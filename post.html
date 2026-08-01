@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="pragma" content="no-cache"><meta http-equiv="expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Does DiffusionGemma have Latent Reasoning?</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127744;</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+ onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false},{left:'$',right:'$',display:false}]});"></script>
+<style>
+:root{--bg:#ffffff;--fg:#1a1a1a;--muted:#666;--rule:#ddd;--accent:#1971c2;--card:#f7f7f9}
+@media(prefers-color-scheme:dark){:root:where(:not([data-theme=light])){--bg:#14161a;--fg:#e6e6e6;--muted:#9aa0a6;--rule:#333;--accent:#74a9e8;--card:#1d2026}}
+:root[data-theme=dark]{--bg:#14161a;--fg:#e6e6e6;--muted:#9aa0a6;--rule:#333;--accent:#74a9e8;--card:#1d2026}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 Georgia,'Times New Roman',serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+h1,h2,h3,h4{font-family:system-ui,sans-serif;line-height:1.25}
+h1{font-size:1.9em}h2{margin-top:1.8em}h3{margin-top:1.4em}h4{margin:.2em 0 .5em;font-size:.95em}
+img{display:block;max-width:100%;margin:1em auto;border-radius:4px}
+figure{margin:1.4em 0}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85em;background:color-mix(in srgb,var(--fg) 7%,transparent);padding:.08em .3em;border-radius:3px}
+code.gen{background:color-mix(in srgb,var(--fg) 5%,transparent)}
+code.gen.block{display:block;white-space:pre-wrap;padding:.5em .7em;margin:.4em 0;border-radius:6px;font-size:.78em;line-height:1.45}
+a{color:var(--accent)}hr{border:0;border-top:1px solid var(--rule);margin:2.2em 0}
+p>em:first-child{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin:1.2em 0;font-family:system-ui,sans-serif;font-size:.85em;line-height:1.45}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.pill{border:1px solid var(--rule);border-radius:999px;padding:1px 9px;font-size:.82em;color:var(--muted);background:var(--bg)}
+.small{color:var(--muted);margin:.3em 0}
+.cap{margin:.7em 0 .2em}.judge{font-style:italic;color:var(--muted);margin:.5em 0 .1em}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:640px){.cols2{grid-template-columns:1fr}}
+.brow{display:grid;grid-template-columns:11em 1fr 1fr;gap:8px;align-items:center;margin:2px 0}
+.card .cols2 .brow{grid-template-columns:2.2em 1fr 1fr}
+.card .cols2 .brow.wide{grid-template-columns:10.5em 1fr}
+.brow .btok{font-family:ui-monospace,monospace;text-align:right;font-weight:600}
+.brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
+.btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
+.btrack i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.btrack b{position:absolute;left:4px;top:-1px;font:10px/16px ui-monospace,monospace;font-weight:400;color:var(--fg);opacity:.85}
+.bhead .bh{font-size:.8em;color:var(--muted)}
+.steergen{padding:2px 10px;margin:2px 0}
+.leg{font-size:.8em;color:var(--muted)}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 10px;vertical-align:-1px}
+#thm{position:fixed;top:12px;right:14px;font:13px system-ui;cursor:pointer;background:none;border:1px solid var(--rule);border-radius:6px;color:var(--fg);padding:3px 8px}
+</style></head><body>
+<button id="thm" onclick="const r=document.documentElement,c=r.dataset.theme||'';r.dataset.theme=c==='dark'?'light':c==='light'?'':'dark';localStorage.setItem('dgblogTheme',r.dataset.theme)">&#9681;</button>
+<script>document.documentElement.dataset.theme=localStorage.getItem('dgblogTheme')||''</script>
+<div class="wrap">
+<h1>Does DiffusionGemma have latent reasoning?</h1>
+<h2>TL;DR:</h2>
+<p>Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass vector-valued information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance. Here, we show that this performance degradation is largely a sampler artifact, supporting the case for high monitorability. Nevertheless, we find some rare cases where the distribution vector is load-bearing computationally, however in a way that is easily interpretable. Overall, this underlines the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.</p>
+<h2>Introduction</h2>
+<p>DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialised token canvas comprising $C$ positions. The self-conditioning state $S_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via</p>
+<p>$$
+\begin{aligned}
+&\textbf{for } t = 0, \dots, T-1: \\[2pt]
+&\qquad S_{t+1} = f(p,\, x_t;\, S_t) \\[2pt]
+&\qquad x_{t+1} = \mathrm{sample}(S_{t+1})
+\end{aligned}
+$$</p>
+<p>where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirectionally to itself, and causally to $p$. $S_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $S_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $S_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.</p>
+<p>For a visual and more detailed introduction to DiffusionGemma, see <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma">this post</a>.</p>
+<p>Thus, generation in DiffusionGemma differs in the following ways:</p>
+<ol><li>Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer.</li><li>Attention is bidirectional.</li><li>Between every diffusion step, not only the current text output is sampled, but the output distributions $S_t$ across all positions are also passed to the next diffusion step $t+1$.</li></ol>
+<p>The last point is especially interesting, since it passes the vector-valued object between diffusion steps, in addition to the tokens $x_t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.</p>
+<h2>Performance degradation from top-k truncation largely is a sampler artifact</h2>
+<p>Despite this a-priori risk, <a href="https://arxiv.org/abs/2606.20560">Engels et al.</a> found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $S_t$ to just its top-k entries, performance of DG significantly dropped. This was in conflict with their other results suggesting high monitorability, since somehow the information in $S_t$ seemed to have been essential to DiffusionGemma.</p>
+<p>When replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer.</p>
+<p>We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. However, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.</p>
+<figure><img src="figs/fig1_gpqa_trunc_failures.png" alt="GPQA truncation failure modes"></figure>
+<p><em>A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $S_t$ observed in <a href="https://arxiv.org/abs/2606.20560">Engels et al.</a></em>.</p>
+<h2>A case study for using the distribution computationally: letter arithmetic</h2>
+<p>We next investigated whether there may still be some other tasks where $S_t$ in fact is essential. Note that in principle, there is no need for the model to use $S_t$ whatsoever to satisfy its training objective (indeed, most of the phenomena in <a href="https://arxiv.org/abs/2606.20560">Engels et al.</a> are explained by bidirectional attention+looping). However, it may facilitate trainability and exploration.</p>
+<p>We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that "superposition" in a simple form is already present in the pretraining data ("Today the weather is _", with "rainy" and "sunny" both plausible), so that we were especially interested in cases where this may have been induced by the model's generalization. [+compuaiton]</p>
+<p>We prompt DG with tasks of the form <em>"Pick any uppercase letter between A and W, write it, then write the letter three positions later in the alphabet, also in uppercase, separated by a comma."</em> DG answers these correctly on its own (e.g. "Letters: G, J"). We then capture a rollout mid-denoising, add probability mass $\varepsilon$ on a <em>different</em> source letter $x$ at the operand position — keeping it strictly sub-leading, so the committed canvas never changes — and re-run exactly one denoising step on paired re-noised canvases. We read out the response at the answer position, $R_c(x') = \log_{10}\big(\bar P^{\mathrm{pert}}_c(x') / \bar P^{\mathrm{base}}_c(x')\big)$, where $\bar P$ averages over the paired draws.</p>
+<figure><img src="figs/fig2a_transfer_map.png" alt="Letter-arithmetic transfer maps"></figure>
+<p><em>Injected mass lands on the diagonal: perturbing source letter $x$ raises its image $x+k$ one step later ($k\in\{3,5,7,11\}$, rows aligned by $-k$; left: argmax, right: mean response $R_c$). The offset follows the prompt, not the state. G column = committed operand (excluded); H/R rows are decode artifacts.</em></p>
+<p>Here is a single intervention in full:</p>
+<figure><img src="figs/fig2a_example_intervention.png" alt="Example intervention"></figure>
+<p><em>One intervention: injecting $\varepsilon=0.45$ on 'H' (the leader 'G' keeps rank 1, the canvas never changes) swings the answer slot from 'J' (0.996→0.05) to 'K'='H'+3 (0.0002→0.91) one step later — the answer tracks the belief at the operand slot, not the committed text.</em></p>
+<h3>Parallelism</h3>
+<p>[stub:] Does the interface serialize, or can it push many hypotheses through at once? We inject $n$ source letters simultaneously (each at flat $\varepsilon_0$, all sub-leading) and read all $n$ computed images. We track the target and non-target responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$, the effect $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$, and the mass-normalized effect $\mathrm{NE}_c = E_c/(n\,\varepsilon_0)$.</p>
+<figure><img src="figs/fig2b_triptych.png" alt="Parallelism triptych"></figure>
+<p><em>Letters (case-flip), mean ± 95% CI over 736 cells, $\varepsilon_0=0.04$. The effect $E_c$ grows with $n$ while the per-mass efficiency $\mathrm{NE}_c$ stays flat ≈0.6–0.7 out to $n=20$ — hypothesis count is not the bottleneck (numbers: same plateau ≈0.5). The mixed reference includes a case-band component; the band-free edge (≈0.2–0.4) is equally flat.</em></p>
+<h2>Appendix</h2>
+<p>How much of the standard AR interpretability toolkit survives the transfer to DG? Everything below is measured on the SAE-Probes real-text concept datasets (plus RepE tasks for steering and the J-Lens paper sets); DG additionally has two <em>modes</em> over one weight stack — causal reading and bidirectional denoising.</p>
+<h3>A1: Representation similarity (cosine &amp; CKA)</h3>
+<figure><img src="figs/figA1_rsa_cosine_cka.png" alt="RSA cosine and CKA"></figure>
+<p><em>Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔denoising mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.</em></p>
+<h3>A2: Probe retention</h3>
+<figure><img src="figs/figA2_probe_retention.png" alt="Probe retention"></figure>
+<p><em>Top: mean held-out AUC (56 concepts, source-CV layer) — cross-model reading costs ~0.03 in both directions. Bottom: a held-out pair read by the same gemma-trained probe on both models' activations.</em></p>
+<h3>A3: Steering retention</h3>
+<figure><img src="figs/figA3_steer_retention.png" alt="Steering retention"></figure>
+<p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); denoising-mode directions are the weakest sources. Bottom: ±steer pair for the happiness direction (gemma-4 → DG); judge digest in italics.</em></p>
+<h3>A4: J-Lens retention</h3>
+<figure><img src="figs/figA4_jlens_retention.png" alt="J-Lens retention"></figure>
+<p><em>Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: a transfer hit and a miss.</em></p>
+</div></body></html>

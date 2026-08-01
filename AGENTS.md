@@ -1,0 +1,67 @@
+# dg_blog — DiffusionGemma blog post
+
+Blog-post compilation directory (standalone, not a git repo). The deliverable is `post.md`
+(the user's text — edit conservatively, they rewrite prose themselves) plus its HTML render
+`post.html` with figures and interactive-style illustration cards.
+
+## Math convention
+
+**Inline math is `$...$`, display math is `$$...$$`.** Do not use `\( ... \)` (converted away
+2026-08-01). `build_html.py` stashes both forms before markdown conversion and KaTeX
+auto-renders them client-side; the algorithm block uses `$$ \begin{aligned} ... \end{aligned} $$`.
+
+## Build pipeline
+
+Everything is a pure CPU re-render of archived study data — never launch model runs for this.
+Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/PIL).
+
+- `scripts/build_html.py` — renders `post.md` → `post.html` (minimal md subset: `#`-headers,
+  `**`/`__`/`*`, images, links, lists, `` ` `` code, `---`). House style: system light/dark +
+  toggle (top right), no-cache meta, ~900px column. **Rebuild + push after every post.md edit.**
+  It can also inject native-HTML illustration cards at `<!--ILLUST:name-->` markers from
+  `data/*.json` — but since 2026-08-01 the post uses PNG renders of those cards instead
+  (markers removed), so md and html show identical figures. To change a card: edit its
+  generator in build_html.py, temporarily re-add the marker, rebuild+push, re-screenshot the
+  card on aws-static (playwright, device_scale_factor=2, `.card` locator → figs/parts/card_*.png),
+  run `scripts/compose_figs.py`, remove the marker again, rebuild.
+- `scripts/compose_figs.py` — composes appendix figures (parts/figA*_matrix.png on top +
+  parts/card_*.png below) → figs/figA*_retention.png, and promotes the letters-example card to
+  figs/fig2a_example_intervention.png. Titles are intentionally absent from all plots — the
+  post's italic captions carry that information; don't re-add them.
+- `scripts/fig1_trunc_failures.py` — GPQA truncation stacked failure-mode bars.
+  Data: `/workspace-vast/jbauer/exp/dg_lockin/pipe/commit_ds/` (std ladder `acts_bench/gpqa/*/
+  manifest.json`, gentle soft/k1 `acts_stab/.../manifest.json`, gentle k2–k8 `acts_psweep/...
+  /manifest_w*.jsonl`; schemas differ: `correct` vs `ok`). Failure rules per
+  `diffusiongemma/lockin/fig2_report.py::norm_record`.
+- `scripts/payload.py` — parses `window.__DATA__` out of
+  `activation_oracles_dev/reports/dg-planning/symbol_arithmetic.html` (caches to scratchpad).
+- `scripts/fig2a_transfer_map.py` — letter-arithmetic transfer matshows (headline variant:
+  UPPER→UPPER, ε=0.45, payload `tmap.let`, `v=="UU"`).
+- `scripts/extract_letters_example.py` — example-intervention data → `data/letters_example.json`
+  (cell `UU3|hi|s0`, inject 'H'; A-slot sheet from battery state `UU3|src0|s0`).
+- `scripts/fig2b_triptych.py` — parallelism, letters-only, mean ± 95% CI curves (no sinas, per
+  user request 2026-08-01).
+- `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 are matrix-only PNGs;
+  their example pairs live in `data/*_pair.json` → HTML cards). Source data:
+  `activation_oracles_dev/concept_probes/out/saeprobes/`.
+
+## Serving / publishing
+
+- One canonical file per artifact, stable paths, **no version-keyed filenames or `?v=` URLs**.
+- Local: symlink `/workspace-vast/jbauer/served/dg_blog` → here;
+  URL http://localhost:8095/dg_blog/post.html (Simple Browser).
+- Public: symlink `activation_oracles_dev/reports/dg-blog` → here; the `reports_mirror` tmux
+  rsyncs to https://reports.janbauer.cc/dg-blog/post.html every 5 min (manual push:
+  `rsync -rlptL .../reports/dg-blog aws-static:reports/`). Everything here becomes public —
+  no secrets.
+- Visual verification: workbench has no Chromium — screenshot on aws-static
+  (`~/pwenv` playwright + temp `http.server` in `~/reports`).
+
+## Gotchas
+
+- The user edits `post.md` live in VS Code — write collisions happen; make targeted edits and
+  re-check the file after "modified since read" errors. Their prose placeholders
+  (`[stub:]`, `[link]`, `[maybe give more deets]`, `see []`) are intentional.
+- Current canonical saeprobes numbers: probe 2×2 = 0.826/0.793/0.792/0.820; steering = RepE
+  blind-pair accuracy (gg .80 gd .79 eg .85 ed .83 cg .73 cd .70); J-Lens A-score cells
+  gg .44 / gd .33 / dgc .49/.46 / dgb .51/.55. Older memories citing 0.878/... are stale.

@@ -1,0 +1,14 @@
+{
+ "tag": "161_agnews_0",
+ "layer": 16,
+ "pos": {
+  "text": "Moral clarity blurs in Darfur crisis Talks between Sudan's government and two rebel groups to resolve the nearly two-year battle resume Friday.",
+  "g": 0.9833,
+  "d": 0.9806
+ },
+ "neg": {
+  "text": "ilterConfigurationHandler; use Sidus\\EAVModelBundle\\Model\\FamilyInterface; use Sidus\\EAVModelBundle\\Translator\\TranslatableTrait; use Symfony\\Component\\Translation\\TranslatorInterface; /** * Extended datagrid configuration for EAV entities */ class DataGrid extends BaseDataGrid { use TranslatableTrait; /** @var FamilyInterface */ protected $family; /** * DataGrid constructor. * * @param string $co",
+  "g": 0.0043,
+  "d": 0.006
+ }
+}

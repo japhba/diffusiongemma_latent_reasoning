@@ -1,0 +1,16 @@
+{
+ "hit": {
+  "label": "transfer hit \u2014 gemma-4 Jacobian read on DG residuals",
+  "desc": "Paper-provided intermediate references: ['Polish', 'opposite', 'left', 'right'] (item: polish-direction-left) \u2014 eval set 'multilingual'",
+  "A": 0.9932620530009145,
+  "matches": "L22/24/25@pos#10: 'Right'; L24/25@pos#10: 'right'",
+  "inspection": "The model surfaces the concept of 'right' across several languages (Spanish, Portuguese, French, Italian) not mentioned in the prompt."
+ },
+ "miss": {
+  "label": "miss \u2014 DG-denoising Jacobian read on gemma-4 residuals",
+  "desc": "Paper-provided intermediate references: ['field'] (item: field-h) \u2014 eval set 'association'",
+  "A": 0.0,
+  "matches": "none",
+  "inspection": "The model surfaces semantically relevant concepts like rooftops and treetops, which are plausible given the farmhouse and height context."
+ }
+}

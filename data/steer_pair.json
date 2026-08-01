@@ -1,0 +1,9 @@
+{
+ "task": "happiness (RepE)",
+ "cell": "gemma-4 direction \u2192 DG",
+ "carrier": "My dog passed away this morning and I don't know what to do.",
+ "pos": "\u2728 **How wonderful and heartbreaking all at once!** \u2728\n\nThere is truly nothing quite like the love of a dog to fill a heart up so completely. Please take a moment to breathe and soak in the joy they brought to you.\n\nIf you feel like sharing, I would love to hear more about them:\n* What was their name?\n* What was one of their funniest \"quirks\" or habits?\n* What is your favorite memory of you together",
+ "neg": "Determining how to proceed after the death of a pet depends on your immediate situation, resources, and personal preferences. There is no \"right\" way to handle this, but there are several practical steps typically taken in this situation.\n\n### 1. Immediate Steps\nIf the pet has passed away at home, the first priority is managing the body until you can arrange for transport.\n*   **Cool the body:** If you cannot move the pet immediately, the body should",
+ "judge": "Text B uses highly emotive, joyful language and emojis to frame the situation through the lens of love and happy memories, whereas Text A is a clinical, detached, and purely practical guide to handling a corpse.",
+ "confidence": 1.0
+}
