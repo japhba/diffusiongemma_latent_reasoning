@@ -99,8 +99,17 @@ def ill_letters_example():
             ap_bar = bar(ap, col)
         body.append(f'<div class="brow b4c"><span class="btok" style="color:{col}">{E(tok)}</span>'
                     + bar(ab, col) + bar(bb, col) + "<span></span>" + ap_bar + bar(bp, col) + "</div>")
+    kword = {3: "three", 5: "five", 7: "seven", 11: "eleven"}[d["k"]]
+    prompt_html = E(d["prompt"]).replace(
+        f" {kword} positions later",
+        f' <u>{kword} positions later</u><span class="kn"> (this sets the shift $k{{=}}{d["k"]}$)</span>', 1)
+    ann = lambda tok, lab: (f'<span class="anntok"><code class="gen">{E(tok)}</code>'
+                            f'<span class="annlab">{lab}</span></span>')
+    gen_html = (f'<code class="gen">Letters:</code> {ann(d["nat"], "$x_i$")}'
+                f'<code class="gen">,</code> {ann(d["ja"], "$x_{i+1}$")}')
     return f"""<div class="card">
-<p class="small">natural generation: <code class="gen">{E(d['final'])}</code></p>
+<p class="small">prompt: {prompt_html}</p>
+<p class="small">natural generation: &nbsp;{gen_html}</p>
 {head}{''.join(body)}
 <span class="leg"><i style="background:{CL['inj']}"></i> injected source token
 <i style="background:{CL['tgt']}"></i> its arithmetic image
@@ -197,6 +206,10 @@ p>em:first-child{color:var(--muted)}
 .ghead .gh{font-weight:600;text-align:center}
 .ghead .gh.s2{grid-column:span 2}
 .ghead{margin:6px 0 0}
+.anntok{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top}
+.annlab{font-size:.8em;color:var(--muted);line-height:1.1}
+.kn{color:var(--muted);font-size:.9em}
+.card u{text-decoration-color:var(--accent);text-underline-offset:2px}
 .brow .btok{font-family:ui-monospace,monospace;text-align:right;font-weight:600}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
