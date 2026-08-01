@@ -34,19 +34,18 @@ base = {field[q] if isinstance(field[q], str) else q: (st["base"][q] or 0.0) for
 base = {field[q]: (st["base"][q] or 0.0) for q in range(52)}
 arm = {field[q]: (c["arm"][q] or 0.0) for q in range(52)}
 
-def top(d1, d2, keep, n=9):
-    toks = sorted(field, key=lambda w: -max(d1.get(w, 0), d2.get(w, 0)))
-    sel = [w for w in toks if max(d1.get(w, 0), d2.get(w, 0)) > 0][:n]
-    for w in keep:
-        if w not in sel:
-            sel.append(w)
-    sel.sort(key=lambda w: -max(d1.get(w, 0), d2.get(w, 0)))
-    return [[w, round(d1.get(w, 0), 5), round(d2.get(w, 0), 5)] for w in sel]
+# unified token rows: [tok, A_base, A_pert, B_base, B_pert], shared across all four bar tracks
+vecs = (stA, stAp, base, arm)
+mx = lambda w: max(v.get(w, 0) or 0 for v in vecs)
+sel = [w for w in sorted(field, key=lambda w: -mx(w)) if mx(w) > 0][:9]
+for w in (X, img, bst["nat"], bst["ja"]):
+    if w not in sel:
+        sel.append(w)
+sel.sort(key=lambda w: -mx(w))
+rows = [[w] + [round(v.get(w, 0) or 0, 5) for v in vecs] for w in sel]
 
 out = dict(prompt=tm["prompts"]["UU3"], final=bst["final"], nat=bst["nat"], ja=bst["ja"],
-           k=k, eps=EPS, x=X, img=img, draws=tm["draws"], t=2,
-           A=top(stA, stAp, keep=[X, bst["nat"]]),
-           B=top(base, arm, keep=[img, X, bst["ja"]]))
+           k=k, eps=EPS, x=X, img=img, draws=tm["draws"], t=2, rows=rows)
 (ROOT / "data").mkdir(exist_ok=True)
 json.dump(out, open(ROOT / "data" / "letters_example.json", "w"), indent=1)
 print(ROOT / "data" / "letters_example.json")

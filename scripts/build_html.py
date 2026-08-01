@@ -66,23 +66,9 @@ LOGFLOOR = 1e-5
 lgw = lambda p: max(0.0, (math.log10(max(p, LOGFLOOR)) - math.log10(LOGFLOOR)) / -math.log10(LOGFLOOR)) * 100
 
 
-def bar_rows(entries, cls_of, inc_tok=None, inc_base=None):
-    """Log-scaled paired bars (t, t+1). For inc_tok, the injected increment beyond inc_base is
-    drawn at low alpha; alphas of the t and t+1 bars themselves are identical."""
-    rows = [('<div class="brow bhead"><span class="btok"></span><span class="bh">$t$</span>'
-             '<span class="bh">$t{+}1$</span></div>')]
-    for tok, p1, p2 in entries:
-        col = CL[cls_of(tok)]
-        seg2 = f'<i style="width:{lgw(p2):.1f}%;background:{col}"></i>'
-        if tok == inc_tok:
-            seg2 = (f'<i style="width:{lgw(p2):.1f}%;background:{col};opacity:.3"></i>'
-                    f'<i style="width:{lgw(inc_base):.1f}%;background:{col}"></i>')
-        rows.append(
-            f'<div class="brow"><span class="btok" style="color:{col}">{E(tok)}</span>'
-            f'<span class="btrack"><i style="width:{lgw(p1):.1f}%;background:{col}"></i>'
-            f'<b class="bv1">{p1:.3g}</b></span>'
-            f'<span class="btrack">{seg2}<b class="bv2">{p2:.3g}</b></span></div>')
-    return "".join(rows)
+def bar(p, col):
+    return (f'<span class="btrack"><i style="width:{lgw(p):.1f}%;background:{col}"></i>'
+            f'<b class="bv1">{p:.3g}</b></span>')
 
 
 def pills(*ps):
@@ -93,17 +79,33 @@ def ill_letters_example():
     d = json.load(open(DATA / "letters_example.json"))
     cls = lambda tok: ("inj" if tok == d["x"] else "tgt" if tok == d["img"] else
                        "att" if tok in (d["ja"], d["nat"]) else "oth")
-    x_before = next(p1 for tok, p1, _ in d["A"] if tok == d["x"])
+    sub_t = "operand position $x_i$, step $t$"
+    sub_t1 = "answer position ${x'}_{i'}$, step $t{+}1$"
+    head = (f'<div class="brow b4c ghead"><span></span><span class="gh s2">baseline</span>'
+            f'<span></span><span class="gh s2">intervention (inject mass '
+            f'$\\varepsilon={d["eps"]:g}$ on \'{E(d["x"])}\')</span></div>'
+            f'<div class="brow b4c bhead"><span></span><span class="bh">{sub_t}</span><span class="bh">{sub_t1}</span>'
+            f'<span></span><span class="bh">{sub_t}</span><span class="bh">{sub_t1}</span></div>')
+    body = []
+    for tok, ab, ap, bb, bp in d["rows"]:
+        col = CL[cls(tok)]
+        # intervention @ operand: the injected increment beyond the carried-over mass, low alpha
+        if tok == d["x"]:
+            carried = ab * (1 - d["eps"])
+            ap_bar = (f'<span class="btrack"><i style="width:{lgw(ap):.1f}%;background:{col};opacity:.3"></i>'
+                      f'<i style="width:{lgw(carried):.1f}%;background:{col}"></i>'
+                      f'<b class="bv1">{ap:.3g}</b></span>')
+        else:
+            ap_bar = bar(ap, col)
+        body.append(f'<div class="brow b4c"><span class="btok" style="color:{col}">{E(tok)}</span>'
+                    + bar(ab, col) + bar(bb, col) + "<span></span>" + ap_bar + bar(bp, col) + "</div>")
     return f"""<div class="card">
 <p class="small">natural generation: <code class="gen">{E(d['final'])}</code></p>
-<div class="cols2">
-<div><h4>$x_i$</h4>{bar_rows(d['A'], cls, inc_tok=d['x'], inc_base=x_before * (1 - d['eps']))}</div>
-<div><h4>${{x'}}_{{i'}}$</h4>{bar_rows(d['B'], cls)}</div>
-</div>
-<span class="leg"><i style="background:{CL['inj']}"></i> injected source
-<i style="background:{CL['tgt']}"></i> its image
+{head}{''.join(body)}
+<span class="leg"><i style="background:{CL['inj']}"></i> injected source token
+<i style="background:{CL['tgt']}"></i> its arithmetic image
 <i style="background:{CL['att']}"></i> committed operand / natural answer
-<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; bars log-scaled ($10^{{-5}}$ … $1$)</span>
+<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; all bars share one log scale ($10^{{-5}}$ … $1$)</span>
 </div>"""
 
 
@@ -191,6 +193,10 @@ p>em:first-child{color:var(--muted)}
 .brow{display:grid;grid-template-columns:11em 1fr 1fr;gap:8px;align-items:center;margin:2px 0}
 .card .cols2 .brow{grid-template-columns:2.2em 1fr 1fr}
 .card .cols2 .brow.wide{grid-template-columns:10.5em 1fr}
+.brow.b4c{grid-template-columns:2.2em 1fr 1fr 16px 1fr 1fr}
+.ghead .gh{font-weight:600;text-align:center}
+.ghead .gh.s2{grid-column:span 2}
+.ghead{margin:6px 0 0}
 .brow .btok{font-family:ui-monospace,monospace;text-align:right;font-weight:600}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
