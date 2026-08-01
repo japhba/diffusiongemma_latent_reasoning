@@ -65,3 +65,7 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
 - Current canonical saeprobes numbers: probe 2×2 = 0.826/0.793/0.792/0.820; steering = RepE
   blind-pair accuracy (gg .80 gd .79 eg .85 ed .83 cg .73 cd .70); J-Lens A-score cells
   gg .44 / gd .33 / dgc .49/.46 / dgb .51/.55. Older memories citing 0.878/... are stale.
+
+## Repo
+
+Private GitHub: https://github.com/japhba/dg_blog (gh account japhba). Commit + push after substantive edits.
