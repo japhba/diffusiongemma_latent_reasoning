@@ -76,7 +76,7 @@ for s, off, alpha in (("std", -w / 2, 1.0), ("gentle", w / 2, 1.0)):
         ax.text(xi, tot + 1.2, f"{tot:.0f}", ha="center", va="bottom")
 
 ax.set_xticks(x, [RUNG_LAB[r] for r in RUNGS])
-ax.set_xlabel("state-vocabulary truncation (top-$k$ of $S^t$)")
+ax.set_xlabel(r"state-vocabulary truncation (top-$k$ of $\mathbf{S}_t$)")
 ax.set_ylabel("% of rollouts failed")
 ax.set_ylim(0, 100)
 from matplotlib.patches import Patch

@@ -8,17 +8,17 @@ Overall, this underlines the paper's conclusion that DiffusionGemma remains high
 
 ## Introduction
 
-DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialised token canvas comprising $C$ positions. The self-conditioning state $S_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via
+DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialised token canvas comprising $C$ positions. The self-conditioning state $\mathbf{S}_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via
 
 $$
 \begin{aligned}
 &\textbf{for } t = 0, \dots, T-1: \\[2pt]
-&\qquad S_{t+1} = f(p,\, x_t;\, S_t) \\[2pt]
-&\qquad x_{t+1} = \mathrm{sample}(S_{t+1})
+&\qquad \mathbf{S}_{t+1} = f(p,\, x_t;\, \mathbf{S}_t) \\[2pt]
+&\qquad x_{t+1} = \mathrm{sample}(\mathbf{S}_{t+1})
 \end{aligned}
 $$
 
-where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirectionally to itself, and causally to $p$. $S_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $S_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $S_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.
+where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{S}_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $\mathbf{S}_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $\mathbf{S}_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.
 
 For a visual and more detailed introduction to DiffusionGemma, see [this post](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma).
 
@@ -26,13 +26,13 @@ Thus, generation in DiffusionGemma differs in the following ways:
 
 1. Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer.
 2. Attention is bidirectional.
-3. Between every diffusion step, not only the current text output is sampled, but the output distributions $S_t$ across all positions are also passed to the next diffusion step $t+1$.
+3. Between every diffusion step, not only the current text output is sampled, but the output distributions $\mathbf{S}_t$ across all positions are also passed to the next diffusion step $t+1$.
 
 The last point is especially interesting, since it passes the vector-valued object between diffusion steps, in addition to the tokens $x_t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Despite this a-priori risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $S_t$ to just its top-k entries, performance of DG significantly dropped. This was in conflict with their other results suggesting high monitorability, since somehow the information in $S_t$ seemed to have been essential to DiffusionGemma.
+Despite this a-priori risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $\mathbf{S}_t$ to just its top-k entries, performance of DG significantly dropped. This was in conflict with their other results suggesting high monitorability, since somehow the information in $\mathbf{S}_t$ seemed to have been essential to DiffusionGemma.
 
 When replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer.
 
@@ -40,11 +40,11 @@ We found that adopting a gentler sampler largely prevents this failure mode, sug
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 
-*A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $S_t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560)*.
+*A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{S}_t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560)*.
 
 ## A case study for using the distribution computationally: letter arithmetic
 
-We next investigated whether there may still be some other tasks where $S_t$ in fact is essential. Note that in principle, there is no need for the model to use $S_t$ whatsoever to satisfy its training objective (indeed, most of the phenomena in [Engels et al.](https://arxiv.org/abs/2606.20560) are explained by bidirectional attention+looping). However, it may facilitate trainability and exploration.
+We next investigated whether there may still be some other tasks where $\mathbf{S}_t$ in fact is essential. Note that in principle, there is no need for the model to use $\mathbf{S}_t$ whatsoever to satisfy its training objective (indeed, most of the phenomena in [Engels et al.](https://arxiv.org/abs/2606.20560) are explained by bidirectional attention+looping). However, it may facilitate trainability and exploration.
 
 We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that "superposition" in a simple form is already present in the pretraining data ("Today the weather is _", with "rainy" and "sunny" both plausible), so that we were especially interested in cases where this may have been induced by the model's generalization. [+compuaiton]
 

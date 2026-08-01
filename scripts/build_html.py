@@ -79,8 +79,8 @@ def ill_letters_example():
     d = json.load(open(DATA / "letters_example.json"))
     cls = lambda tok: ("inj" if tok == d["x"] else "tgt" if tok == d["img"] else
                        "att" if tok in (d["ja"], d["nat"]) else "oth")
-    sub_t = "operand position $x_i$, step $t$"
-    sub_t1 = "answer position ${x'}_{i'}$, step $t{+}1$"
+    sub_t = "operand distribution $\\mathbf{S}^t_i$"
+    sub_t1 = "answer distribution $\\mathbf{S}^{t+1}_{i+1}$"
     head = (f'<div class="brow b4c ghead"><span></span><span class="gh s2">baseline</span>'
             f'<span></span><span class="gh s2">intervention (inject mass '
             f'$\\varepsilon={d["eps"]:g}$ on \'{E(d["x"])}\')</span></div>'
