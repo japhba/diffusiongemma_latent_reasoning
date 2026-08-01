@@ -2,7 +2,7 @@
 at <!--ILLUST:name--> markers (data from data/*.json).
 
 House conventions: system light/dark + toggle, no-cache meta, ~900px column, generations in
-code font, judge digests italic, provenance pills, sqrt-scaled probability bars.
+code font, judge digests italic, log-scaled probability bars.
 """
 import html
 import json
@@ -62,19 +62,27 @@ E = lambda s: html.escape(str(s), quote=False)
 CL = {"inj": "#9c36b5", "tgt": "#e8590c", "att": "#868e96", "oth": "#7aa2ff"}
 
 
-def bar_rows(entries, cls_of, pmax=1.0):
-    rows = []
+LOGFLOOR = 1e-5
+lgw = lambda p: max(0.0, (math.log10(max(p, LOGFLOOR)) - math.log10(LOGFLOOR)) / -math.log10(LOGFLOOR)) * 100
+
+
+def bar_rows(entries, cls_of, inc_tok=None, inc_base=None):
+    """Log-scaled paired bars (t, t+1). For inc_tok, the injected increment beyond inc_base is
+    drawn at low alpha; alphas of the t and t+1 bars themselves are identical."""
+    rows = [('<div class="brow bhead"><span class="btok"></span><span class="bh">$t$</span>'
+             '<span class="bh">$t{+}1$</span></div>')]
     for tok, p1, p2 in entries:
         col = CL[cls_of(tok)]
-        w1, w2 = (100 * math.sqrt(p / pmax) for p in (p1, p2))
+        seg2 = f'<i style="width:{lgw(p2):.1f}%;background:{col}"></i>'
+        if tok == inc_tok:
+            seg2 = (f'<i style="width:{lgw(p2):.1f}%;background:{col};opacity:.3"></i>'
+                    f'<i style="width:{lgw(inc_base):.1f}%;background:{col}"></i>')
         rows.append(
             f'<div class="brow"><span class="btok" style="color:{col}">{E(tok)}</span>'
-            f'<span class="btrack"><i style="width:{w1:.1f}%;background:{col};opacity:.35"></i>'
+            f'<span class="btrack"><i style="width:{lgw(p1):.1f}%;background:{col}"></i>'
             f'<b class="bv1">{p1:.3g}</b></span>'
-            f'<span class="btrack"><i style="width:{w2:.1f}%;background:{col}"></i>'
-            f'<b class="bv2">{p2:.3g}</b></span></div>')
-    return ('<div class="brow bhead"><span class="btok"></span><span class="bh">before</span>'
-            '<span class="bh">after</span></div>' + "".join(rows))
+            f'<span class="btrack">{seg2}<b class="bv2">{p2:.3g}</b></span></div>')
+    return "".join(rows)
 
 
 def pills(*ps):
@@ -85,23 +93,17 @@ def ill_letters_example():
     d = json.load(open(DATA / "letters_example.json"))
     cls = lambda tok: ("inj" if tok == d["x"] else "tgt" if tok == d["img"] else
                        "att" if tok in (d["ja"], d["nat"]) else "oth")
+    x_before = next(p1 for tok, p1, _ in d["A"] if tok == d["x"])
     return f"""<div class="card">
-{pills(f"letter arithmetic +{d['k']} (UPPER→UPPER)", f"sheet seed s=0, step t={d['t']}→{d['t']+1}",
-       f"inject ε={d['eps']:g} on '{d['x']}' (stays sub-leading)", f"{d['draws']} paired renoise draws")}
-<p class="small">prompt: {E(d['prompt'])}</p>
-<p class="small">natural generation: <code class="gen">{E(d['final'])}</code>
-&nbsp;(committed operand '{E(d['nat'])}', natural answer '{E(d['ja'])}')</p>
+<p class="small">natural generation: <code class="gen">{E(d['final'])}</code></p>
 <div class="cols2">
-<div><h4>operand slot A — sheet S<sup>t</sup>, base → +ε on '{E(d['x'])}'</h4>{bar_rows(d['A'], cls)}</div>
-<div><h4>answer slot B — one step later, base → perturbed</h4>{bar_rows(d['B'], cls)}</div>
+<div><h4>$x_i$</h4>{bar_rows(d['A'], cls, inc_tok=d['x'], inc_base=x_before * (1 - d['eps']))}</div>
+<div><h4>${{x'}}_{{i'}}$</h4>{bar_rows(d['B'], cls)}</div>
 </div>
-<p class="cap"><em>The leader '{E(d['nat'])}' keeps rank 1 and the canvas never changes; yet one step later the
-answer slot has swung from '{E(d['ja'])}' (0.996 → 0.05) to '{E(d['img'])}' = '{E(d['x'])}'+{d['k']}
-(0.0002 → 0.91): the answer position tracks the <b>belief</b> at the operand position, not the committed text.</em></p>
 <span class="leg"><i style="background:{CL['inj']}"></i> injected source
 <i style="background:{CL['tgt']}"></i> its image
 <i style="background:{CL['att']}"></i> committed operand / natural answer
-<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; bars √-scaled</span>
+<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; bars log-scaled ($10^{{-5}}$ … $1$)</span>
 </div>"""
 
 
@@ -152,7 +154,7 @@ for j, name in enumerate(ILL):
     blk = GEN[name]()
     body = re.sub(rf"(<p>)?\x02I{j}\x02(</p>)?", lambda m: blk, body)
 
-HTML = """<!DOCTYPE html>
+HEAD = """<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
@@ -202,8 +204,12 @@ p>em:first-child{color:var(--muted)}
 <button id="thm" onclick="const r=document.documentElement,c=r.dataset.theme||'';r.dataset.theme=c==='dark'?'light':c==='light'?'':'dark';localStorage.setItem('dgblogTheme',r.dataset.theme)">&#9681;</button>
 <script>document.documentElement.dataset.theme=localStorage.getItem('dgblogTheme')||''</script>
 <div class="wrap">
-""" + body + """
-</div></body></html>"""
+"""
+TAIL = "\n</div></body></html>"
 
-(ROOT / "post.html").write_text(HTML)
-print(ROOT / "post.html", len(HTML))
+(ROOT / "post.html").write_text(HEAD + body + TAIL)
+print(ROOT / "post.html")
+
+if "card" in __import__("sys").argv:
+    (ROOT / "card_preview.html").write_text(HEAD + ill_letters_example() + TAIL)
+    print(ROOT / "card_preview.html")
