@@ -12,8 +12,9 @@ import numpy as np
 from matplotlib.colors import ListedColormap
 from matplotlib.patches import Patch
 
-EXP = Path("/workspace-vast/jbauer/diffusiongemma/exp/dg_planning")
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
+ROOT = Path(__file__).resolve().parent.parent
+EXP = ROOT / "src_data"
+OUT = ROOT / "figs"
 runs = json.load(open(EXP / "ember_kill.json"))
 by = {(r["seed"], r["tag"]): r for r in runs}
 

@@ -13,8 +13,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
-SP = Path("/workspace-vast/jbauer/activation_oracles_dev/concept_probes/out/saeprobes")
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "figs"
+SP = ROOT / "src_data" / "saeprobes"
 jj = json.load(open(SP / "jlens/judged_jlens_percepts.json"))
 
 agg = defaultdict(list)

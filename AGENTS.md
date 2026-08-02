@@ -15,6 +15,19 @@ auto-renders them client-side; the algorithm block uses `$$ \begin{aligned} ... 
 Everything is a pure CPU re-render of archived study data — never launch model runs for this.
 Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/PIL).
 
+**Self-contained since 2026-08-02:** all source data is vendored under `src_data/` (~23 MB) and
+every script resolves paths relative to the repo root (`Path(__file__).resolve().parent.parent`),
+so the full pipeline reruns from a bare clone with numpy+matplotlib+PIL. Verified: rerunning all
+12 scripts from `src_data/` reproduces every committed PNG byte-identically. Only exception:
+`figs/parts/card_*.png` are pre-rendered browser screenshots (see build_html.py card recipe) —
+committed as artifacts, not regenerable offline. Provenance of `src_data/`:
+- `src_data/commit_ds/` ← `/workspace-vast/jbauer/exp/dg_lockin/pipe/commit_ds/` (only the
+  gpqa manifests fig1 needs: acts_bench, acts_stab *_slow3, acts_psweep *_slow3).
+- `src_data/saeprobes/` (+`jlens/`) ← `activation_oracles_dev/concept_probes/out/saeprobes/`.
+- `src_data/ember_kill.json` ← `diffusiongemma/exp/dg_planning/ember_kill.json`.
+- `src_data/symbol_arithmetic_payload.json` ← `window.__DATA__` of
+  `reports/dg-planning/symbol_arithmetic.html` (builder `diffusiongemma/planning/build_superpos.py`).
+
 - `scripts/build_html.py` — renders `post.md` → `post.html` (minimal md subset: `#`-headers,
   `**`/`__`/`*`, images, links, lists, `` ` `` code, `---`). House style: system light/dark +
   toggle (top right), no-cache meta, ~900px column. **Rebuild + push after every post.md edit.**
@@ -29,12 +42,10 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
   figs/fig2a_example_intervention.png. Titles are intentionally absent from all plots — the
   post's italic captions carry that information; don't re-add them.
 - `scripts/fig1_trunc_failures.py` — GPQA truncation stacked failure-mode bars.
-  Data: `/workspace-vast/jbauer/exp/dg_lockin/pipe/commit_ds/` (std ladder `acts_bench/gpqa/*/
-  manifest.json`, gentle soft/k1 `acts_stab/.../manifest.json`, gentle k2–k8 `acts_psweep/...
-  /manifest_w*.jsonl`; schemas differ: `correct` vs `ok`). Failure rules per
-  `diffusiongemma/lockin/fig2_report.py::norm_record`.
-- `scripts/payload.py` — parses `window.__DATA__` out of
-  `activation_oracles_dev/reports/dg-planning/symbol_arithmetic.html` (caches to scratchpad).
+  Data: `src_data/commit_ds/` (std ladder `acts_bench/gpqa/*/manifest.json`, gentle soft/k1
+  `acts_stab/.../manifest.json`, gentle k2–k8 `acts_psweep/.../manifest_w*.jsonl`; schemas
+  differ: `correct` vs `ok`). Failure rules per `diffusiongemma/lockin/fig2_report.py::norm_record`.
+- `scripts/payload.py` — loads `src_data/symbol_arithmetic_payload.json`.
 - `scripts/fig2a_transfer_map.py` — letter-arithmetic transfer matshows (headline variant:
   UPPER→UPPER, ε=0.45, payload `tmap.let`, `v=="UU"`).
 - `scripts/extract_letters_example.py` — example-intervention data → `data/letters_example.json`
@@ -44,13 +55,12 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
 - `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 matrix-only PNGs in
   figs/parts/) + card data: `data/probe_pair.json`, `data/steer_pair.json` (cells gg+gd — both
   target models side by side), `data/jlens_layers.json` (carnival-ocean top-5/layer for both
-  read streams, from `jlens/eval_2x2.json` examples). Source data:
-  `activation_oracles_dev/concept_probes/out/saeprobes/`.
+  read streams, from `jlens/eval_2x2.json` examples). Source data: `src_data/saeprobes/`.
   The A2 matrix is the 3×3 mode-split (probe_matrix.json modes: `headline` = DG causal,
   `declast` = DG bidirectional last-token; `decmean` only cited in prose). causal↔bidirectional
   cross-cells don't exist in the data → masked grey. Matrix scores annotated `:.2f` everywhere.
 - `scripts/figA5_ember.py` — seasonal-vs-idiom ember-kill: 4 stacked trajectory panels + outcome
-  matshow from `diffusiongemma/exp/dg_planning/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
+  matshow from `src_data/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
 
 ## Serving / publishing
 

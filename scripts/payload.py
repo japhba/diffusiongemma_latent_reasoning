@@ -1,20 +1,16 @@
-"""Extract window.__DATA__ payload from symbol_arithmetic.html (cached to scratchpad)."""
+"""Load the symbol-arithmetic study payload (src_data/symbol_arithmetic_payload.json).
+
+Provenance: window.__DATA__ of activation_oracles_dev/reports/dg-planning/symbol_arithmetic.html
+(builder: diffusiongemma/planning/build_superpos.py), extracted verbatim 2026-08-02.
+"""
 import json
 from pathlib import Path
 
-HTML = Path("/workspace-vast/jbauer/activation_oracles_dev/reports/dg-planning/symbol_arithmetic.html")
-CACHE = Path("/tmp/claude-2107/-workspace-vast-jbauer-activation-oracles-dev/29d76a9f-ac8a-4212-8cc9-989545728103/scratchpad/symbol_arithmetic_payload.json")
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def load_payload():
-    if CACHE.exists():
-        return json.load(open(CACHE))
-    txt = HTML.read_text()
-    i = txt.index("window.__DATA__ = ") + len("window.__DATA__ = ")
-    data, _ = json.JSONDecoder().raw_decode(txt[i:])
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(data, open(CACHE, "w"))
-    return data
+    return json.load(open(ROOT / "src_data" / "symbol_arithmetic_payload.json"))
 
 
 if __name__ == "__main__":

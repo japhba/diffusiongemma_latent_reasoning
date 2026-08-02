@@ -10,7 +10,7 @@ import math
 import re
 from pathlib import Path
 
-ROOT = Path("/workspace-vast/jbauer/dg_blog")
+ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 md = (ROOT / "post.md").read_text().replace("&nbsp;", " ")
 

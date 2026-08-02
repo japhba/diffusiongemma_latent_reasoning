@@ -10,8 +10,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
-SP = Path("/workspace-vast/jbauer/activation_oracles_dev/concept_probes/out/saeprobes")
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "figs"
+SP = ROOT / "src_data" / "saeprobes"
 c = json.load(open(SP / "dg_rsa_cka_curves.json"))
 L = np.arange(c["n_layers"])
 PAIRS = [("g_enc", "gemma-4 × DG causal (model gap)", "#1971c2"),

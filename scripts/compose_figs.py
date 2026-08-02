@@ -9,7 +9,8 @@ from pathlib import Path
 
 from PIL import Image
 
-FIGS = Path("/workspace-vast/jbauer/dg_blog/figs")
+ROOT = Path(__file__).resolve().parent.parent
+FIGS = ROOT / "figs"
 P = FIGS / "parts"
 PAD, BG = 36, (255, 255, 255)
 

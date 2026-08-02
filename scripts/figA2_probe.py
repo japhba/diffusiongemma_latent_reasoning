@@ -15,8 +15,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
-SP = Path("/workspace-vast/jbauer/activation_oracles_dev/concept_probes/out/saeprobes")
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "figs"
+SP = ROOT / "src_data" / "saeprobes"
 
 pm = json.load(open(SP / "probe_matrix.json"))
 mean = lambda mode, cell: float(np.mean([r["auc"] for r in pm["concept_auc"][mode][cell]]))

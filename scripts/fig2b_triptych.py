@@ -13,7 +13,8 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 from payload import load_payload
 
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "figs"
 FLOOR = 1e-5
 D = load_payload()
 LOW, UPP = "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

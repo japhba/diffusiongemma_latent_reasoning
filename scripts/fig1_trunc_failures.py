@@ -15,8 +15,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-CD = Path("/workspace-vast/jbauer/exp/dg_lockin/pipe/commit_ds")
-OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
+ROOT = Path(__file__).resolve().parent.parent
+CD = ROOT / "src_data" / "commit_ds"
+OUT = ROOT / "figs"
 RUNGS = ["soft", "k8", "k4", "k2", "k1"]
 RUNG_LAB = {"soft": "soft", "k8": "top-8", "k4": "top-4", "k2": "top-2", "k1": "top-1"}
 FMS = ["wrong", "capped", "loop"]  # stacking order bottom -> top
