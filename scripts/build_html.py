@@ -143,7 +143,7 @@ def ill_steer_pair():
                 f'<code class="gen block">{E(trunc(txt))}</code></div>')
     def side(c):
         return (f'<div><h4>steered model: {E(c["model"])}</h4>'
-                + gen(c["pos"], "+steer (toward happiness)", "#2f9e44")
+                + gen(c["pos"], f"+steer (toward {d['concept']})", "#2f9e44")
                 + gen(c["neg"], "−steer (away)", "#c2255c")
                 + f'<p class="judge">judge: {E(c["judge"])}</p></div>')
     return f"""<div class="card">
@@ -171,9 +171,10 @@ def ill_jlens_pair():
     tail = d["tail"].rstrip()
     # poetry reads at the token containing the FINAL newline (cue-line ending), per paper_readout
     pre, post = tail.rsplit("\n", 1)
-    tail_html = (f'<code class="gen">{E(pre)}</code>'
+    br = lambda s: E(s).replace("\n", "<br>")
+    tail_html = (f'<code class="gen">{br(pre)}</code>'
                  f'<span class="readtok" style="background:{READ}">↵</span> '
-                 f'<code class="gen">{E(post)}</code>')
+                 f'<code class="gen">{br(post)}</code>')
     return f"""<div class="card">
 <p class="small">{E(d['config_label'])} — top-5 tokens per audited layer &nbsp;·&nbsp;
 item: {E(d['name'])} ({E(d['set'])}) &nbsp;·&nbsp; ground-truth intermediate: {E(', '.join(d['intermediates']))}</p>

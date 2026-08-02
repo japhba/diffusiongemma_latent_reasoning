@@ -30,9 +30,9 @@ ROWS = [("g", "G · causal · last"), ("e", "DG · causal · last"), ("c", "DG �
 COLS = [("g", "gemma-4\npr80 write"), ("d", "DiffusionGemma\npr80 write")]
 M = np.array([[np.mean(acc[r + c]) for c, _ in COLS] for r, _ in ROWS])
 
-KEY = "re_0_happiness|8|gd|pr80|pos"
-v = jp["pairs"][KEY]
-pos, neg = dgens[v["positive_key"]], dgens[v["negative_key"]]
+# example: rh_honesty carrier 3 — both cells judged correct at confidence 1.0, all four
+# generations coherent (many other 1.0 items have a degenerate DG -steer)
+EX_TAG, EX_PI = "rh_honesty", 3
 
 fig, axL = plt.subplots(layout="constrained")
 im_ = axL.imshow(M, cmap="viridis", vmin=0.5, vmax=1.0, aspect="auto")
@@ -41,25 +41,24 @@ for (i, j), val in np.ndenumerate(M):
     axL.text(j, i, f"{val:.2f}", ha="center", va="center", color="white" if val < 0.85 else "black")
 axL.set_xticks([0, 1], [lab for _, lab in COLS])
 axL.set_yticks([0, 1, 2], [lab for _, lab in ROWS])
-fig.supxlabel("target")
-fig.supylabel("source")
+fig.supxlabel("target", fontweight="bold")
+fig.supylabel("source", fontweight="bold")
 fig.colorbar(im_, ax=axL, shrink=0.7)
 fig.savefig(OUT / "parts" / "figA3_matrix.png", dpi=200)
 print(OUT / "parts" / "figA3_matrix.png")
 
 # example-pair data consumed by build_html.py: same gemma-fit direction on BOTH target models
-# pi=8 = 6 RepE originals + carrier_additions_sonnet5 EMOTIONS[2]
-CARRIER = "My dog passed away this morning and I don't know what to do."
-assert CARRIER in json.load(open(SP / "carrier_additions_sonnet5.json"))["EMOTIONS"]
+CARRIER = carriers[EX_TAG]["carriers"][EX_PI]
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
 cells = {}
 for cell, lab in (("gg", "gemma-4"), ("gd", "DiffusionGemma")):
-    vv = jp["pairs"][f"re_0_happiness|8|{cell}|pr80|pos"]
+    vv = jp["pairs"][f"{EX_TAG}|{EX_PI}|{cell}|pr80|pos"]
     cells[cell] = {"model": lab,
-                   "pos": dgens[f"re_0_happiness|8|{cell}|pr80|pos"][:600],
-                   "neg": dgens[f"re_0_happiness|8|{cell}|pr80|neg"][:600],
+                   "pos": dgens[f"{EX_TAG}|{EX_PI}|{cell}|pr80|pos"][:600],
+                   "neg": dgens[f"{EX_TAG}|{EX_PI}|{cell}|pr80|neg"][:600],
                    "judge": vv["justification"], "confidence": vv.get("confidence")}
-json.dump({"task": "happiness (RepE)", "direction": "fit on gemma-4 causal stream",
+json.dump({"task": "honesty (RepE)", "concept": "honesty",
+           "direction": "fit on gemma-4 causal stream",
            "carrier": CARRIER, "cells": cells},
           open(DATA / "steer_pair.json", "w"), indent=1)
 print(DATA / "steer_pair.json")

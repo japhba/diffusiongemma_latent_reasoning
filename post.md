@@ -78,7 +78,7 @@ This behavior is plausible considering the computation in question: a shift is e
 
 In this post, we have studied whether DiffusionGemma has latent reasoning in terms of its vector-valued state $\mathbf{S}^t$. We found that top-k truncation of $\mathbf{S}^t$ largely preserves accuracy suggests that it is not _significantly_ being used in typical reasoning-focussed task. However, for some tasks, we found that the model can make _some_ use of $\mathbf{S}^t$, in terms of carrying out (parallel) computation on it.
 
-Overall, this supports [Engels et al.](https://arxiv.org/abs/2606.20560)'s conclusion of a highly monitorable DiffusionGemma. Specifically, we did not find any strong evidence of latent _reasoning_, as in using $\mathbf{S}^t$ in a way that carries out meaningful computation and is opaque. Going forward, these largely negative results are an update that "true" latent reasoning is somewhat hard to learn. However, there already exist models like CODI that pass a vector-valued state that is not clearly a superposition of tokens, though they so far don't show superior performance. We believe that finding methods to better interpret such models is an important area of reasearch.
+Overall, this supports [Engels et al.](https://arxiv.org/abs/2606.20560)'s conclusion of a highly monitorable DiffusionGemma. In particular, we did not find any strong evidence of latent _reasoning_, as in using $\mathbf{S}^t$ in a way that carries out meaningful computation and is opaque. Going forward, these largely negative results are an update that "true" latent reasoning is somewhat hard to learn. However, there already exist models like CODI that pass a vector-valued state that is not clearly a superposition of tokens, though they so far don't show superior performance. We believe that finding methods to better interpret such models is an important area of reasearch.
 
 ## Appendix
 
@@ -104,15 +104,15 @@ _**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AU
 
 #### DiffusionGemma's representation is more linearly separable
 
-Interestingly, training and applying probes on DiffusionGemma in _bidirectional_ attention mode yields a somewhat higher AUC. This is suggestive of DG's bidirectional attention yielding a better structured representation, but is confounded by potentially longer training. 
+Interestingly, training and applying probes on DiffusionGemma in _bidirectional_ attention mode yields a somewhat higher AUC. This is suggestive of DG's bidirectional attention yielding a better structured representation, but is confounded by potentially longer training.
 
 ### Steering retention
 
-To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\mu(h\,\vert\,\mathrm{pos}) - \mu(h\,\vert\,\mathrm{neg})\big)$, where $\mu(h\,\vert\,\mathrm{pos})$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and must identify the $+$steer one.
+To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\langle h\rangle_{\mathrm{pos}} - \langle h\rangle_{\mathrm{neg}}\big)$, where $\langle h\rangle_{\mathrm{pos}}$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and must identify the $+$steer one.
 
 ![Steering retention](figs/figA3_steer_retention.png)
 
-_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-pair judge accuracy, direction source × steered model — every cell steers well above chance (0.70–0.85); bidirectional-fit directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt; judge digests in italics._
+_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-papir judge accuracy, direction source × steered model — every cell steers well above chance (0.70–0.85); bidirectional-fit directions are the weakest sources. Bottom: the same gemma-fit honesty direction applied to gemma-4 and DiffusionGemma on one carrier prompt; judge digests in italics._
 
 ### J-Lens retention
 
@@ -120,7 +120,7 @@ _**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-pair ju
 
 _**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from ...). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance._
 
-### A5: Autonomous computational usage of $\mathbf{S}^t$
+### Autonomous computational usage of $\mathbf{S}^t$
 
 In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{S}^t$ _autonomously_, i.e. without interventions.
 

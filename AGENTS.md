@@ -54,7 +54,7 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   user request 2026-08-01).
 - `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 matrix-only PNGs in
   figs/parts/) + card data: `data/probe_pair.json`, `data/steer_pair.json` (cells gg+gd — both
-  target models side by side), `data/jlens_layers.json` (carnival-ocean top-5/layer for both
+  target models side by side), `data/jlens_layers.json` (couplet-breath-death top-5/layer for both
   read streams, from `jlens/eval_2x2.json` examples). Source data: `src_data/saeprobes/`.
   The A2 matrix is the 3×3 mode-split (probe_matrix.json modes: `headline` = DG causal,
   `declast` = DG bidirectional last-token; `decmean` only cited in prose). causal↔bidirectional
