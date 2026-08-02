@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
+Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to **pass information that is illegible to monitors**, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
 Here, we show that this performance degradation is largely a sampler artifact, supporting the case for high monitorability. Nevertheless, we find some rare cases where the distribution vector is load-bearing computationally, however in a way that is easily interpretable.
 Overall, this underlines the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.
 
@@ -76,7 +76,7 @@ This behavior is plausible considering the computation in question: a shift is e
 
 ## Conclusion
 
-In this post, we have studied whether DiffusionGemma has latent reasoning, and found a capability to do  (parallel) computation on the vector-valued state passed between diffusion steps.
+In this post, we have studied whether DiffusionGemma has latent reasoning, and found a capability to do (parallel) computation on the vector-valued state passed between diffusion steps.
 
 The fact that top-k truncation largely preserves accuracy suggests that no _significant_ latent reasoning is used in typical reasoning-focussed task.
 
@@ -102,31 +102,32 @@ Probing allows to study how well a model separates concepts. We use 56 binary co
 
 ![Probe retention](figs/figA2_probe_retention.png)
 
-*Probes largely transfer from Gemma to DiffusionGemma (DG split by attention mode; last-position read everywhere; grey = causal ↔ bidirectional cross-cells not measured).*
+_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, trained-on × applied-to; DG is split by attention mode (last-position read everywhere), grey = causal ↔ bidirectional cross-cells not measured. Bottom: a held-out positive and negative test text for one concept (world news): the same gemma-trained probe scores gemma-4 and DG activations near-identically._
 
 #### DiffusionGemma's representation is more linearly separable
 
-[stub:] Read bidirectionally — DG's native generation mode — DG's representation is *more* linearly separable than gemma-4's (self-AUC 0.88 vs 0.83, rising to 0.90 with a mean-pooled read), while in the causal mode matching the gemma probes it is not (0.82). The gain is attention-mode driven, not a weight effect: swapping gemma-4 → DG weights at a fixed causal read costs −0.01 AUC, while switching DG causal → bidirectional at the same last-position read adds +0.07. It is also asymmetric: the bidirectional stream transfers worst back to gemma-4 (0.71).
 
 ### Steering retention
 
+To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{unit}\big(\mu(h\,\vert\,\mathrm{pos}) - \mu(h\,\vert\,\mathrm{neg})\big)$ from the task's contrastive stimulus pairs, read at the last token separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$, layers 9–19, $\alpha=0.35$) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and must identify the $+$steer one; chance is 0.5.
+
 ![Steering retention](figs/figA3_steer_retention.png)
 
-*Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); bidirectional-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.*
+_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-pair judge accuracy, direction source × steered model — every cell steers well above chance (0.70–0.85); bidirectional-fit directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt; judge digests in italics._
 
 ### J-Lens retention
 
 ![J-Lens retention](figs/figA4_jlens_retention.png)
 
-J-lens
+_**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from ...). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance._
 
 ### A5: Autonomous computational usage of $\mathbf{S}^t$
 
-In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also _autonomously_ would make use of its state.
+In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{S}^t$ _autonomously_, i.e. without interventions.
 
-To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution autonomously. An instance we found is a word-level _palindrome_ task. When asked ```Please write a word-level palindrome```, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```fall leaves as soon as leaves fall```) and the famous _idiom_ (```all for one and one for all```).
+To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. When asked ```Please write a word-level palindrome```, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```fall leaves as soon as leaves fall```) and the famous _idiom_ (```all for one and one for all```).
 
-The canvas will read the _seaonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{S}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
+The canvas will read the _seasonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{S}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
 
 We validated that the emergence of _idiom_ is indeed causal: when ablating _idiom_'s tokens, the transition can be prevented. Note however that early and late ablation do not have this effect.
 
