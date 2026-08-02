@@ -54,7 +54,7 @@ We consider a task that requires DG to make an unspecified choice, and to do a c
 
 DG answers these correctly on its own (e.g. ```Letters: G, J```). We then capture at some intermediate denoising step $t$, add probability mass $\varepsilon$ on a *different* source letter $x$ at the operand position. Importantly, we choose the injection such that $\mathbf{S}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most likely ones.
 
-Then, we measure the response to that perturbation $\mathbf{R}[x'_{i+1}\vert\mathrm{pert}(x_i)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{i+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{i+1}]\big)$, where $\bar P$ averages over the paired draws.
+Then, we measure the response to that perturbation $\mathbf{R}[x'_{i+1}\vert\mathrm{pert}(x_i)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{i+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{i+1}]\big)$, where $\bar{ \mathbf{S}}$ averages over the paired draws.
 
 ![Letter-arithmetic transfer maps](figs/fig2a_transfer_map.png)
 

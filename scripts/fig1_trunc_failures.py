@@ -63,6 +63,7 @@ for r in RUNGS:
 fig, ax = plt.subplots()
 x = np.arange(len(RUNGS))
 w = 0.38
+tops = {}
 for s, off, alpha in (("std", -w / 2, 1.0), ("gentle", w / 2, 1.0)):
     bottom = np.zeros(len(RUNGS))
     for fm in FMS:
@@ -72,16 +73,24 @@ for s, off, alpha in (("std", -w / 2, 1.0), ("gentle", w / 2, 1.0)):
                hatch=None if s == "std" else "//",
                label=FMLAB[fm] if s == "std" else None)
         bottom += vals
+    tops[s] = (x + off, bottom.copy())
+ax.plot(*tops["std"], color="black", linestyle="-")
+ax.plot(*tops["gentle"], color="black", linestyle="--")
 
 ax.set_xticks(x, [RUNG_LAB[r] for r in RUNGS])
 ax.set_xlabel(r"state-vocabulary truncation (top-$k$ of $\mathbf{S}_t$)")
 ax.set_ylabel("% of rollouts failed")
 ax.set_ylim(0, 100)
+from matplotlib.legend_handler import HandlerTuple
+from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
-handles = [Patch(facecolor=FMCOL[fm], label=FMLAB[fm]) for fm in FMS[::-1]]
-handles += [Patch(facecolor="0.65", label="standard sampler (left bars)"),
-            Patch(facecolor="0.65", hatch="//", edgecolor="white", label="gentle sampler (right bars)")]
-ax.legend(handles=handles, loc="upper left", frameon=False, ncols=2)
+handles = [Patch(facecolor=FMCOL[fm]) for fm in FMS[::-1]]
+labels = [FMLAB[fm] for fm in FMS[::-1]]
+handles += [(Patch(facecolor="0.65"), Line2D([], [], color="black")),
+            (Patch(facecolor="0.65", hatch="//", edgecolor="white"), Line2D([], [], color="black", linestyle="--"))]
+labels += ["standard sampler (left bars)", "gentle sampler (right bars)"]
+ax.legend(handles, labels, loc="upper left", frameon=False, ncols=2,
+          handler_map={tuple: HandlerTuple(ndivide=None)})
 ax.spines[["top", "right"]].set_visible(False)
 fig.tight_layout()
 fig.savefig(OUT / "fig1_gpqa_trunc_failures.png", dpi=200)
