@@ -26,7 +26,8 @@ M = np.ma.masked_invalid([
     [mean("headline", "dg"), mean("headline", "dd"), np.nan],
     [mean("declast", "dg"),  np.nan,                 mean("declast", "dd")],
 ])
-LABS = ["gemma-4", "DG causal", "DG bidirectional"]
+# report-style model/mode/read tick hierarchy (source_label convention)
+LABS = ["G\ncausal\nlast", "DG\ncausal\nlast", "DG\nbidirectional\nlast"]
 
 pe = json.load(open(SP / "probe_example_scores.json"))
 TAG = "161_agnews_0"
@@ -47,10 +48,10 @@ axL.set_box_aspect(1)
 for (i, j), v in np.ndenumerate(M):
     axL.text(j, i, "—" if M.mask[i, j] else f"{v:.2f}", ha="center", va="center",
              color="0.4" if M.mask[i, j] else ("white" if v < 0.85 else "black"))
-axL.set_xticks(range(3), [l.replace(" ", "\n") for l in LABS])
-axL.set_yticks(range(3), LABS)
-axL.set_xlabel("applied to")
-axL.set_ylabel("trained on")
+axL.set_xticks(range(3), LABS)
+axL.set_yticks(range(3), [l.replace("\n", " · ") for l in LABS])
+fig.supxlabel("target")
+fig.supylabel("source")
 fig.colorbar(im_, ax=axL, shrink=0.7)
 fig.savefig(OUT / "parts" / "figA2_matrix.png", dpi=200)
 print(OUT / "parts" / "figA2_matrix.png")

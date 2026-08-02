@@ -100,7 +100,7 @@ Probing allows to study how well a model separates concepts. We use 56 binary co
 
 ![Probe retention](figs/figA2_probe_retention.png)
 
-_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, trained-on × applied-to; DG is split by attention mode (last-position read everywhere), grey = causal ↔ bidirectional cross-cells not measured. Bottom: a held-out positive and negative test text for one concept (world news): the same gemma-trained probe scores gemma-4 and DG activations near-identically._
+_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, probe source (trained on) × target (applied to); DG is split by attention mode (last-position read everywhere), grey = causal ↔ bidirectional cross-cells not measured. Bottom: a held-out positive and negative test text for one concept (world news): the same gemma-trained probe scores gemma-4 and DG activations near-identically._
 
 #### DiffusionGemma's representation is more linearly separable
 
@@ -108,7 +108,7 @@ Interestingly, training and applying probes on DiffusionGemma in _bidirectional_
 
 ### Steering retention
 
-To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\mu(h\,\vert\,\mathrm{pos}) - \mu(h\,\vert\,\mathrm{neg})\big)$ from the task's contrastive stimulus pairs, read at the last token separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected into the residual stream of the steered model with optimized steering strength $\alpha$  ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$, layers 9–19$) while it completes a neutral carrier prompt, once with +\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and must identify the $+$steer one; chance is 0.5.
+To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\mu(h\,\vert\,\mathrm{pos}) - \mu(h\,\vert\,\mathrm{neg})\big)$, where $\mu(h\,\vert\,\mathrm{pos})$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and must identify the $+$steer one.
 
 ![Steering retention](figs/figA3_steer_retention.png)
 

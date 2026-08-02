@@ -24,8 +24,10 @@ for k, v in jp["pairs"].items():
     tag, pi, cell, prot, _ = k.split("|")
     if prot == "pr80" and "correct" in v:
         acc[cell].append(bool(v["correct"]))
-ROWS = [("g", "gemma-4 causal"), ("e", "DG causal"), ("c", "DG bidirectional")]
-COLS = [("g", "gemma-4"), ("d", "DG")]
+# report-style model/mode/read tick hierarchy (source_label convention); targets carry the
+# pr80 write protocol
+ROWS = [("g", "G · causal · last"), ("e", "DG · causal · last"), ("c", "DG · bidirectional · last")]
+COLS = [("g", "gemma-4\npr80 write"), ("d", "DiffusionGemma\npr80 write")]
 M = np.array([[np.mean(acc[r + c]) for c, _ in COLS] for r, _ in ROWS])
 
 KEY = "re_0_happiness|8|gd|pr80|pos"
@@ -39,7 +41,8 @@ for (i, j), val in np.ndenumerate(M):
     axL.text(j, i, f"{val:.2f}", ha="center", va="center", color="white" if val < 0.85 else "black")
 axL.set_xticks([0, 1], [lab for _, lab in COLS])
 axL.set_yticks([0, 1, 2], [lab for _, lab in ROWS])
-axL.set_xlabel("steered model")
+fig.supxlabel("target")
+fig.supylabel("source")
 fig.colorbar(im_, ax=axL, shrink=0.7)
 fig.savefig(OUT / "parts" / "figA3_matrix.png", dpi=200)
 print(OUT / "parts" / "figA3_matrix.png")
