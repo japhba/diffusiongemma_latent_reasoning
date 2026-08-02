@@ -113,11 +113,9 @@ $$</p>
 <h3>Probe retention</h3>
 <p>Probing allows to study how well a model separates concepts. We use 56 binary concept datasets from the SAE-Probes benchmark (<a href="https://arxiv.org/abs/2502.16681">Kantamneni et al., 2025</a>) and train logistic-regression probes on gemma-4's residual stream (1024 training examples per concept), optimizing the layer via heldout AUC. We then test this probe on DG.</p>
 <figure><img src="figs/figA2_probe_retention.png" alt="Probe retention"></figure>
-<p><em>Probes largely transfer from Gemma to DiffusionGemma.</em></p>
+<p><em>Probes largely transfer from Gemma to DiffusionGemma (DG split by attention mode; last-position read everywhere; grey = causal ↔ bidirectional cross-cells not measured).</em></p>
 <p>#### DiffusionGemma's representation is more linearly separable</p>
-<p>[stub:] The DG cells above read DG in its <em>causal</em> mode, matching the convention the gemma probes were fit under. Splitting DG's modes changes the picture: read bidirectionally — DG's native generation mode — its representation is <em>more</em> linearly separable than gemma-4's (self-AUC 0.884 vs 0.826, and 0.895 with a mean-pooled read). The gain is attention-mode driven, not a weight effect: swapping gemma-4 → DG weights at a fixed causal read costs −0.006 AUC, while switching DG causal → bidirectional at the same last-position read adds +0.065.</p>
-<figure><img src="figs/figA2b_probe_modes.png" alt="Probe transfer with DG modes split"></figure>
-<p><em>The probe-transfer matrix with DG's modes split (last-position read everywhere). DG bidirectional is the most separable stream but transfers worst back to gemma-4 (0.712); causal ↔ bidirectional cross-cells were not measured (grey).</em></p>
+<p>[stub:] Read bidirectionally — DG's native generation mode — DG's representation is <em>more</em> linearly separable than gemma-4's (self-AUC 0.88 vs 0.83, rising to 0.90 with a mean-pooled read), while in the causal mode matching the gemma probes it is not (0.82). The gain is attention-mode driven, not a weight effect: swapping gemma-4 → DG weights at a fixed causal read costs −0.01 AUC, while switching DG causal → bidirectional at the same last-position read adds +0.07. It is also asymmetric: the bidirectional stream transfers worst back to gemma-4 (0.71).</p>
 <h3>Steering retention</h3>
 <figure><img src="figs/figA3_steer_retention.png" alt="Steering retention"></figure>
 <p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); bidirectional-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.</em></p>

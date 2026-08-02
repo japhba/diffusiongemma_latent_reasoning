@@ -1,7 +1,10 @@
-"""A2: probe retention — 2x2 transfer AUC (trained-on x applied-to) + illustrating example pair.
+"""A2: probe retention — 3x3 transfer AUC with DG's modes split + illustrating example pair.
 
-Left:  mean held-out AUC over 56 concepts, source-CV-selected layer (probe_matrix.json headline).
-Right: one positive + one negative held-out text for 161_agnews_0 (world news), scored by the
+Top:   mean held-out AUC over 56 concepts, source-CV-selected layer; rows/cols gemma-4 /
+       DG causal / DG bidirectional, last-position read everywhere (probe_matrix.json modes:
+       headline = DG causal, declast = DG bidirectional; causal<->bidirectional cross cells
+       were not measured -> masked grey).
+Below: one positive + one negative held-out text for 161_agnews_0 (world news), scored by the
        gemma-trained probe reading gemma activations vs the SAME probe reading DG activations
        (probe_example_scores.json, cell gd).
 """
@@ -16,9 +19,13 @@ OUT = Path("/workspace-vast/jbauer/dg_blog/figs")
 SP = Path("/workspace-vast/jbauer/activation_oracles_dev/concept_probes/out/saeprobes")
 
 pm = json.load(open(SP / "probe_matrix.json"))
-h = pm["concept_auc"]["headline"]
-M = np.array([[np.mean([r["auc"] for r in h["gg"]]), np.mean([r["auc"] for r in h["gd"]])],
-              [np.mean([r["auc"] for r in h["dg"]]), np.mean([r["auc"] for r in h["dd"]])]])
+mean = lambda mode, cell: float(np.mean([r["auc"] for r in pm["concept_auc"][mode][cell]]))
+M = np.ma.masked_invalid([
+    [mean("headline", "gg"), mean("headline", "gd"), mean("declast", "gd")],
+    [mean("headline", "dg"), mean("headline", "dd"), np.nan],
+    [mean("declast", "dg"),  np.nan,                 mean("declast", "dd")],
+])
+LABS = ["gemma-4", "DG causal", "DG bidirectional"]
 
 pe = json.load(open(SP / "probe_example_scores.json"))
 TAG = "161_agnews_0"
@@ -32,13 +39,15 @@ print("pos:", x[ip], ysc[ip], r["texts"][ip])
 print("neg:", x[im], ysc[im], r["texts"][im][:160])
 
 fig, axL = plt.subplots(layout="constrained")
-im_ = axL.imshow(M, cmap="viridis", vmin=0.5, vmax=1.0, aspect="auto")
+cmap = plt.get_cmap("viridis").copy()
+cmap.set_bad("#e9ecef")
+im_ = axL.imshow(M, cmap=cmap, vmin=0.5, vmax=1.0, aspect="auto")
 axL.set_box_aspect(1)
 for (i, j), v in np.ndenumerate(M):
-    axL.text(j, i, f"{v:.3f}", ha="center", va="center",
-             color="white" if v < 0.85 else "black")
-axL.set_xticks([0, 1], ["gemma-4", "DG"])
-axL.set_yticks([0, 1], ["gemma-4", "DG"])
+    axL.text(j, i, "—" if M.mask[i, j] else f"{v:.2f}", ha="center", va="center",
+             color="0.4" if M.mask[i, j] else ("white" if v < 0.85 else "black"))
+axL.set_xticks(range(3), [l.replace(" ", "\n") for l in LABS])
+axL.set_yticks(range(3), LABS)
 axL.set_xlabel("applied to")
 axL.set_ylabel("trained on")
 fig.colorbar(im_, ax=axL, shrink=0.7)
