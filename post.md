@@ -74,11 +74,13 @@ This simple response behavior begs the question whether it is possible to pertur
 
 _DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._
 
-This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses.
+This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.
+
+#
 
 ## Appendix
 
-How much of the standard AR interpretability toolkit survives the transfer to DG? Everything below is measured on the SAE-Probes real-text concept datasets (plus RepE tasks for steering and the J-Lens paper sets); DG additionally has two *modes* over one weight stack — causal reading and bidirectional denoising.
+The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability. 
 
 ### A1: Representation similarity (cosine & CKA)
 
