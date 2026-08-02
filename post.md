@@ -46,15 +46,21 @@ We found that adopting a gentler sampler largely prevents this failure mode, sug
 
 We next investigated whether there may still be some other tasks where $\mathbf{S}_t$ in fact is essential. Note that in principle, there is no need for the model to use $\mathbf{S}_t$ whatsoever to satisfy its training objective (indeed, most of the phenomena in [Engels et al.](https://arxiv.org/abs/2606.20560) are explained by bidirectional attention+looping). However, it may facilitate trainability and exploration.
 
-We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that "superposition" in a simple form is already present in the pretraining data ("Today the weather is _", with "rainy" and "sunny" both plausible), so that we were especially interested in cases where this may have been induced by the model's generalization. [+compuaiton]
+We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that superposition in a simple form is already present in the pretraining data ("Today the weather is _", with "rainy" and "sunny" both plausible), so that we were especially interested in cases where this may have been induced by the model's generalization. [+compuaiton]
 
-We prompt DG with tasks of the form *"Pick any uppercase letter between A and W, write it, then write the letter three positions later in the alphabet, also in uppercase, separated by a comma."* DG answers these correctly on its own (e.g. "Letters: G, J"). We then capture a rollout mid-denoising, add probability mass $\varepsilon$ on a *different* source letter $x$ at the operand position — keeping it strictly sub-leading, so the committed canvas never changes — and re-run exactly one denoising step on paired re-noised canvases. We read out the response at the answer position, $R_c(x') = \log_{10}\big(\bar P^{\mathrm{pert}}_c(x') / \bar P^{\mathrm{base}}_c(x')\big)$, where $\bar P$ averages over the paired draws.
+We consider a task that requires DG to make an unspecified choice, and to do a compution on that choice. Specifically, we consider _letter arithmetic_:
+
+```Pick any uppercase letter``` (the operand $x$) ```between A and W, write it, then write the letter``` (the target $x'$) ```3 ```(the increment $k$)``` positions later in the alphabet.```
+
+DG answers these correctly on its own (e.g. ```Letters: G, J```). We then capture at some intermediate denoising step $t$, add probability mass $\varepsilon$ on a *different* source letter $x$ at the operand position. Importantly, we choose the injection such that $\mathbf{S}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most likely ones.
+
+Then, we measure the response to that perturbation $\mathbf{R}[x'_{i+1}\vert\mathrm{pert}(x_i)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{i+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{i+1}]\big)$, where $\bar P$ averages over the paired draws.
 
 ![Letter-arithmetic transfer maps](figs/fig2a_transfer_map.png)
 
-*Injected mass lands on the diagonal: perturbing source letter $x$ raises its image $x+k$ one step later ($k\in\{3,5,7,11\}$, rows aligned by $-k$; left: argmax, right: mean response $R_c$). The offset follows the prompt, not the state. G column = committed operand (excluded); H/R rows are decode artifacts.*
+*Perturbing subleading tokens triggers a response at corresponding target tokens.* 
 
-Here is a single intervention in full:
+For illustration, here is a single intervention in full:
 
 ![Example intervention](figs/fig2a_example_intervention.png)
 

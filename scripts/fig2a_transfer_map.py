@@ -41,23 +41,15 @@ cn = np.ma.masked_invalid(np.where(coln > 0, conf / np.maximum(coln, 1), np.nan)
 em = np.ma.masked_invalid(np.where(ecnt > 0, esum / np.maximum(ecnt, 1), np.nan))
 xt = list(UPP[:NC]); yt = list(UPP[:NC]) + ["other"]
 
-fig, axes = plt.subplots(1, 2, sharey=True, layout="constrained",
-                         figsize=(plt.rcParams["figure.figsize"][0] * 1.7,
-                                  plt.rcParams["figure.figsize"][1] * 1.15))
-for ax, M, cmap, vmin, vmax, title in (
-        (axes[0], cn, "viridis", 0, 1,
-         r"$\langle \mathbf{1}[x'=\mathrm{argmax}\; R_c(\,\cdot \mid x)]\rangle_c$"),
-        (axes[1], em, "coolwarm", None, None,
-         r"$\langle R_c(x' \mid x)\rangle_c$")):
-    if vmin is None:
-        vm = np.percentile(np.abs(M.compressed()), 98)
-        vmin, vmax = -vm, vm
-    im = ax.imshow(M, cmap=cmap, vmin=vmin, vmax=vmax, origin="lower")
-    ax.set_xticks(range(NC), xt)
-    ax.set_yticks(range(NC + 1), yt)
-    fig.colorbar(im, ax=ax, shrink=0.75)
-axes[0].set_ylabel(r"aligned target $x' - k$   (uppercase band)")
-fig.supxlabel(rf"perturbed source letter $x$ (strictly subleading, $\varepsilon={EPS:g}$)")
+fig, ax = plt.subplots(layout="constrained")
+vm = np.percentile(np.abs(em.compressed()), 98)
+im = ax.imshow(em, cmap="coolwarm", vmin=-vm, vmax=vm, origin="lower")
+ax.set_xticks(range(NC), xt)
+ax.set_yticks(range(NC + 1), yt)
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"$x^{\prime}_{i+1}$")
+ax.set_title(r"response $\mathbf{R}[x^{\prime}_{i+1} \vert\, \mathrm{pert}(x_i)]$")
+fig.colorbar(im, ax=ax, shrink=0.8)
 fig.savefig(OUT / "fig2a_transfer_map.png", dpi=200)
 print(OUT / "fig2a_transfer_map.png")
 d = [em[i, i] for i in range(NC) if ecnt[i, i] > 0]
