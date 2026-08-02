@@ -79,8 +79,8 @@ def ill_letters_example():
     d = json.load(open(DATA / "letters_example.json"))
     cls = lambda tok: ("inj" if tok == d["x"] else "tgt" if tok == d["img"] else
                        "att" if tok in (d["ja"], d["nat"]) else "oth")
-    sub_t = "operand distribution $\\mathbf{S}^t_i$"
-    sub_t1 = "answer distribution $\\mathbf{S}^{t+1}_{i+1}$"
+    sub_t = "operand distribution $\\mathbf{s}^t_i$"
+    sub_t1 = "answer distribution $\\mathbf{s}^{t+1}_{i+1}$"
     head = (f'<div class="brow b4c ghead"><span></span><span class="gh s2">baseline</span>'
             f'<span></span><span class="gh s2">intervention (inject mass '
             f'$\\varepsilon={d["eps"]:g}$ on \'{E(d["x"])}\')</span></div>'
@@ -128,9 +128,9 @@ def ill_probe_pair():
             for who, k, col in (("read on gemma-4 acts", "g", "#1971c2"), ("read on DG acts", "d", "#e8590c")))
         return f'<div><h4>{lab}</h4><code class="gen block">{E(rec["text"][:260])}{" …" if len(rec["text"])>260 else ""}</code>{bars}</div>'
     return f"""<div class="card">
-<p class="small">concept: world news (161_agnews_0) &nbsp;·&nbsp; same gemma-trained probe, layer {d['layer']}
+<p class="small">concept: {d['concept']} ({d['tag']}) &nbsp;·&nbsp; same gemma-trained probe, layer {d['layer']}
 &nbsp;·&nbsp; held-out test texts</p>
-<div class="cols2">{side(d['pos'], "positive (world news)")}{side(d['neg'], "negative (balanced other)")}</div>
+<div class="cols2">{side(d['pos'], f"positive ({d['pos_label']})")}{side(d['neg'], f"negative ({d['neg_label']})")}</div>
 </div>"""
 
 

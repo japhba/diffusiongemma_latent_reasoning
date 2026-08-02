@@ -30,15 +30,17 @@ M = np.ma.masked_invalid([
 LABS = ["G\ncausal\nlast", "DG\ncausal\nlast", "DG\nbidirectional\nlast"]
 
 pe = json.load(open(SP / "probe_example_scores.json"))
-TAG = "161_agnews_0"
+# example concept chosen by scan over all 56: clean prose pos+neg, both reads agreeing at
+# saturation (clickbait: pos 1.00/1.00, neg 0.00/0.01)
+TAG, CONCEPT, POS_LAB, NEG_LAB = "105_click_bait", "clickbait headline", "clickbait", "regular headline"
 r = pe[TAG]
 gd = r["cells"]["gd"]
 x, ysc, y = np.array(gd["x"]), np.array(gd["y"]), np.array(r["y"])
-ip = next(i for i in np.argsort(-np.minimum(x, ysc)) if y[i] == 1 and 40 < len(r["texts"][i]) < 150)
-im = next(iter(np.argsort(np.maximum(x, ysc))[y[np.argsort(np.maximum(x, ysc))] == 0]))
-shorten = lambda t: t if len(t) <= 145 else t[:145] + " …"
+ok = lambda i: 60 < len(r["texts"][i]) < 220 and all(ord(c) < 0x2500 for c in r["texts"][i])
+ip = max((i for i in range(len(y)) if y[i] == 1 and ok(i)), key=lambda i: min(x[i], ysc[i]))
+im = min((i for i in range(len(y)) if y[i] == 0 and ok(i)), key=lambda i: max(x[i], ysc[i]))
 print("pos:", x[ip], ysc[ip], r["texts"][ip])
-print("neg:", x[im], ysc[im], r["texts"][im][:160])
+print("neg:", x[im], ysc[im], r["texts"][im])
 
 fig, axL = plt.subplots(layout="constrained")
 cmap = plt.get_cmap("viridis").copy()
@@ -58,7 +60,8 @@ print(OUT / "parts" / "figA2_matrix.png")
 
 # example-pair data consumed by build_html.py
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
-json.dump({"tag": TAG, "layer": r["layers"]["gd"],
+json.dump({"tag": TAG, "concept": CONCEPT, "pos_label": POS_LAB, "neg_label": NEG_LAB,
+           "layer": r["layers"]["gd"],
            "pos": {"text": r["texts"][ip], "g": float(x[ip]), "d": float(ysc[ip])},
            "neg": {"text": r["texts"][im][:400], "g": float(x[im]), "d": float(ysc[im])}},
           open(DATA / "probe_pair.json", "w"), indent=1)

@@ -8,17 +8,17 @@ Overall, this underlines the paper's conclusion that DiffusionGemma remains high
 
 ## Introduction
 
-DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. The self-conditioning state $\mathbf{S}_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via
+DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $X_0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. The self-conditioning state $\mathbf{S}_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $X_T$ then is obtained via
 
 $$
 \begin{aligned}
 &\textbf{for } t = 0, \dots, T-1: \\[2pt]
-&\qquad \mathbf{S}_{t+1} = f(p,\, x_t;\, \mathbf{S}_t) \\[2pt]
-&\qquad x_{t+1} = \mathrm{sample}(\mathbf{S}_{t+1})
+&\qquad \mathbf{S}_{t+1} = f(p,\, X_t;\, \mathbf{S}_t) \\[2pt]
+&\qquad X_{t+1} = \mathrm{sample}(\mathbf{S}_{t+1})
 \end{aligned}
 $$
 
-where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{S}_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $\mathbf{S}_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $\mathbf{S}_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.
+where $T$ is the number of diffusion steps. Importantly, $X_t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{s}_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $\mathbf{s}_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $\mathbf{s}_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.
 
 For a visual and more detailed introduction to DiffusionGemma, see [this post](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma).
 
@@ -28,17 +28,17 @@ Thus, generation in DiffusionGemma mainly differs in the following ways:
 2. Attention is bidirectional.
 3. Between every diffusion step, not only the current text output is sampled, but the output distributions $\mathbf{S}_t$ across all positions are also passed to the next diffusion step $t+1$.
 
-The last point is especially interesting, since it passes the vector-valued object between diffusion steps, in addition to the tokens $x_t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.
+The last point is especially interesting, since it passes the vector-valued object between diffusion steps, in addition to the token canvas $X_t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $\mathbf{S}_t$ to just its top-k entries, performance of DG significantly dropped. Thus somehow the information in $\mathbf{S}_t$ seemed to have been essential to DiffusionGemma, conflicting the results of high monitorability.
+Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $\mathbf{s}_t$ to just its top-k entries, performance of DG significantly dropped. Thus somehow the information in $\mathbf{S}_t$ seemed to have been essential to DiffusionGemma, conflicting the results of high monitorability.
 
 However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 
-*A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{S}_t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560)*.
+*A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{s}_t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560)*.
 
 ## A case study for using the distribution computationally: letter arithmetic
 
@@ -50,9 +50,9 @@ We therefore looked for a task that requires DG to make an unspecified choice, a
 
 ```Pick any uppercase letter``` (the operand $x$) ```between A and W, write it, then write the letter``` (the target $x'$) ```3 ```(the increment $k$)``` positions later in the alphabet.```
 
-DG answers these correctly, consistently choosing its own _natural_ operand $x_{\mathrm{nat},\,t}$ and target $x^\prime_{\mathrm{nat},\,t+1}$  (e.g. ```Letters: G, J```). To intervene on this computation, we capture the canvas at some intermediate denoising step $t$, add probability mass $\epsilon$ on a *different* operand letter $x\neq x_{\mathrm{nat}}$ at the operand position. Importantly, we choose the injection such that $\mathbf{S}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most probable ones.
+DG answers these correctly, consistently choosing its own _natural_ operand $x_{\mathrm{nat},\,t}$ and target $x^\prime_{\mathrm{nat},\,t+1}$  (e.g. ```Letters: G, J```). To intervene on this computation, we capture the canvas at some intermediate denoising step $t$, add probability mass $\epsilon$ on a *different* operand letter $x\neq x_{\mathrm{nat}}$ at the operand position. Importantly, we choose the injection such that $\mathbf{s}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most probable ones.
 
-Then, we measure the response to that perturbation $\mathbf{R}[x'_{t+1}\vert\mathrm{pert}(x_t)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{t+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{t+1}]\big)$, where $\bar{ \mathbf{S}}$ indicates an average over 8 replays of the denoising step, each with the still-open canvas tokens at the operand and answer positions independently re-noised (holding the injected $\mathbf{S}^t$ fixed, this averages out the sampler's canvas randomness).
+Then, we measure the response to that perturbation $\mathbf{R}[x'_{t+1}\vert\mathrm{pert}(x_t)] = \log_{10}\big(\bar{\mathbf{s}}_{\mathrm{pert}}^{t+1}[x'_{t+1}]\, / \,\bar{\mathbf{s}}_{\mathrm{base}}^{t+1}[x'_{t+1}]\big)$, where $\bar{ \mathbf{s}}$ indicates an average over 8 replays of the denoising step, each with the still-open canvas tokens at the operand and answer positions independently re-noised (holding the injected $\mathbf{s}^t$ fixed, this averages out the sampler's canvas randomness).
 
 ![Letter-arithmetic transfer maps](figs/fig2a_transfer_map.png)
 
@@ -112,13 +112,15 @@ To see whether these similarities in representation are causally load-bearing, w
 
 ![Steering retention](figs/figA3_steer_retention.png)
 
-_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-papir judge accuracy, direction source × steered model — every cell steers well above chance (0.70–0.85); bidirectional-fit directions are the weakest sources. Bottom: the same gemma-fit honesty direction applied to gemma-4 and DiffusionGemma on one carrier prompt; judge digests in italics._
+_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind-papir judge accuracy, direction source × steered model — every cell steers well above chance (0.70–0.85); bidirectional-fit directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt; judge digests in italics._
 
 ### J-Lens retention
 
+The [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html) reads out what a residual-stream activation $h_\ell$ is disposed to make the model say: it linearly transports $h_\ell$ into the final-layer basis and decodes it with the model's own unembedding, $\mathrm{lens}_\ell(h) = \mathrm{unembed}\big(J_\ell\, h\big)$, where $J_\ell = \mathbb{E}\big[\partial h_{L}/\partial h_\ell\big]$ is the input–output Jacobian averaged over a generic text corpus (WikiText). We fit separate lenses on gemma-4, DG causal, and DG bidirectional, and read each on both models' residual streams.
+
 ![J-Lens retention](figs/figA4_jlens_retention.png)
 
-_**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from ...). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance._
+_**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from the [J-Lens paper](https://transformer-circuits.pub/2026/workspace/index.html)). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance._
 
 ### Autonomous computational usage of $\mathbf{S}^t$
 

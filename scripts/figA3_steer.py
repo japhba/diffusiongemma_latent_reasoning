@@ -30,9 +30,9 @@ ROWS = [("g", "G · causal · last"), ("e", "DG · causal · last"), ("c", "DG �
 COLS = [("g", "gemma-4\npr80 write"), ("d", "DiffusionGemma\npr80 write")]
 M = np.array([[np.mean(acc[r + c]) for c, _ in COLS] for r, _ in ROWS])
 
-# example: rh_honesty carrier 3 — both cells judged correct at confidence 1.0, all four
-# generations coherent (many other 1.0 items have a degenerate DG -steer)
-EX_TAG, EX_PI = "rh_honesty", 3
+# example: happiness on the dog carrier (both cells correct; pi=8 = 6 RepE originals +
+# carrier_additions_sonnet5 EMOTIONS[2], hence the hardcoded carrier + assert)
+EX_TAG, EX_PI = "re_0_happiness", 8
 
 fig, axL = plt.subplots(layout="constrained")
 im_ = axL.imshow(M, cmap="viridis", vmin=0.5, vmax=1.0, aspect="auto")
@@ -48,7 +48,8 @@ fig.savefig(OUT / "parts" / "figA3_matrix.png", dpi=200)
 print(OUT / "parts" / "figA3_matrix.png")
 
 # example-pair data consumed by build_html.py: same gemma-fit direction on BOTH target models
-CARRIER = carriers[EX_TAG]["carriers"][EX_PI]
+CARRIER = "My dog passed away this morning and I don't know what to do."
+assert CARRIER in json.load(open(SP / "carrier_additions_sonnet5.json"))["EMOTIONS"]
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
 cells = {}
 for cell, lab in (("gg", "gemma-4"), ("gd", "DiffusionGemma")):
@@ -57,7 +58,7 @@ for cell, lab in (("gg", "gemma-4"), ("gd", "DiffusionGemma")):
                    "pos": dgens[f"{EX_TAG}|{EX_PI}|{cell}|pr80|pos"][:600],
                    "neg": dgens[f"{EX_TAG}|{EX_PI}|{cell}|pr80|neg"][:600],
                    "judge": vv["justification"], "confidence": vv.get("confidence")}
-json.dump({"task": "honesty (RepE)", "concept": "honesty",
+json.dump({"task": "happiness (RepE)", "concept": "happiness",
            "direction": "fit on gemma-4 causal stream",
            "carrier": CARRIER, "cells": cells},
           open(DATA / "steer_pair.json", "w"), indent=1)

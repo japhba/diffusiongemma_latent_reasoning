@@ -10,6 +10,13 @@ Blog-post compilation directory (standalone, not a git repo). The deliverable is
 2026-08-01). `build_html.py` stashes both forms before markdown conversion and KaTeX
 auto-renders them client-side; the algorithm block uses `$$ \begin{aligned} ... \end{aligned} $$`.
 
+**Case convention (since 2026-08-02):** bold lowercase `\mathbf{s}` = a single position's
+distribution (the R^|V| object: confidence `\mathbf{s}_t[x_t]`, top-k truncation, injections,
+the R-definition's `\bar{\mathbf{s}}`); bold uppercase `\mathbf{S}` = the full sheet
+(R^{C×|V|}: the algorithm box, "passed between steps", S-mass). Likewise lowercase `x` = a
+single token, uppercase `X` = the full canvas (the V^C object: `X_t` in the algorithm box,
+"attends bidirectionally"). Sub/superscript placement of t follows the surrounding section.
+
 ## Build pipeline
 
 Everything is a pure CPU re-render of archived study data — never launch model runs for this.
