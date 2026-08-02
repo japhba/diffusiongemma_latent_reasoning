@@ -46,8 +46,12 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
   target models side by side), `data/jlens_layers.json` (carnival-ocean top-5/layer for both
   read streams, from `jlens/eval_2x2.json` examples). Source data:
   `activation_oracles_dev/concept_probes/out/saeprobes/`.
-- A5 seasonal-vs-idiom figure = verbatim copy of `reports/dg-planning/figs/stuck_gain.png`
-  (dg-planning study archive) → `figs/figA5_seasonal_stuck_gain.png`; not regenerated here.
+- `scripts/figA2b_probe_modes.py` — 3×3 probe matrix with DG's modes split (probe_matrix.json
+  modes: `headline` = DG causal, `declast` = DG bidirectional last-token; `decmean` only cited
+  in the caption). causal↔bidirectional cross-cells don't exist in the data → masked grey.
+  Standalone figure (no card composition) → `figs/figA2b_probe_modes.png`.
+- `scripts/figA5_ember.py` — seasonal-vs-idiom ember-kill: 4 stacked trajectory panels + outcome
+  matshow from `diffusiongemma/exp/dg_planning/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
 
 ## Serving / publishing
 

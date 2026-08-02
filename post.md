@@ -32,11 +32,9 @@ The last point is especially interesting, since it passes the vector-valued obje
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Despite this a-priori risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $\mathbf{S}_t$ to just its top-k entries, performance of DG significantly dropped. This was in conflict with their other results suggesting high monitorability, since somehow the information in $\mathbf{S}_t$ seemed to have been essential to DiffusionGemma.
+Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. [maybe give more deets] However, when truncating $\mathbf{S}_t$ to just its top-k entries, performance of DG significantly dropped. Thus somehow the information in $\mathbf{S}_t$ seemed to have been essential to DiffusionGemma, conflicting the results of high monitorability.
 
-When replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer.
-
-We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. However, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
+However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 
@@ -46,15 +44,15 @@ We found that adopting a gentler sampler largely prevents this failure mode, sug
 
 We next investigated whether there may still be some other tasks where $\mathbf{S}_t$ in fact is essential. Note that in principle, there is no need for the model to use $\mathbf{S}_t$ whatsoever to satisfy its training objective (indeed, most of the phenomena in [Engels et al.](https://arxiv.org/abs/2606.20560) are explained by bidirectional attention+looping). However, it may facilitate trainability and exploration.
 
-We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that superposition in a simple form is already present in the pretraining data ("Today the weather is _", with "rainy" and "sunny" both plausible), so that we were especially interested in cases where this may have been induced by the model's generalization. [+compuaiton]
+We therefore looked for tasks where the model plausibly would hold several "hypotheses" in superposition. Note that superposition in a simple form is already present in the pretraining data (`Today the weather is _`, with `rainy`and`sunny` both plausible), so that we were especially interested in cases where this 1) has instead been induced by the model's generalization, 2) involves nontrivial computation (the latter is important, since some superposition may be explained by "interpolating" the training distribution).
 
-We consider a task that requires DG to make an unspecified choice, and to do a compution on that choice. Specifically, we consider _letter arithmetic_:
+We therefore looked for a task that requires DG to make an unspecified choice, and to do a compution on that choice. Specifically, we consider _letter arithmetic_:
 
 ```Pick any uppercase letter``` (the operand $x$) ```between A and W, write it, then write the letter``` (the target $x'$) ```3 ```(the increment $k$)``` positions later in the alphabet.```
 
-DG answers these correctly on its own (e.g. ```Letters: G, J```). We then capture at some intermediate denoising step $t$, add probability mass $\varepsilon$ on a *different* source letter $x$ at the operand position. Importantly, we choose the injection such that $\mathbf{S}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most likely ones.
+DG answers these correctly, consistently choosing its own _natural_ operand $x_{\mathrm{nat},\,t}$ and target $x^\prime_{\mathrm{nat},\,t+1}$  (e.g. ```Letters: G, J```). To intervene on this computation, we capture the canvas at some intermediate denoising step $t$, add probability mass $\epsilon$ on a *different* operand letter $x\neq x_{\mathrm{nat}}$ at the operand position. Importantly, we choose the injection such that $\mathbf{S}^t[x]+\epsilon$ is still not the top logit. This is important, because we would like to measure what DG does to states that are not the most probable ones.
 
-Then, we measure the response to that perturbation $\mathbf{R}[x'_{i+1}\vert\mathrm{pert}(x_i)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{i+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{i+1}]\big)$, where $\bar{ \mathbf{S}}$ averages over the paired draws.
+Then, we measure the response to that perturbation $\mathbf{R}[x'_{t+1}\vert\mathrm{pert}(x_t)] = \log_{10}\big(\bar{\mathbf{S}}_{\mathrm{pert}}^{t+1}[x'_{t+1}]\, / \,\bar{\mathbf{S}}_{\mathrm{base}}^{t+1}[x'_{t+1}]\big)$, where $\bar{ \mathbf{S}}$ indicates an average over 8 replays of the denoising step, each with the still-open canvas tokens at the operand and answer positions independently re-noised (holding the injected $\mathbf{S}^t$ fixed, this averages out the sampler's canvas randomness).
 
 ![Letter-arithmetic transfer maps](figs/fig2a_transfer_map.png)
 
@@ -64,7 +62,7 @@ For illustration, here is a single intervention in full:
 
 ![Example intervention](figs/fig2a_example_intervention.png)
 
-Example of one intervention: a subleading injection on ```H``` (the leader ```G``` keeps rank 1) swings the answer slot from ```J```  to ```K```=```H+3```  one step later.
+_Example of one intervention: a subleading injection on `H`(the leader `G` keeps rank 1) swings the answer slot from `J` to`K`=`H+3`  one step later._
 
 ### Parallelism
 
@@ -82,7 +80,7 @@ In this post, we have studied whether DiffusionGemma has latent reasoning, and f
 
 The fact that top-k truncation largely preserves accuracy suggests that no _significant_ latent reasoning is used in typical reasoning-focussed task.
 
-More broadly, DiffusionGemma is only one testbed for latent reasoning. Going forward, there are many more architectures and forms where it can occur. 
+More broadly, DiffusionGemma is only one testbed for latent reasoning. Going forward, we should not expect the interpretable superposition of DiffusionGemma to be the only way this capacity can be used. For example, models like CODI pass a vector-valued state that is not clearly a superposition of tokens. We believe that finding methods to better interpret such models is an important area of reasearch.
 
 ## Appendix
 
@@ -100,13 +98,19 @@ A priori, this rather large drop suggests a significant change in how the repres
 
 ### Probe retention
 
-Probing allows to study how well a model separates concepts. We use the data from XXX and train on XXX, optimizing the layer via heldout AUC. We then test this probe on DG.
+Probing allows to study how well a model separates concepts. We use 56 binary concept datasets from the SAE-Probes benchmark ([Kantamneni et al., 2025](https://arxiv.org/abs/2502.16681)) and train logistic-regression probes on gemma-4's residual stream (1024 training examples per concept), optimizing the layer via heldout AUC. We then test this probe on DG.
 
 ![Probe retention](figs/figA2_probe_retention.png)
 
-*Top: mean held-out AUC (56 concepts, source-CV layer) — cross-model reading costs ~0.03 in both directions. Bottom: a held-out pair read by the same gemma-trained probe on both models' activations.*
+*Probes largely transfer from Gemma to DiffusionGemma.*
 
-#### DiffusionGemmas representation is more separable
+#### DiffusionGemma's representation is more linearly separable
+
+[stub:] The DG cells above read DG in its *causal* mode, matching the convention the gemma probes were fit under. Splitting DG's modes changes the picture: read bidirectionally — DG's native generation mode — its representation is *more* linearly separable than gemma-4's (self-AUC 0.884 vs 0.826, and 0.895 with a mean-pooled read). The gain is attention-mode driven, not a weight effect: swapping gemma-4 → DG weights at a fixed causal read costs −0.006 AUC, while switching DG causal → bidirectional at the same last-position read adds +0.065.
+
+![Probe transfer with DG modes split](figs/figA2b_probe_modes.png)
+
+*The probe-transfer matrix with DG's modes split (last-position read everywhere). DG bidirectional is the most separable stream but transfers worst back to gemma-4 (0.712); causal ↔ bidirectional cross-cells were not measured (grey).*
 
 ### Steering retention
 
