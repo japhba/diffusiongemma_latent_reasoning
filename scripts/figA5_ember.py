@@ -28,8 +28,10 @@ fig = plt.figure(layout="constrained",
                           plt.rcParams["figure.figsize"][1] * 1.55))
 G = fig.add_gridspec(5, 1, height_ratios=[1, 1, 1, 1, 1.5])
 axB = None
+traj_axes = []
 for i, (tag, lab, t_abl) in enumerate(PANELS):
     ax = fig.add_subplot(G[i, 0], sharex=axB, sharey=axB)
+    traj_axes.append(ax)
     axB = axB or ax
     r = by[(3, tag)]
     ax.plot(r["m_idt"], color=IDIOM, label="idiom")
@@ -70,5 +72,12 @@ axS.set_xlabel(r"ablation step $t_{\mathrm{abl}}$")
 axS.legend(handles=[Patch(color=GREEN, label="final: idiom (escape survives)"),
                     Patch(color=ORANGE, label="final: seasonal (escape killed)")],
            loc="upper left", bbox_to_anchor=(0, -0.55), frameon=False, ncols=2)
+# separator between the base panel and the ablation panels
+fig.canvas.draw()
+fig.set_layout_engine("none")
+b0, b1 = traj_axes[0].get_position(), traj_axes[1].get_position()
+ymid = (b0.y0 + b1.y1) / 2
+fig.add_artist(plt.Line2D([b0.x0, b0.x1], [ymid, ymid], color="0.5", linewidth=0.8,
+                          linestyle="-", transform=fig.transFigure))
 fig.savefig(OUT / "figA5_seasonal_ember_kill.png", dpi=200)
 print(OUT / "figA5_seasonal_ember_kill.png")

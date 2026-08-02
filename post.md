@@ -86,7 +86,7 @@ In this post, we have studied whether DiffusionGemma has latent reasoning, and f
 
 ## Appendix
 
-The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability. 
+The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability.
 
 ### A1: Representation similarity (cosine & CKA)
 
@@ -112,9 +112,15 @@ The findings in Engels et al. and in this post have focussed on DiffusionGemma's
 
 *Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one multihop item, read on gemma-4 vs DG residuals with the same gemma-fit Jacobian — the gemma read surfaces the surface answer (Atlantic/ocean), the DG read the latent intermediate (Brazil).*
 
-### A5: Case study — two competing completions (seasonal vs idiom)
+### A5: Autonomous computational usage of $\mathbf{S}^t$
 
-[stub:] Asked to complete a palindrome, DG maintains two competing completions of the same canvas: a literal seasonal phrase ("fall leaves as soon as leaves fall") and the famous idiom ("all for one and one for all"). The canvas can only ever show one — but $\mathbf{S}_t$ carries both, and the loser can win: in escaping runs the idiom's sheet mass ramps up gradually over several steps while every visible draft still reads seasonal, until the canvas flips. This is a concrete case of belief content that a token-level monitor cannot see at the step where it matters — though it becomes visible the moment one reads $\mathbf{S}_t$ itself.
+In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also _autonomously_ would make use of its state.
+
+To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution autonomously. An instance we found is a word-level _palindrome_ task. When asked ```Please write a word-level palindrome```, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```fall leaves as soon as leaves fall```) and the famous _idiom_ (```all for one and one for all```).
+
+The canvas will read the _seaonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{S}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
+
+We validated that the emergence of _idiom_ is indeed causal: when ablating _idiom_'s tokens, the transition can be prevented. Note however that early and late ablation do not have this effect.
 
 ![Seasonal vs idiom: ember kill](figs/figA5_seasonal_ember_kill.png)
 
