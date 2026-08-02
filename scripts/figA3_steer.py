@@ -23,7 +23,7 @@ for k, v in jp["pairs"].items():
     tag, pi, cell, prot, _ = k.split("|")
     if prot == "pr80" and "correct" in v:
         acc[cell].append(bool(v["correct"]))
-ROWS = [("g", "gemma-4 causal"), ("e", "DG causal"), ("c", "DG denoising")]
+ROWS = [("g", "gemma-4 causal"), ("e", "DG causal"), ("c", "DG bidirectional")]
 COLS = [("g", "gemma-4"), ("d", "DG")]
 M = np.array([[np.mean(acc[r + c]) for c, _ in COLS] for r, _ in ROWS])
 

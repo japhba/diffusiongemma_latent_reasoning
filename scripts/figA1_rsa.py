@@ -15,8 +15,8 @@ SP = Path("/workspace-vast/jbauer/activation_oracles_dev/concept_probes/out/saep
 c = json.load(open(SP / "dg_rsa_cka_curves.json"))
 L = np.arange(c["n_layers"])
 PAIRS = [("g_enc", "gemma-4 × DG causal (model gap)", "#1971c2"),
-         ("g_dec", "gemma-4 × DG denoising (model + mode gap)", "#e8590c"),
-         ("enc_dec", "DG causal × DG denoising (mode gap)", "#2f9e44")]
+         ("g_dec", "gemma-4 × DG bidirectional (model + mode gap)", "#e8590c"),
+         ("enc_dec", "DG causal × DG bidirectional (mode gap)", "#2f9e44")]
 
 fig, axes = plt.subplots(1, 2, sharex=True, layout="constrained",
                          figsize=(plt.rcParams["figure.figsize"][0] * 1.6,

@@ -22,7 +22,7 @@ for k, v in jj["scores"].items():
     st, idx, cfg, test = k.split("|")
     if "A" in v:
         agg[(cfg, test)].append(v["A"]["score"])
-ROWS = [("g_shared", "gemma-4"), ("dgc_shared", "DG causal"), ("dgb_shared", "DG denoising")]
+ROWS = [("g_shared", "gemma-4"), ("dgc_shared", "DG causal"), ("dgb_shared", "DG bidirectional")]
 COLS = [("g", "gemma-4 residuals"), ("dg", "DG residuals")]
 M = np.array([[np.mean(agg[(r, c)]) for c, _ in COLS] for r, _ in ROWS])
 
@@ -49,7 +49,7 @@ it = next(x for x in ev["examples"] if x["name"] == "couplet-breath-death")
 LAYERS = [27, 20, 12, 4]
 out = {"name": it["name"], "set": it["set"], "tail": it["prompt_tail"],
        "intermediates": it["intermediates"], "config": CFG,
-       "config_label": "DG-denoising-fit Jacobian lens",
+       "config_label": "DG-bidirectional-fit Jacobian lens",
        "highlight": ["death", "died", "dying", "死亡"], "layers": LAYERS,
        "tops": {test: {str(L): it["tops"][f"{test}|{CFG}|L{L}"][:5] for L in LAYERS}
                 for test in ("g", "dg")}}

@@ -22,7 +22,7 @@ where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirecti
 
 For a visual and more detailed introduction to DiffusionGemma, see [this post](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma).
 
-Thus, generation in DiffusionGemma differs in the following ways:
+Thus, generation in DiffusionGemma mainly differs in the following ways:
 
 1. Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer.
 2. Attention is bidirectional.
@@ -68,7 +68,7 @@ Example of one intervention: a subleading injection on ```H``` (the leader ```G`
 
 ### Parallelism
 
-This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simulteaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.
+This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.
 
 ![Parallelism triptych](figs/fig2b_triptych.png)
 
@@ -90,9 +90,11 @@ The findings in Engels et al. and in this post have focussed on DiffusionGemma's
 
 ### A1: Representation similarity (cosine & CKA)
 
+We first ask about how the representation changes between Gemma and DiffusionGemma. 
+
 ![RSA cosine and CKA](figs/figA1_rsa_cosine_cka.png)
 
-*Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔denoising mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.*
+*Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔bidirectional mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.*
 
 ### A2: Probe retention
 
@@ -104,7 +106,7 @@ The findings in Engels et al. and in this post have focussed on DiffusionGemma's
 
 ![Steering retention](figs/figA3_steer_retention.png)
 
-*Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); denoising-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.*
+*Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); bidirectional-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.*
 
 ### A4: J-Lens retention
 

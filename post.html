@@ -42,6 +42,7 @@ p>em:first-child{color:var(--muted)}
 .anntok{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top}
 .annlab{font-size:.8em;color:var(--muted);line-height:1.1}
 .kn{color:var(--muted);font-size:.9em;font-family:system-ui,sans-serif}
+.readtok{color:#fff;border-radius:3px;padding:0 .3em}
 .card u{text-decoration-color:var(--accent);text-underline-offset:2px}
 .lrow{display:flex;align-items:center;gap:5px;margin:3px 0;flex-wrap:wrap}
 .llab{font:600 .85em system-ui;color:var(--muted);width:2.4em}
@@ -73,7 +74,7 @@ code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 $$</p>
 <p>where $T$ is the number of diffusion steps. Importantly, $x_t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{S}_t[x_t]$ also functions as a confidence score for any token $x_t$: unless a confidence threshold is passed, $x_t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. Two consequences matter for this post: at such open positions the canvas carries no information from one step to the next — $\mathbf{S}_t$ is the only memory the model has there — and the pace of commitment is set by this confidence gate, so anything that artificially sharpens $\mathbf{S}_t$ (such as truncating it to its top-k entries) makes the gate commit more positions, earlier.</p>
 <p>For a visual and more detailed introduction to DiffusionGemma, see <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma">this post</a>.</p>
-<p>Thus, generation in DiffusionGemma differs in the following ways:</p>
+<p>Thus, generation in DiffusionGemma mainly differs in the following ways:</p>
 <ol><li>Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer.</li><li>Attention is bidirectional.</li><li>Between every diffusion step, not only the current text output is sampled, but the output distributions $\mathbf{S}_t$ across all positions are also passed to the next diffusion step $t+1$.</li></ol>
 <p>The last point is especially interesting, since it passes the vector-valued object between diffusion steps, in addition to the tokens $x_t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.</p>
 <h2>Performance degradation from top-k truncation largely is a sampler artifact</h2>
@@ -95,7 +96,7 @@ $$</p>
 <figure><img src="figs/fig2a_example_intervention.png" alt="Example intervention"></figure>
 <p>Example of one intervention: a subleading injection on ``<code>H</code>`<code> (the leader </code>`<code>G</code>`<code> keeps rank 1) swings the answer slot from </code>`<code>J</code>`<code>  to </code>`<code>K</code>`<code>=</code>`<code>H+3</code>``  one step later.</p>
 <h3>Parallelism</h3>
-<p>This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simulteaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.</p>
+<p>This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.</p>
 <figure><img src="figs/fig2b_triptych.png" alt="Parallelism triptych"></figure>
 <p>_DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._</p>
 <p>This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.</p>
@@ -105,14 +106,15 @@ $$</p>
 <h2>Appendix</h2>
 <p>The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability.</p>
 <h3>A1: Representation similarity (cosine &amp; CKA)</h3>
+<p>We first ask about how the representation changes between Gemma and DiffusionGemma. </p>
 <figure><img src="figs/figA1_rsa_cosine_cka.png" alt="RSA cosine and CKA"></figure>
-<p><em>Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔denoising mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.</em></p>
+<p><em>Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔bidirectional mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.</em></p>
 <h3>A2: Probe retention</h3>
 <figure><img src="figs/figA2_probe_retention.png" alt="Probe retention"></figure>
 <p><em>Top: mean held-out AUC (56 concepts, source-CV layer) — cross-model reading costs ~0.03 in both directions. Bottom: a held-out pair read by the same gemma-trained probe on both models' activations.</em></p>
 <h3>A3: Steering retention</h3>
 <figure><img src="figs/figA3_steer_retention.png" alt="Steering retention"></figure>
-<p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); denoising-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.</em></p>
+<p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); bidirectional-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.</em></p>
 <h3>A4: J-Lens retention</h3>
 <figure><img src="figs/figA4_jlens_retention.png" alt="J-Lens retention"></figure>
 <p><em>Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one poetry item, read on gemma-4 vs DG residuals with the same DG-fit Jacobian — both streams surface the ground-truth intermediate ('death') at L20.</em></p>

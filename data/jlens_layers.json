@@ -6,7 +6,7 @@
   "death"
  ],
  "config": "dgb_shared",
- "config_label": "DG-denoising-fit Jacobian lens",
+ "config_label": "DG-bidirectional-fit Jacobian lens",
  "highlight": [
   "death",
   "died",

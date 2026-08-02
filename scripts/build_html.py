@@ -166,13 +166,20 @@ def ill_jlens_pair():
             + "".join(chip(tk) for tk in d["tops"][test][str(L)]) + "</div>"
             for L in d["layers"])
         return f'<div><h4>{lab}</h4>{rows}</div>'
+    READ = "#1971c2"
+    tail = d["tail"].strip()
+    pre, readtok = tail.rsplit(" ", 1)
+    tail_html = (f'<code class="gen">{E(pre)} '
+                 f'<span class="readtok" style="background:{READ}">{E(readtok)}</span></code>')
     return f"""<div class="card">
 {pills(f"{d['config_label']}, top-5 tokens per audited layer",
        f"item: {d['name']} ({d['set']})", f"ground-truth intermediate: {', '.join(d['intermediates'])}")}
-<p class="small">prompt tail: <code class="gen">{E(d['tail'].strip())}</code></p>
+<p class="small">prompt tail: {tail_html}</p>
 <div class="cols2">{side('g', 'read on gemma-4 residuals')}{side('dg', 'read on DG residuals')}</div>
 <span class="leg"><i style="background:{GT}"></i> ground-truth intermediate
-('{E(d['intermediates'][0])}', incl. variants) &nbsp;·&nbsp; layers deep → shallow</span>
+('{E(d['intermediates'][0])}', incl. variants)
+<i style="background:{READ}"></i> lens read position (residual at the final prompt token)
+&nbsp;·&nbsp; layers deep → shallow</span>
 </div>"""
 
 
@@ -226,6 +233,7 @@ p>em:first-child{color:var(--muted)}
 .anntok{display:inline-flex;flex-direction:column;align-items:center;vertical-align:top}
 .annlab{font-size:.8em;color:var(--muted);line-height:1.1}
 .kn{color:var(--muted);font-size:.9em;font-family:system-ui,sans-serif}
+.readtok{color:#fff;border-radius:3px;padding:0 .3em}
 .card u{text-decoration-color:var(--accent);text-underline-offset:2px}
 .lrow{display:flex;align-items:center;gap:5px;margin:3px 0;flex-wrap:wrap}
 .llab{font:600 .85em system-ui;color:var(--muted);width:2.4em}
