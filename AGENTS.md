@@ -66,8 +66,9 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   The A2 matrix is the 3×3 mode-split (probe_matrix.json modes: `headline` = DG causal,
   `declast` = DG bidirectional last-token; `decmean` only cited in prose). causal↔bidirectional
   cross-cells don't exist in the data → masked grey. Matrix scores annotated `:.2f` everywhere.
-- `scripts/figA5_ember.py` — seasonal-vs-idiom ember-kill: 4 stacked trajectory panels + outcome
-  matshow from `src_data/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
+- `scripts/figA5_ember.py` — seasonal-vs-idiom ember-kill: 4 stacked trajectory panels
+  (base | early/mid/late kills; outcome matshow dropped 2026-08-02 per user request) from
+  `src_data/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
 
 ## Serving / publishing
 

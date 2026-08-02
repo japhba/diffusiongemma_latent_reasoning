@@ -1,16 +1,13 @@
-"""A5: seasonal-vs-idiom ember-kill — left: 4 stacked trajectory panels (base separated by a gap
-+ hline; early/mid/late single-step ablations, seed s3); right: extended outcome matshow over
-all arms (1-step kills, persistent kills, s0 rescues) x ablation steps, cell text = draft-flip step.
+"""A5: seasonal-vs-idiom ember-kill — 4 stacked trajectory panels (base separated by a gap
++ hline; early/mid/late single-step ablations, seed s3). The outcome matshow was dropped
+2026-08-02 per user request.
 
-Data: diffusiongemma/exp/dg_planning/ember_kill.json (dg-planning seasonal study archive).
+Data: src_data/ember_kill.json (dg-planning seasonal study archive).
 """
 import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.colors import ListedColormap
-from matplotlib.patches import Patch
 
 ROOT = Path(__file__).resolve().parent.parent
 EXP = ROOT / "src_data"
@@ -19,25 +16,20 @@ runs = json.load(open(EXP / "ember_kill.json"))
 by = {(r["seed"], r["tag"]): r for r in runs}
 
 IDIOM, SEAS = "k", "#9c36b5"
-GREEN, ORANGE, GREY = "#2f9e44", "#e8590c", "#868e96"
+GREEN, ORANGE = "#2f9e44", "#e8590c"
 PANELS = [("base", "base", None), ("kill@t2", "early kill", 2),
           ("kill@t5", "mid kill", 5), ("kill@t10", "late kill", 10)]
-SINGLE_T, PERSIST_T = list(range(1, 13)), [2, 4, 6, 8, 10]
-ROWS = ([(s, "kill", "1-step", SINGLE_T) for s in (3, 4, 7)] +
-        [(s, "kill", "persist", PERSIST_T) for s in (3, 4, 7)] +
-        [(0, "rescue", "1-step", SINGLE_T), (0, "rescue", "persist", PERSIST_T)])
-OC = {"idiom": 0, "seasonal": 1, "other": 2}
 
 fig = plt.figure(layout="constrained",
-                 figsize=(plt.rcParams["figure.figsize"][0] * 2.1,
+                 figsize=(plt.rcParams["figure.figsize"][0] * 1.15,
                           plt.rcParams["figure.figsize"][1] * 1.25))
-G = fig.add_gridspec(5, 2, height_ratios=[1, 0.22, 1, 1, 1], width_ratios=[1.05, 1])
+G = fig.add_gridspec(5, 1, height_ratios=[1, 0.22, 1, 1, 1])
 
-# ---- left: trajectories (base | gap | early, mid, late) ----
+# ---- trajectories (base | gap | early, mid, late) ----
 row_of = [0, 2, 3, 4]
 axB, traj_axes = None, []
 for (tag, lab, t_abl), gr in zip(PANELS, row_of):
-    ax = fig.add_subplot(G[gr, 0], sharex=axB, sharey=axB)
+    ax = fig.add_subplot(G[gr], sharex=axB, sharey=axB)
     traj_axes.append(ax)
     axB = axB or ax
     r = by[(3, tag)]
@@ -51,7 +43,7 @@ for (tag, lab, t_abl), gr in zip(PANELS, row_of):
             color=GREEN if oc == "idiom" else ORANGE, fontweight="bold")
     ax.set_ylim(-0.08, 1.08)
     ax.set_yticks([0, 1])
-    ax.set_ylabel(r"$\mathbf{S}$-mass")
+    ax.set_ylabel(r"$\mathbf{s}$-mass")
     ax.spines[["top", "right"]].set_visible(False)
     ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
     if gr == 0:
@@ -61,35 +53,7 @@ for (tag, lab, t_abl), gr in zip(PANELS, row_of):
     else:
         ax.set_xlabel("denoising step $t$")
 
-# ---- right: extended outcome matshow ----
-axS = fig.add_subplot(G[:, 1])
-M = np.full((len(ROWS), len(SINGLE_T)), np.nan)
-for i, (s, arm, kind, ts) in enumerate(ROWS):
-    for t in ts:
-        r = by.get((s, f"{arm}@t{t}" + ("+" if kind == "persist" else "")))
-        if r is None:
-            continue
-        M[i, t - 1] = OC[r["outcome"]]
-        axS.text(t - 1, i, "—" if r["flip"] is None else str(r["flip"]),
-                 ha="center", va="center", fontsize="small",
-                 color="white" if OC[r["outcome"]] < 2 else "black")
-cmap = ListedColormap([GREEN, ORANGE, GREY])
-cmap.set_bad("#00000010")
-axS.imshow(np.ma.masked_invalid(M), cmap=cmap, vmin=0, vmax=2, aspect="auto")
-for t in (2, 5, 10):  # the trajectory panels shown left
-    axS.add_patch(plt.Rectangle((t - 1.5, -0.5), 1, 1, fill=False, edgecolor="k", linewidth=1.6))
-for yy in (2.5, 5.5):  # group separators: 1-step kills | persistent kills | rescues
-    axS.axhline(yy, color="white", linewidth=2.5)
-axS.set_xticks(range(len(SINGLE_T)), SINGLE_T)
-axS.set_yticks(range(len(ROWS)),
-               [f"s{s} {arm} {kind}" for s, arm, kind, _ in ROWS])
-axS.set_xlabel(r"ablation step $t_{\mathrm{abl}}$")
-axS.legend(handles=[Patch(color=GREEN, label="final: idiom"),
-                    Patch(color=ORANGE, label="final: seasonal"),
-                    Patch(color=GREY, label="final: other")],
-           loc="upper left", bbox_to_anchor=(0, -0.12), frameon=False, ncols=3)
-
-# separator between the base panel and the ablation panels (left column)
+# separator between the base panel and the ablation panels
 fig.canvas.draw()
 fig.set_layout_engine("none")
 b0, b1 = traj_axes[0].get_position(), traj_axes[1].get_position()
