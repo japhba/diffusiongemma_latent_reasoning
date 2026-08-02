@@ -44,11 +44,14 @@ print(OUT / "parts" / "figA4_matrix.png")
 # per-layer top-5 example data consumed by build_html.py (gemma-fit Jacobian, both read streams)
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
 ev = json.load(open(SP / "jlens/eval_2x2.json"))
-it = next(x for x in ev["examples"] if x["name"] == "carnival-ocean")
+CFG = "dgb_shared"  # the one fitted-lens config where BOTH read streams surface the intermediate
+it = next(x for x in ev["examples"] if x["name"] == "couplet-breath-death")
 LAYERS = [27, 20, 12, 4]
 out = {"name": it["name"], "set": it["set"], "tail": it["prompt_tail"],
-       "intermediates": it["intermediates"], "config": "g_shared", "layers": LAYERS,
-       "tops": {test: {str(L): it["tops"][f"{test}|g_shared|L{L}"][:5] for L in LAYERS}
+       "intermediates": it["intermediates"], "config": CFG,
+       "config_label": "DG-denoising-fit Jacobian lens",
+       "highlight": ["death", "died", "dying", "死亡"], "layers": LAYERS,
+       "tops": {test: {str(L): it["tops"][f"{test}|{CFG}|L{L}"][:5] for L in LAYERS}
                 for test in ("g", "dg")}}
 json.dump(out, open(DATA / "jlens_layers.json", "w"), indent=1)
 print(DATA / "jlens_layers.json")

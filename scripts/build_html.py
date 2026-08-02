@@ -154,11 +154,10 @@ def ill_steer_pair():
 
 def ill_jlens_pair():
     d = json.load(open(DATA / "jlens_layers.json"))
-    GT, ANS = "#e8590c", "#1971c2"
+    GT = "#e8590c"
+    hl = [h.lower() for h in d["highlight"]]
     def chip(tk):
-        low = tk.strip().lower()
-        col = GT if ("brazil" in low or "brasil" in low or tk.strip() == "巴西") else \
-              ANS if ("atlantic" in low or "ocean" in low) else None
+        col = GT if any(h in tk.strip().lower() for h in hl) else None
         style = f'style="color:#fff;background:{col}"' if col else ""
         return f'<code class="gen chip" {style}>{E(tk)}</code>'
     def side(test, lab):
@@ -168,12 +167,12 @@ def ill_jlens_pair():
             for L in d["layers"])
         return f'<div><h4>{lab}</h4>{rows}</div>'
     return f"""<div class="card">
-{pills("gemma-4-fit Jacobian lens, top-5 tokens per audited layer",
-       f"item: {d['name']} ({d['set']})", f"latent intermediate: {', '.join(d['intermediates'])}")}
+{pills(f"{d['config_label']}, top-5 tokens per audited layer",
+       f"item: {d['name']} ({d['set']})", f"ground-truth intermediate: {', '.join(d['intermediates'])}")}
 <p class="small">prompt tail: <code class="gen">{E(d['tail'].strip())}</code></p>
 <div class="cols2">{side('g', 'read on gemma-4 residuals')}{side('dg', 'read on DG residuals')}</div>
-<span class="leg"><i style="background:{GT}"></i> latent intermediate ('Brazil')
-<i style="background:{ANS}"></i> surface answer ('Atlantic' / 'ocean') &nbsp;·&nbsp; layers deep → shallow</span>
+<span class="leg"><i style="background:{GT}"></i> ground-truth intermediate
+('{E(d['intermediates'][0])}', incl. variants) &nbsp;·&nbsp; layers deep → shallow</span>
 </div>"""
 
 

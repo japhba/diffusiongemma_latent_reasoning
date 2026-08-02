@@ -110,7 +110,7 @@ The findings in Engels et al. and in this post have focussed on DiffusionGemma's
 
 ![J-Lens retention](figs/figA4_jlens_retention.png)
 
-*Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one multihop item, read on gemma-4 vs DG residuals with the same gemma-fit Jacobian — the gemma read surfaces the surface answer (Atlantic/ocean), the DG read the latent intermediate (Brazil).*
+*Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one poetry item, read on gemma-4 vs DG residuals with the same DG-fit Jacobian — both streams surface the ground-truth intermediate ('death') at L20.*
 
 ### A5: Autonomous computational usage of $\mathbf{S}^t$
 

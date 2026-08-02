@@ -1,11 +1,18 @@
 {
- "name": "carnival-ocean",
- "set": "multihop",
- "tail": "Fact: The ocean on the coast of the country where Carnival is most famously celebrated is the ",
+ "name": "couplet-breath-death",
+ "set": "poetry",
+ "tail": "A rhyming couplet:\nThe soldier held his final, rattling breath,\nAnd closed his eyes to greet the face of ",
  "intermediates": [
-  "Brazil"
+  "death"
  ],
- "config": "g_shared",
+ "config": "dgb_shared",
+ "config_label": "DG-denoising-fit Jacobian lens",
+ "highlight": [
+  "death",
+  "died",
+  "dying",
+  "\u6b7b\u4ea1"
+ ],
  "layers": [
   27,
   20,
@@ -15,62 +22,62 @@
  "tops": {
   "g": {
    "27": [
-    " \u043e\u043a\u0435",
-    " Atlantic",
-    " ocean",
-    "ocean",
-    " atlantic"
+    " Embr",
+    " Dancing",
+    " embrace",
+    " wrestling",
+    " dancing"
    ],
    "20": [
-    "MARINE",
-    "Atlantic",
-    "TOUR",
-    "Ocean",
-    "ocean"
+    " death",
+    " Death",
+    "death",
+    "Death",
+    " died"
    ],
    "12": [
-    "Coast",
-    "Beach",
-    "continent",
-    "beach",
-    "district"
+    " Mikey",
+    "Much",
+    " Tew",
+    "Ultimately",
+    " Ultimately"
    ],
    "4": [
-    "ray",
-    "riot",
-    "Martin",
-    "SEG",
-    "martin"
+    " Mous",
+    " Millie",
+    " Mosque",
+    " Modi",
+    " Militia"
    ]
   },
   "dg": {
    "27": [
-    " Brazil",
-    " Trinidad",
-    " Brasil",
-    " Tristan",
-    "\u5df4\u897f"
+    ",\",",
+    "And",
+    "\n",
+    " Dancing",
+    ",\\"
    ],
    "20": [
-    "Australia",
-    "Caribbean",
-    "america",
-    " Caribbean",
-    " Cameroon"
+    " death",
+    "\u6b7b\u4ea1",
+    " Death",
+    " died",
+    " dying"
    ],
    "12": [
-    "coast",
-    "continent",
-    "south",
-    " atlantic",
-    "atlantic"
+    " Mikey",
+    "MouseMove",
+    " Mariano",
+    " Milo",
+    "Mole"
    ],
    "4": [
-    "disc",
-    "derive",
-    "rigid",
-    "sear",
-    "ray"
+    "Rek",
+    " Mous",
+    "RSS",
+    " Alaska",
+    " Rana"
    ]
   }
  }
