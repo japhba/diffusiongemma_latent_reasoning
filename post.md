@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to **pass information that is illegible to monitors**, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
+Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
 Here, we show that this performance degradation is largely a sampler artifact, supporting the case for high monitorability. Nevertheless, we find some rare cases where the distribution vector is load-bearing computationally, however in a way that is easily interpretable.
 Overall, this underlines the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.
 
@@ -18,7 +18,7 @@ $$
 \end{aligned}
 $$
 
-where $T$ is the number of diffusion steps. Importantly, $X^t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{s}^t[x^t]$ also functions as a confidence score for any token $x^t$: unless a confidence threshold is passed, $x^t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. 
+where $T$ is the number of diffusion steps. Importantly, $X^t$ attends bidirectionally to itself, and causally to $p$. $\mathbf{s}^t[x^t]$ also functions as a confidence score for any token $x^t$: unless a confidence threshold is passed, $x^t$ gets replaced with a random token at every step $t$, facilitating exploration and correction.
 
 For a visual and more detailed introduction to DiffusionGemma, see [this post](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma).
 
@@ -28,11 +28,11 @@ Thus, generation in DiffusionGemma mainly differs in the following ways:
 2. Attention is bidirectional.
 3. Between every diffusion step, not only the current text output is sampled, but the output distributions $\mathbf{S}^t$ across all positions are also passed to the next diffusion step $t+1$.
 
-The last point is especially interesting, since it passes the vector-valued object $\mathbf{s}^t$ between diffusion steps, in addition to the token canvas $X^t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.
+The last point is especially interesting, since it passes the vector $\mathbf{s}^t$ between diffusion steps, in addition to the token canvas $X^t$ lacking the $|\mathcal{V}|$ axis. A priori, this allows the model to transport drastically more information between diffusion steps in an illegible way, hindering monitorability.
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma [maybe give more deets on what they found]. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance of DG significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential to DiffusionGemma, conflicting the results of high monitorability.
+Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma [maybe give more details on what they found]. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance of DG significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential to DiffusionGemma, conflicting the results of high monitorability.
 
 However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
 
@@ -102,7 +102,7 @@ Probing allows to study how well a model separates concepts. We use 56 binary co
 
 ![Probe retention](figs/figA2_probe_retention.png)
 
-_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, probe source (trained on) × target (applied to). DG is split by attention mode (last-position read everywhere). Bottom: a held-out positive and negative test text for one concept (clickbait): the same gemma-trained probe scores gemma-4 and DG activations near-identically. [stub: ticks read model · attention mode · read position — G = gemma-4, DG = DiffusionGemma, "last" = the probe reads the residual at the last token.]_
+_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, probe source (trained on) × target (applied to). DG is split by attention mode (last-position read everywhere). Bottom: a held-out positive and negative test text for one concept (clickbait): the same gemma-trained probe scores gemma-4 and DG activations near-identically. Ticks: \<read model\> · \<attention mode\> · \<read position\> — G = gemma-4, DG = DiffusionGemma, "last" = the probe reads the residual at the last token._
 
 #### DiffusionGemma's representation is more linearly separable
 
@@ -114,7 +114,7 @@ To see whether these similarities in representation are causally load-bearing, w
 
 ![Steering retention](figs/figA3_steer_retention.png)
 
-_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind judge accuracy, direction source × steered model. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt. [stub: source ticks read model · attention mode · read position of the direction fit; "pr80 write" = the direction is added over the last 80% of prompt positions.]_
+_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind judge accuracy, direction source × steered model. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt.  Ticks: \<read model\> · \<attention mode\> · \<read position of the direction fit\>. "pr80 write" = the direction is added over the last 80% of prompt positions._
 
 ### J-Lens retention
 
@@ -122,7 +122,7 @@ The [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html) 
 
 ![J-Lens retention](figs/figA4_jlens_retention.png)
 
-_**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from the [J-Lens paper](https://transformer-circuits.pub/2026/workspace/index.html)). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance. [stub: source ticks show the fitted Jacobian estimator — $h^{\ell'}_i(x)$ is the residual at source layer $\ell'$ and position $i$, $h^{L}_j(x)$ the final-layer residual at target position $j$; the causal fits average over causal targets $j\geq i$, the bidirectional fit over all canvas positions $I$.]_
+_**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from the [J-Lens paper](https://transformer-circuits.pub/2026/workspace/index.html)). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance. Ticks show the fitted Jacobian estimator: $h^{\ell'}_i(X)$ is the residual at source layer $\ell'$ and position $i$, $h^{L}_j(X)$ the final-layer residual at target position $j$; the causal fits average over causal targets $j\geq i$, the bidirectional fit over all canvas positions $I$, and the expectation is taken over samples $X$ of WikiText._
 
 ### Autonomous computational usage of $\mathbf{s}^t$
 
@@ -136,4 +136,4 @@ We validated that the emergence of _idiom_ is indeed causal: when ablating _idio
 
 ![Seasonal vs idiom: ember kill](figs/figA5_seasonal_ember_kill.png)
 
-*Sheet mass of the two completions at the contested slots (black: idiom, purple: seasonal; seed s3) — the base run (top, separated), then single-step ablations of the idiom's $\mathbf{s}$-mass (red ×): an early kill regrows, a mid-ramp kill destroys the escape, a late kill is a no-op.*
+_**Ablating a nascent contender can prevent takeover (during an intermediate step window).** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: The base run. Bottom three rows: single-step ablations of the idiom's $\mathbf{s}$-mass (red ×)._
