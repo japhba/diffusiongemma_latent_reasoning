@@ -1,14 +1,14 @@
 # Does DiffusionGemma have latent reasoning?
 
-## TL;DR:
+## TL;DR
 
-Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass vector-valued information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
+Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance.
 Here, we show that this performance degradation is largely a sampler artifact, supporting the case for high monitorability. Nevertheless, we find some rare cases where the distribution vector is load-bearing computationally, however in a way that is easily interpretable.
 Overall, this underlines the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.
 
 ## Introduction
 
-DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialised token canvas comprising $C$ positions. The self-conditioning state $\mathbf{S}_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via
+DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $x_0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. The self-conditioning state $\mathbf{S}_0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uninformatively — there is no model output to feed back at the first step. Let $f$ denote a single forward pass through the transformer stack, which is a finetune of Gemma. Roughly, the final output $x_T$ then is obtained via
 
 $$
 \begin{aligned}
@@ -58,21 +58,23 @@ Then, we measure the response to that perturbation $\mathbf{R}[x'_{i+1}\vert\mat
 
 ![Letter-arithmetic transfer maps](figs/fig2a_transfer_map.png)
 
-*Perturbing subleading tokens triggers a response at corresponding target tokens.* 
+*Perturbing subleading tokens triggers a response at corresponding target tokens.*
 
 For illustration, here is a single intervention in full:
 
 ![Example intervention](figs/fig2a_example_intervention.png)
 
-*One intervention: injecting $\varepsilon=0.45$ on 'H' (the leader 'G' keeps rank 1, the canvas never changes) swings the answer slot from 'J' (0.996→0.05) to 'K'='H'+3 (0.0002→0.91) one step later — the answer tracks the belief at the operand slot, not the committed text.*
+Example of one intervention: a subleading injection on ```H``` (the leader ```G``` keeps rank 1) swings the answer slot from ```J```  to ```K```=```H+3```  one step later.
 
 ### Parallelism
 
-[stub:] Does the interface serialize, or can it push many hypotheses through at once? We inject $n$ source letters simultaneously (each at flat $\varepsilon_0$, all sub-leading) and read all $n$ computed images. We track the target and non-target responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$, the effect $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$, and the mass-normalized effect $\mathrm{NE}_c = E_c/(n\,\varepsilon_0)$.
+This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simulteaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.
 
 ![Parallelism triptych](figs/fig2b_triptych.png)
 
-*Letters (case-flip), mean ± 95% CI over 736 cells, $\varepsilon_0=0.04$. The effect $E_c$ grows with $n$ while the per-mass efficiency $\mathrm{NE}_c$ stays flat ≈0.6–0.7 out to $n=20$ — hypothesis count is not the bottleneck (numbers: same plateau ≈0.5). The mixed reference includes a case-band component; the band-free edge (≈0.2–0.4) is equally flat.*
+_DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._
+
+This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses.
 
 ## Appendix
 

@@ -72,8 +72,6 @@ for s, off, alpha in (("std", -w / 2, 1.0), ("gentle", w / 2, 1.0)):
                hatch=None if s == "std" else "//",
                label=FMLAB[fm] if s == "std" else None)
         bottom += vals
-    for xi, tot in zip(x + off, bottom):
-        ax.text(xi, tot + 1.2, f"{tot:.0f}", ha="center", va="bottom")
 
 ax.set_xticks(x, [RUNG_LAB[r] for r in RUNGS])
 ax.set_xlabel(r"state-vocabulary truncation (top-$k$ of $\mathbf{S}_t$)")
@@ -83,7 +81,7 @@ from matplotlib.patches import Patch
 handles = [Patch(facecolor=FMCOL[fm], label=FMLAB[fm]) for fm in FMS[::-1]]
 handles += [Patch(facecolor="0.65", label="standard sampler (left bars)"),
             Patch(facecolor="0.65", hatch="//", edgecolor="white", label="gentle sampler (right bars)")]
-ax.legend(handles=handles, loc="upper left", frameon=False)
+ax.legend(handles=handles, loc="upper left", frameon=False, ncols=2)
 ax.spines[["top", "right"]].set_visible(False)
 fig.tight_layout()
 fig.savefig(OUT / "fig1_gpqa_trunc_failures.png", dpi=200)
