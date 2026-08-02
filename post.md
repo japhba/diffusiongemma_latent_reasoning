@@ -24,7 +24,7 @@ For a visual and more detailed introduction to DiffusionGemma, see [this post](h
 
 Thus, generation in DiffusionGemma mainly differs in the following ways:
 
-1. Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer.
+1. Generation happens as reverse diffusion, not as token-by-token autoregression. This is reminiscent of a looped transformer ([Giannou et al., 2023](https://arxiv.org/abs/2301.13196)).
 2. Attention is bidirectional.
 3. Between every diffusion step, not only the current text output is sampled, but the output distributions $\mathbf{S}_t$ across all positions are also passed to the next diffusion step $t+1$.
 
@@ -86,15 +86,15 @@ In this post, we have studied whether DiffusionGemma has latent reasoning, and f
 
 ## Appendix
 
-The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability.
+The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability. 
 
 ### A1: Representation similarity (cosine & CKA)
 
-We first ask about how the representation changes between Gemma and DiffusionGemma. 
+We first ask about how the representation changes between Gemma and DiffusionGemma. A simple way is to just measure overlap between pairs of inputs, where each element of the pair is fed through Gemma or DiffusionGemma, respectively. We here compare a simple cosine similarity, and centered kernel analysis (CKA). 
 
 ![RSA cosine and CKA](figs/figA1_rsa_cosine_cka.png)
 
-*Left: matched cosine; right: linear CKA (per layer, 3,584 texts). Mid-stack alignment is high across models and degrades from the deep global-attention layers on; the causal↔bidirectional mode switch — same weights — costs as much as the model gap (mean CKA 0.51 vs 0.81), and the gaps compound.*
+*Representational similarity falls with layers, and is significantly driven by bare model difference and bidirectional attention.*
 
 ### A2: Probe retention
 
@@ -126,4 +126,16 @@ We validated that the emergence of _idiom_ is indeed causal: when ablating _idio
 
 ![Seasonal vs idiom: ember kill](figs/figA5_seasonal_ember_kill.png)
 
-*Sheet mass of the two completions at the contested slots (black: idiom, purple: seasonal; seed s3). Top: base run — the idiom's belief ramps sub-threshold for several steps while every draft still reads seasonal, then the canvas flips. Below: ablating the idiom's $\mathbf{S}$-mass for a single step (red ×) — an early kill regrows, a mid-ramp kill destroys the escape, a late kill is a no-op (already committed). Bottom: final outcome across seeds × ablation steps (outlined cells = the panels above); the vulnerable window is exactly the sub-threshold ramp.*
+*Left: sheet mass of the two completions at the contested slots (black: idiom, purple: seasonal; seed s3) — the base run (top, separated), then single-step ablations of the idiom's $\mathbf{S}$-mass (red ×): an early kill regrows, a mid-ramp kill destroys the escape, a late kill is a no-op. Right: final outcome across all arms × ablation steps — single-step kills, persistent kills (grey = collapse into a third, degenerate basin), and incumbent-kills on the trapped seed s0, where silencing the seasonal incumbent for a single step rescues the idiom at any time. Cell text = draft-flip step (— = never); outlined cells = the panels at left.*
+
+## References
+
+- Engels et al., 2026. *[Monitorability of diffusion language models]* — the DiffusionGemma monitorability and top-k truncation study. [arXiv:2606.20560](https://arxiv.org/abs/2606.20560)
+- Grootendorst, 2026. *A Visual Guide to DiffusionGemma.* [newsletter.maartengrootendorst.com](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma)
+- Chen, Zhang & Hinton, 2022. *Analog Bits: Generating Discrete Data using Diffusion Models with Self-Conditioning.* (the self-conditioning mechanism behind $\mathbf{S}_t$) [arXiv:2208.04202](https://arxiv.org/abs/2208.04202)
+- Nie et al., 2025. *Large Language Diffusion Models* (LLaDA — masked diffusion LMs). [arXiv:2502.09992](https://arxiv.org/abs/2502.09992)
+- Giannou et al., 2023. *Looped Transformers as Programmable Computers.* [arXiv:2301.13196](https://arxiv.org/abs/2301.13196)
+- Zou et al., 2023. *Representation Engineering* (RepE — steering tasks and diff-of-means directions used in A3). [arXiv:2310.01405](https://arxiv.org/abs/2310.01405)
+- Kantamneni et al., 2025. *Are Sparse Autoencoders Useful? A Case Study in Sparse Probing* (the 113 real-text concept datasets used in A1–A2). [arXiv:2502.16681](https://arxiv.org/abs/2502.16681)
+- Kornblith et al., 2019. *Similarity of Neural Network Representations Revisited* (CKA, used in A1). [arXiv:1905.00414](https://arxiv.org/abs/1905.00414)
+- [J-Lens paper — fill in citation for the fitted Jacobian lens and its six eval sets]

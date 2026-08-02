@@ -128,7 +128,8 @@ def ill_probe_pair():
             for who, k, col in (("read on gemma-4 acts", "g", "#1971c2"), ("read on DG acts", "d", "#e8590c")))
         return f'<div><h4>{lab}</h4><code class="gen block">{E(rec["text"][:260])}{" …" if len(rec["text"])>260 else ""}</code>{bars}</div>'
     return f"""<div class="card">
-{pills("concept: world news (161_agnews_0)", f"same gemma-trained probe, layer {d['layer']}", "held-out test texts")}
+<p class="small">concept: world news (161_agnews_0) &nbsp;·&nbsp; same gemma-trained probe, layer {d['layer']}
+&nbsp;·&nbsp; held-out test texts</p>
 <div class="cols2">{side(d['pos'], "positive (world news)")}{side(d['neg'], "negative (balanced other)")}</div>
 </div>"""
 
@@ -146,7 +147,7 @@ def ill_steer_pair():
                 + gen(c["neg"], "−steer (away)", "#c2255c")
                 + f'<p class="judge">judge: {E(c["judge"])}</p></div>')
     return f"""<div class="card">
-{pills(f"task: {d['task']}", f"direction: {d['direction']}", "same carrier prompt, ±steer")}
+<p class="small">task: {E(d['task'])} &nbsp;·&nbsp; direction: {E(d['direction'])} &nbsp;·&nbsp; same carrier prompt, ±steer</p>
 <p class="small">carrier: <code class="gen">{E(d['carrier'])}</code></p>
 <div class="cols2">{side(d['cells']['gg'])}{side(d['cells']['gd'])}</div>
 </div>"""
@@ -167,18 +168,20 @@ def ill_jlens_pair():
             for L in d["layers"])
         return f'<div><h4>{lab}</h4>{rows}</div>'
     READ = "#1971c2"
-    tail = d["tail"].strip()
-    pre, readtok = tail.rsplit(" ", 1)
-    tail_html = (f'<code class="gen">{E(pre)} '
-                 f'<span class="readtok" style="background:{READ}">{E(readtok)}</span></code>')
+    tail = d["tail"].rstrip()
+    # poetry reads at the token containing the FINAL newline (cue-line ending), per paper_readout
+    pre, post = tail.rsplit("\n", 1)
+    tail_html = (f'<code class="gen">{E(pre)}</code>'
+                 f'<span class="readtok" style="background:{READ}">↵</span> '
+                 f'<code class="gen">{E(post)}</code>')
     return f"""<div class="card">
-{pills(f"{d['config_label']}, top-5 tokens per audited layer",
-       f"item: {d['name']} ({d['set']})", f"ground-truth intermediate: {', '.join(d['intermediates'])}")}
+<p class="small">{E(d['config_label'])} — top-5 tokens per audited layer &nbsp;·&nbsp;
+item: {E(d['name'])} ({E(d['set'])}) &nbsp;·&nbsp; ground-truth intermediate: {E(', '.join(d['intermediates']))}</p>
 <p class="small">prompt tail: {tail_html}</p>
 <div class="cols2">{side('g', 'read on gemma-4 residuals')}{side('dg', 'read on DG residuals')}</div>
 <span class="leg"><i style="background:{GT}"></i> ground-truth intermediate
 ('{E(d['intermediates'][0])}', incl. variants)
-<i style="background:{READ}"></i> lens read position (residual at the final prompt token)
+<i style="background:{READ}"></i> lens read position — the newline token closing the cue line
 &nbsp;·&nbsp; layers deep → shallow</span>
 </div>"""
 
