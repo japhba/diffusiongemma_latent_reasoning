@@ -48,11 +48,11 @@ fig, axes = plt.subplots(1, 3, layout="constrained",
                          figsize=(plt.rcParams["figure.figsize"][0] * 2.0,
                                   plt.rcParams["figure.figsize"][1] * 0.85))
 panels = [
-    (axes[0], [("rt", "#e8590c", r"$\langle R_c\rangle_{T_c}$ (targets)"),
-               ("rn", "#7aa2ff", r"$\langle R_c\rangle_{N_c}$ (non-targets)")],
-     r"components", r"$\langle R_c\rangle\ (\log_{10})$"),
-    (axes[1], [("E", "0.2", None)], r"$E_c=\langle R_c\rangle_{T_c}-\langle R_c\rangle_{N_c}$", r"$E_c$"),
-    (axes[2], [("NE", "0.2", None)], r"$\mathrm{NE}_c = E_c/(n\,\varepsilon_0)$", r"$\mathrm{NE}_c$"),
+    (axes[0], [("rt", "#e8590c", r"$\langle R\rangle_{T}$ (targets)"),
+               ("rn", "#7aa2ff", r"$\langle R\rangle_{N}$ (non-targets)")],
+     r"components", r"$\langle R\rangle\ (\log_{10})$"),
+    (axes[1], [("E", "0.2", None)], r"$E=\langle R\rangle_{T}-\langle R\rangle_{N}$", r"$E$"),
+    (axes[2], [("NE", "0.2", None)], r"$\mathrm{NE} = E/(n\,\varepsilon_0)$", r"$\mathrm{NE}$"),
 ]
 for ax, series, title, ylab in panels:
     for key, col, lab in series:

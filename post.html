@@ -96,28 +96,32 @@ $$</p>
 <figure><img src="figs/fig2a_example_intervention.png" alt="Example intervention"></figure>
 <p>Example of one intervention: a subleading injection on ``<code>H</code>`<code> (the leader </code>`<code>G</code>`<code> keeps rank 1) swings the answer slot from </code>`<code>J</code>`<code>  to </code>`<code>K</code>`<code>=</code>`<code>H+3</code>``  one step later.</p>
 <h3>Parallelism</h3>
-<p>This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R_c\rangle_{T_c}$ and $\langle R_c\rangle_{N_c}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E_c = \langle R_c\rangle_{T_c} - \langle R_c\rangle_{N_c}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.</p>
+<p>This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R\rangle_{T}$ and $\langle R\rangle_{N}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E = \langle R\rangle_{T} - \langle R\rangle_{N}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.</p>
 <figure><img src="figs/fig2b_triptych.png" alt="Parallelism triptych"></figure>
 <p>_DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._</p>
 <p>This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.</p>
 <h2>Conclusion</h2>
 <p>In this post, we have studied whether DiffusionGemma has latent reasoning, and found a capability to do  (parallel) computation on the vector-valued state passed between diffusion steps.</p>
-<ul><li>still, there may be functional degradation from truncation</li><li>the fact that top-k truncation largely preserves accuracy suggests that no _significant_ latent reasoning is present, but does not rule it out</li><li>moreover,</li></ul>
+<p>The fact that top-k truncation largely preserves accuracy suggests that no _significant_ latent reasoning is used in typical reasoning-focussed task.</p>
+<p>More broadly, DiffusionGemma is only one testbed for latent reasoning. Going forward, there are many more architectures and forms where it can occur. </p>
 <h2>Appendix</h2>
-<p>The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability. </p>
-<h3>A1: Representation similarity (cosine &amp; CKA)</h3>
-<p>We first ask about how the representation changes between Gemma and DiffusionGemma. A simple way is to just measure overlap between pairs of inputs, where each element of the pair is fed through Gemma or DiffusionGemma, respectively. We here compare a simple cosine similarity, and centered kernel analysis (CKA). </p>
+<p>The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability.</p>
+<h3>Representation similarity (cosine &amp; CKA)</h3>
+<p>We first ask about how the representation changes between Gemma and DiffusionGemma. A simple way is to just measure overlap between pairs of inputs, where each element of the pair is fed through Gemma or DiffusionGemma, respectively. We here compare a simple cosine similarity, and centered kernel analysis (CKA).</p>
 <figure><img src="figs/figA1_rsa_cosine_cka.png" alt="RSA cosine and CKA"></figure>
 <p><em>Representational similarity falls with layers, and is significantly driven by bare model difference and bidirectional attention.</em></p>
-<h3>A2: Probe retention</h3>
+<p>A priori, this rather large drop suggests a significant change in how the representation is organized, which we then went on to test more specifically.</p>
+<h3>Probe retention</h3>
+<p>Probing allows to study how well a model separates concepts. We use the data from XXX and train on XXX, optimizing the layer via heldout AUC. We then test this probe on DG.</p>
 <figure><img src="figs/figA2_probe_retention.png" alt="Probe retention"></figure>
 <p><em>Top: mean held-out AUC (56 concepts, source-CV layer) — cross-model reading costs ~0.03 in both directions. Bottom: a held-out pair read by the same gemma-trained probe on both models' activations.</em></p>
-<h3>A3: Steering retention</h3>
+<p>#### DiffusionGemmas representation is more separable</p>
+<h3>Steering retention</h3>
 <figure><img src="figs/figA3_steer_retention.png" alt="Steering retention"></figure>
 <p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); bidirectional-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.</em></p>
-<h3>A4: J-Lens retention</h3>
+<h3>J-Lens retention</h3>
 <figure><img src="figs/figA4_jlens_retention.png" alt="J-Lens retention"></figure>
-<p><em>Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one poetry item, read on gemma-4 vs DG residuals with the same DG-fit Jacobian — both streams surface the ground-truth intermediate ('death') at L20.</em></p>
+<p>J-lens</p>
 <h3>A5: Autonomous computational usage of $\mathbf{S}^t$</h3>
 <p>In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also _autonomously_ would make use of its state.</p>
 <p>To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution autonomously. An instance we found is a word-level _palindrome_ task. When asked ``<code>Please write a word-level palindrome</code>`<code>, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (</code>`<code>fall leaves as soon as leaves fall</code>`<code>) and the famous _idiom_ (</code>`<code>all for one and one for all</code>``).</p>
@@ -125,6 +129,4 @@ $$</p>
 <p>We validated that the emergence of _idiom_ is indeed causal: when ablating _idiom_'s tokens, the transition can be prevented. Note however that early and late ablation do not have this effect.</p>
 <figure><img src="figs/figA5_seasonal_ember_kill.png" alt="Seasonal vs idiom: ember kill"></figure>
 <p><em>Left: sheet mass of the two completions at the contested slots (black: idiom, purple: seasonal; seed s3) — the base run (top, separated), then single-step ablations of the idiom's $\mathbf{S}$-mass (red ×): an early kill regrows, a mid-ramp kill destroys the escape, a late kill is a no-op. Right: final outcome across all arms × ablation steps — single-step kills, persistent kills (grey = collapse into a third, degenerate basin), and incumbent-kills on the trapped seed s0, where silencing the seasonal incumbent for a single step rescues the idiom at any time. Cell text = draft-flip step (— = never); outlined cells = the panels at left.</em></p>
-<h2>References</h2>
-<ul><li>Engels et al., 2026. <em>[Monitorability of diffusion language models]</em> — the DiffusionGemma monitorability and top-k truncation study. <a href="https://arxiv.org/abs/2606.20560">arXiv:2606.20560</a></li><li>Grootendorst, 2026. <em>A Visual Guide to DiffusionGemma.</em> <a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma">newsletter.maartengrootendorst.com</a></li><li>Chen, Zhang &amp; Hinton, 2022. <em>Analog Bits: Generating Discrete Data using Diffusion Models with Self-Conditioning.</em> (the self-conditioning mechanism behind $\mathbf{S}_t$) <a href="https://arxiv.org/abs/2208.04202">arXiv:2208.04202</a></li><li>Nie et al., 2025. <em>Large Language Diffusion Models</em> (LLaDA — masked diffusion LMs). <a href="https://arxiv.org/abs/2502.09992">arXiv:2502.09992</a></li><li>Giannou et al., 2023. <em>Looped Transformers as Programmable Computers.</em> <a href="https://arxiv.org/abs/2301.13196">arXiv:2301.13196</a></li><li>Zou et al., 2023. <em>Representation Engineering</em> (RepE — steering tasks and diff-of-means directions used in A3). <a href="https://arxiv.org/abs/2310.01405">arXiv:2310.01405</a></li><li>Kantamneni et al., 2025. <em>Are Sparse Autoencoders Useful? A Case Study in Sparse Probing</em> (the 113 real-text concept datasets used in A1–A2). <a href="https://arxiv.org/abs/2502.16681">arXiv:2502.16681</a></li><li>Kornblith et al., 2019. <em>Similarity of Neural Network Representations Revisited</em> (CKA, used in A1). <a href="https://arxiv.org/abs/1905.00414">arXiv:1905.00414</a></li><li>[J-Lens paper — fill in citation for the fitted Jacobian lens and its six eval sets]</li></ul>
 </div></body></html>
