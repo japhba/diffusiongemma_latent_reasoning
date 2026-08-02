@@ -135,28 +135,45 @@ def ill_probe_pair():
 
 def ill_steer_pair():
     d = json.load(open(DATA / "steer_pair.json"))
-    strip = lambda t: "".join(ch for ch in t if ord(ch) < 0x2500 or ch in "💖✨")
+    strip = lambda t: "".join(ch for ch in t if ord(ch) < 0x2500 or ch in "💖✨🌸")
+    trunc = lambda t, n=380: (lambda s: s if len(s) <= n else s[:n] + " …")(strip(t))
     def gen(txt, lab, col):
         return (f'<div class="steergen" style="border-left:3px solid {col}"><b style="color:{col}">{lab}</b>'
-                f'<code class="gen block">{E(strip(txt))} …</code></div>')
+                f'<code class="gen block">{E(trunc(txt))}</code></div>')
+    def side(c):
+        return (f'<div><h4>steered model: {E(c["model"])}</h4>'
+                + gen(c["pos"], "+steer (toward happiness)", "#2f9e44")
+                + gen(c["neg"], "−steer (away)", "#c2255c")
+                + f'<p class="judge">judge: {E(c["judge"])}</p></div>')
     return f"""<div class="card">
-{pills(f"task: {d['task']}", f"direction: {d['cell']}", "same carrier prompt, ±steer",
-       f"judge confidence {d['confidence']:g}")}
+{pills(f"task: {d['task']}", f"direction: {d['direction']}", "same carrier prompt, ±steer")}
 <p class="small">carrier: <code class="gen">{E(d['carrier'])}</code></p>
-<div class="cols2">{gen(d['pos'], "+steer (toward happiness)", "#2f9e44")}{gen(d['neg'], "−steer (away)", "#c2255c")}</div>
-<p class="judge">judge: {E(d['judge'])}</p>
+<div class="cols2">{side(d['cells']['gg'])}{side(d['cells']['gd'])}</div>
 </div>"""
 
 
 def ill_jlens_pair():
-    d = json.load(open(DATA / "jlens_pair.json"))
-    def side(rec, col):
-        insp = f'<p class="judge">inspection: {E(rec["inspection"])}</p>' if rec.get("inspection") else ""
-        return (f'<div><h4 style="color:{col}">{E(rec["label"])}</h4><p class="small">{E(rec["desc"])}</p>'
-                f'<code class="gen block">A = {rec["A"]:.2f} &nbsp; top-20 matches: {E(rec["matches"])}</code>{insp}</div>')
+    d = json.load(open(DATA / "jlens_layers.json"))
+    GT, ANS = "#e8590c", "#1971c2"
+    def chip(tk):
+        low = tk.strip().lower()
+        col = GT if ("brazil" in low or "brasil" in low or tk.strip() == "巴西") else \
+              ANS if ("atlantic" in low or "ocean" in low) else None
+        style = f'style="color:#fff;background:{col}"' if col else ""
+        return f'<code class="gen chip" {style}>{E(tk)}</code>'
+    def side(test, lab):
+        rows = "".join(
+            f'<div class="lrow"><span class="llab">L{L}</span>'
+            + "".join(chip(tk) for tk in d["tops"][test][str(L)]) + "</div>"
+            for L in d["layers"])
+        return f'<div><h4>{lab}</h4>{rows}</div>'
     return f"""<div class="card">
-{pills("J-Lens percepts", "score A = 1 − e^−n", "judge: gemini-3-flash (inspection rungs)")}
-<div class="cols2">{side(d['hit'], "#2f9e44")}{side(d['miss'], "#c2255c")}</div>
+{pills("gemma-4-fit Jacobian lens, top-5 tokens per audited layer",
+       f"item: {d['name']} ({d['set']})", f"latent intermediate: {', '.join(d['intermediates'])}")}
+<p class="small">prompt tail: <code class="gen">{E(d['tail'].strip())}</code></p>
+<div class="cols2">{side('g', 'read on gemma-4 residuals')}{side('dg', 'read on DG residuals')}</div>
+<span class="leg"><i style="background:{GT}"></i> latent intermediate ('Brazil')
+<i style="background:{ANS}"></i> surface answer ('Atlantic' / 'ocean') &nbsp;·&nbsp; layers deep → shallow</span>
 </div>"""
 
 
@@ -211,6 +228,9 @@ p>em:first-child{color:var(--muted)}
 .annlab{font-size:.8em;color:var(--muted);line-height:1.1}
 .kn{color:var(--muted);font-size:.9em;font-family:system-ui,sans-serif}
 .card u{text-decoration-color:var(--accent);text-underline-offset:2px}
+.lrow{display:flex;align-items:center;gap:5px;margin:3px 0;flex-wrap:wrap}
+.llab{font:600 .85em system-ui;color:var(--muted);width:2.4em}
+code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 .brow .btok{font-family:ui-monospace,monospace;text-align:right;font-weight:600}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
@@ -231,5 +251,6 @@ TAIL = "\n</div></body></html>"
 print(ROOT / "post.html")
 
 if "card" in __import__("sys").argv:
-    (ROOT / "card_preview.html").write_text(HEAD + ill_letters_example() + TAIL)
+    allcards = ill_letters_example() + ill_probe_pair() + ill_steer_pair() + ill_jlens_pair()
+    (ROOT / "card_preview.html").write_text(HEAD + allcards + TAIL)
     print(ROOT / "card_preview.html")

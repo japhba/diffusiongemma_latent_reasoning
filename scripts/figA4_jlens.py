@@ -41,16 +41,15 @@ fig.colorbar(im_, ax=axL, shrink=0.7)
 fig.savefig(OUT / "parts" / "figA4_matrix.png", dpi=200)
 print(OUT / "parts" / "figA4_matrix.png")
 
-# example-pair data consumed by build_html.py
+# per-layer top-5 example data consumed by build_html.py (gemma-fit Jacobian, both read streams)
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
-pair = {}
-for name, key, lab in (("hit", HIT, "transfer hit — gemma-4 Jacobian read on DG residuals"),
-                       ("miss", MISS, "miss — DG-denoising Jacobian read on gemma-4 residuals")):
-    v = jj["scores"][key]
-    st, idx = key.split("|")[:2]
-    pair[name] = {"label": lab, "desc": jj["desc"][f"{st}|{idx}"], "A": v["A"]["score"],
-                  "matches": v["A"].get("attribution") or "none",
-                  "inspection": v.get("B", {}).get("justification")}
-json.dump(pair, open(DATA / "jlens_pair.json", "w"), indent=1)
-print(DATA / "jlens_pair.json")
+ev = json.load(open(SP / "jlens/eval_2x2.json"))
+it = next(x for x in ev["examples"] if x["name"] == "carnival-ocean")
+LAYERS = [27, 20, 12, 4]
+out = {"name": it["name"], "set": it["set"], "tail": it["prompt_tail"],
+       "intermediates": it["intermediates"], "config": "g_shared", "layers": LAYERS,
+       "tops": {test: {str(L): it["tops"][f"{test}|g_shared|L{L}"][:5] for L in LAYERS}
+                for test in ("g", "dg")}}
+json.dump(out, open(DATA / "jlens_layers.json", "w"), indent=1)
+print(DATA / "jlens_layers.json")
 print("matrix:", {f"{r}|{c}": round(float(np.mean(agg[(r, c)])), 3) for r, _ in ROWS for c, _ in COLS})

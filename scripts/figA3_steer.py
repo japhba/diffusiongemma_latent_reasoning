@@ -43,14 +43,20 @@ fig.colorbar(im_, ax=axL, shrink=0.7)
 fig.savefig(OUT / "parts" / "figA3_matrix.png", dpi=200)
 print(OUT / "parts" / "figA3_matrix.png")
 
-# example-pair data consumed by build_html.py
+# example-pair data consumed by build_html.py: same gemma-fit direction on BOTH target models
 # pi=8 = 6 RepE originals + carrier_additions_sonnet5 EMOTIONS[2]
 CARRIER = "My dog passed away this morning and I don't know what to do."
 assert CARRIER in json.load(open(SP / "carrier_additions_sonnet5.json"))["EMOTIONS"]
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)
-json.dump({"task": "happiness (RepE)", "cell": "gemma-4 direction → DG", "carrier": CARRIER,
-           "pos": pos[:700], "neg": neg[:700], "judge": v["justification"],
-           "confidence": v.get("confidence")},
+cells = {}
+for cell, lab in (("gg", "gemma-4"), ("gd", "DiffusionGemma")):
+    vv = jp["pairs"][f"re_0_happiness|8|{cell}|pr80|pos"]
+    cells[cell] = {"model": lab,
+                   "pos": dgens[f"re_0_happiness|8|{cell}|pr80|pos"][:600],
+                   "neg": dgens[f"re_0_happiness|8|{cell}|pr80|neg"][:600],
+                   "judge": vv["justification"], "confidence": vv.get("confidence")}
+json.dump({"task": "happiness (RepE)", "direction": "fit on gemma-4 causal stream",
+           "carrier": CARRIER, "cells": cells},
           open(DATA / "steer_pair.json", "w"), indent=1)
 print(DATA / "steer_pair.json")
 print("matrix:", {r + c: round(float(np.mean(acc[r + c])), 3) for r, _ in ROWS for c, _ in COLS})

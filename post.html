@@ -43,6 +43,9 @@ p>em:first-child{color:var(--muted)}
 .annlab{font-size:.8em;color:var(--muted);line-height:1.1}
 .kn{color:var(--muted);font-size:.9em;font-family:system-ui,sans-serif}
 .card u{text-decoration-color:var(--accent);text-underline-offset:2px}
+.lrow{display:flex;align-items:center;gap:5px;margin:3px 0;flex-wrap:wrap}
+.llab{font:600 .85em system-ui;color:var(--muted);width:2.4em}
+code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 .brow .btok{font-family:ui-monospace,monospace;text-align:right;font-weight:600}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
@@ -96,7 +99,9 @@ $$</p>
 <figure><img src="figs/fig2b_triptych.png" alt="Parallelism triptych"></figure>
 <p>_DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._</p>
 <p>This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.</p>
-<p>#</p>
+<h2>Conclusion</h2>
+<p>In this post, we have studied whether DiffusionGemma has latent reasoning, and found a capability to do  (parallel) computation on the vector-valued state passed between diffusion steps.</p>
+<ul><li>still, there may be functional degradation from truncation</li><li>the fact that top-k truncation largely preserves accuracy suggests that no _significant_ latent reasoning is present, but does not rule it out</li><li>moreover,</li></ul>
 <h2>Appendix</h2>
 <p>The findings in Engels et al. and in this post have focussed on DiffusionGemma's behavior. We here study whether the model's representation supports the behavioral finding of high monitorability. </p>
 <h3>A1: Representation similarity (cosine &amp; CKA)</h3>
@@ -107,8 +112,12 @@ $$</p>
 <p><em>Top: mean held-out AUC (56 concepts, source-CV layer) — cross-model reading costs ~0.03 in both directions. Bottom: a held-out pair read by the same gemma-trained probe on both models' activations.</em></p>
 <h3>A3: Steering retention</h3>
 <figure><img src="figs/figA3_steer_retention.png" alt="Steering retention"></figure>
-<p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); denoising-mode directions are the weakest sources. Bottom: ±steer pair for the happiness direction (gemma-4 → DG); judge digest in italics.</em></p>
+<p><em>Top: blind-pair judge accuracy (judge must identify +steer vs −steer), 11 RepE tasks — every cell steers (0.70–0.85); denoising-mode directions are the weakest sources. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma side by side (±steer on one carrier); judge digests in italics.</em></p>
 <h3>A4: J-Lens retention</h3>
 <figure><img src="figs/figA4_jlens_retention.png" alt="J-Lens retention"></figure>
-<p><em>Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: a transfer hit and a miss.</em></p>
+<p><em>Top: mean GT-appearance score $A=1-e^{-n}$ ($n$ = matching top-20 lens tokens; 551 items) — fitted Jacobian lenses transfer across the AR/diffusion boundary (gemma→DG retention ≈0.76). Bottom: top-5 lens tokens per audited layer for one multihop item, read on gemma-4 vs DG residuals with the same gemma-fit Jacobian — the gemma read surfaces the surface answer (Atlantic/ocean), the DG read the latent intermediate (Brazil).</em></p>
+<h3>A5: Case study — two competing completions (seasonal vs idiom)</h3>
+<p>[stub:] Asked to complete a palindrome, DG maintains two competing completions of the same canvas: a literal seasonal phrase ("fall leaves as soon as leaves fall") and the famous idiom ("all for one and one for all"). The canvas can only ever show one — but $\mathbf{S}_t$ carries both, and the loser can win: in escaping runs the idiom's sheet mass ramps up gradually over several steps while every visible draft still reads seasonal, until the canvas flips. This is a concrete case of belief content that a token-level monitor cannot see at the step where it matters — though it becomes visible the moment one reads $\mathbf{S}_t$ itself.</p>
+<figure><img src="figs/figA5_seasonal_stuck_gain.png" alt="Seasonal vs idiom belief race"></figure>
+<p><em>Sheet mass at the contested canvas slots (solid: idiom, dashed: seasonal, dotted: fraction of visible drafts on seasonal; vertical line: the draft flip). Left: deep-basin runs that escape to the idiom — the belief ramps sub-threshold for ~4–5 steps before the canvas moves. Middle: shallow contests. Right: a trapped run — the idiom's mass is purged and the run never escapes.</em></p>
 </div></body></html>

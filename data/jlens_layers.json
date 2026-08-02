@@ -1,0 +1,77 @@
+{
+ "name": "carnival-ocean",
+ "set": "multihop",
+ "tail": "Fact: The ocean on the coast of the country where Carnival is most famously celebrated is the ",
+ "intermediates": [
+  "Brazil"
+ ],
+ "config": "g_shared",
+ "layers": [
+  27,
+  20,
+  12,
+  4
+ ],
+ "tops": {
+  "g": {
+   "27": [
+    " \u043e\u043a\u0435",
+    " Atlantic",
+    " ocean",
+    "ocean",
+    " atlantic"
+   ],
+   "20": [
+    "MARINE",
+    "Atlantic",
+    "TOUR",
+    "Ocean",
+    "ocean"
+   ],
+   "12": [
+    "Coast",
+    "Beach",
+    "continent",
+    "beach",
+    "district"
+   ],
+   "4": [
+    "ray",
+    "riot",
+    "Martin",
+    "SEG",
+    "martin"
+   ]
+  },
+  "dg": {
+   "27": [
+    " Brazil",
+    " Trinidad",
+    " Brasil",
+    " Tristan",
+    "\u5df4\u897f"
+   ],
+   "20": [
+    "Australia",
+    "Caribbean",
+    "america",
+    " Caribbean",
+    " Cameroon"
+   ],
+   "12": [
+    "coast",
+    "continent",
+    "south",
+    " atlantic",
+    "atlantic"
+   ],
+   "4": [
+    "disc",
+    "derive",
+    "rigid",
+    "sear",
+    "ray"
+   ]
+  }
+ }
+}

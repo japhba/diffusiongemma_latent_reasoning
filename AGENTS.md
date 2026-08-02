@@ -21,9 +21,9 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
   It can also inject native-HTML illustration cards at `<!--ILLUST:name-->` markers from
   `data/*.json` — but since 2026-08-01 the post uses PNG renders of those cards instead
   (markers removed), so md and html show identical figures. To change a card: edit its
-  generator in build_html.py, temporarily re-add the marker, rebuild+push, re-screenshot the
-  card on aws-static (playwright, device_scale_factor=2, `.card` locator → figs/parts/card_*.png),
-  run `scripts/compose_figs.py`, remove the marker again, rebuild.
+  generator in build_html.py, run `build_html.py card` (renders ALL four cards to card_preview.html), push, screenshot each
+  `.card` on aws-static (playwright, device_scale_factor=2) → figs/parts/card_*.png,
+  run `scripts/compose_figs.py`, rebuild.
 - `scripts/compose_figs.py` — composes appendix figures (parts/figA*_matrix.png on top +
   parts/card_*.png below) → figs/figA*_retention.png, and promotes the letters-example card to
   figs/fig2a_example_intervention.png. Titles are intentionally absent from all plots — the
@@ -41,9 +41,13 @@ Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/
   (cell `UU3|hi|s0`, inject 'H'; A-slot sheet from battery state `UU3|src0|s0`).
 - `scripts/fig2b_triptych.py` — parallelism, letters-only, mean ± 95% CI curves (no sinas, per
   user request 2026-08-01).
-- `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 are matrix-only PNGs;
-  their example pairs live in `data/*_pair.json` → HTML cards). Source data:
+- `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 matrix-only PNGs in
+  figs/parts/) + card data: `data/probe_pair.json`, `data/steer_pair.json` (cells gg+gd — both
+  target models side by side), `data/jlens_layers.json` (carnival-ocean top-5/layer for both
+  read streams, from `jlens/eval_2x2.json` examples). Source data:
   `activation_oracles_dev/concept_probes/out/saeprobes/`.
+- A5 seasonal-vs-idiom figure = verbatim copy of `reports/dg-planning/figs/stuck_gain.png`
+  (dg-planning study archive) → `figs/figA5_seasonal_stuck_gain.png`; not regenerated here.
 
 ## Serving / publishing
 
