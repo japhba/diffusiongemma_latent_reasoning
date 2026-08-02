@@ -23,7 +23,14 @@ for k, v in jj["scores"].items():
     st, idx, cfg, test = k.split("|")
     if "A" in v:
         agg[(cfg, test)].append(v["A"]["score"])
-ROWS = [("g_shared", "gemma-4"), ("dgc_shared", "DG causal"), ("dgb_shared", "DG bidirectional")]
+# source ticks carry the fit-faithful differential-quotient math (report jlens_math_tick
+# convention): causal fits average targets j>=i, the bidirectional fit averages j in I
+def mtick(model, mode, tgt):
+    return (f"{model} · {mode}\n" + r"$\mathbb{E}_{x,i,\," + tgt
+            + r"}\left[\frac{\partial h^{L}_{j}(x)}{\partial h^{\ell'}_{i}(x)}\right]$")
+ROWS = [("g_shared", mtick("G", "causal", r"j\geq i")),
+        ("dgc_shared", mtick("DG", "causal", r"j\geq i")),
+        ("dgb_shared", mtick("DG", "bidirectional", r"j\in I"))]
 COLS = [("g", "gemma-4 residuals"), ("dg", "DG residuals")]
 M = np.array([[np.mean(agg[(r, c)]) for c, _ in COLS] for r, _ in ROWS])
 

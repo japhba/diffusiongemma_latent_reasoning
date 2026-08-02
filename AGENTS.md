@@ -15,7 +15,7 @@ distribution (the R^|V| object: confidence `\mathbf{s}_t[x_t]`, top-k truncation
 the R-definition's `\bar{\mathbf{s}}`); bold uppercase `\mathbf{S}` = the full sheet
 (R^{C×|V|}: the algorithm box, "passed between steps", S-mass). Likewise lowercase `x` = a
 single token, uppercase `X` = the full canvas (the V^C object: `X_t` in the algorithm box,
-"attends bidirectionally"). Sub/superscript placement of t follows the surrounding section.
+"attends bidirectionally"). The time index t is ALWAYS a superscript (`\mathbf{S}^t`, `\mathbf{s}^t`, `X^t`, `x^t`, `x^{\prime\,t+1}`; since 2026-08-02) — never `_t`.
 
 ## Build pipeline
 

@@ -47,9 +47,9 @@ vm = np.percentile(np.abs(em.compressed()), 98)
 im = ax.imshow(em, cmap="coolwarm", vmin=-vm, vmax=vm, origin="lower")
 ax.set_xticks(range(NC), xt)
 ax.set_yticks(range(NC + 1), yt)
-ax.set_xlabel(r"$x_t$")
-ax.set_ylabel(r"$x^{\prime}_{t+1} - k$")  # rows are k-aligned (pooled over k), so ticks name the pre-image
-ax.set_title(r"response $\mathbf{R}[x^{\prime}_{t+1} \vert\, \mathrm{pert}(x_t)]$")
+ax.set_xlabel(r"$x^{t}$")
+ax.set_ylabel(r"$x^{\prime\,t+1} - k$")  # rows are k-aligned (pooled over k), so ticks name the pre-image
+ax.set_title(r"response $\mathbf{R}[x^{\prime\,t+1} \vert\, \mathrm{pert}(x^t)]$")
 fig.colorbar(im, ax=ax, shrink=0.8)
 fig.savefig(OUT / "fig2a_transfer_map.png", dpi=200)
 print(OUT / "fig2a_transfer_map.png")

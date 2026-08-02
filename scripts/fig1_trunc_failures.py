@@ -79,7 +79,7 @@ ax.plot(*tops["std"], color="black", linestyle="-")
 ax.plot(*tops["gentle"], color="black", linestyle="--")
 
 ax.set_xticks(x, [RUNG_LAB[r] for r in RUNGS])
-ax.set_xlabel(r"state-vocabulary truncation (top-$k$ of $\mathbf{s}_t$)")
+ax.set_xlabel(r"state-vocabulary truncation (top-$k$ of $\mathbf{s}^t$)")
 ax.set_ylabel("% of rollouts failed")
 ax.set_ylim(0, 100)
 from matplotlib.legend_handler import HandlerTuple
