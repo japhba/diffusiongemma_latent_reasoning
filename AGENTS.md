@@ -31,7 +31,7 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `src_data/commit_ds/` ← `/workspace-vast/jbauer/exp/dg_lockin/pipe/commit_ds/` (only the
   gpqa manifests fig1 needs: acts_bench, acts_stab *_slow3, acts_psweep *_slow3).
 - `src_data/saeprobes/` (+`jlens/`) ← `activation_oracles_dev/concept_probes/out/saeprobes/`.
-- `src_data/ember_kill.json` ← `diffusiongemma/exp/dg_planning/ember_kill.json`.
+- `src_data/ember_base_traj.json`, `src_data/ember_kill2.json` ← `diffusiongemma/exp/dg_planning/`.
 - `src_data/symbol_arithmetic_payload.json` ← `window.__DATA__` of
   `reports/dg-planning/symbol_arithmetic.html` (builder `diffusiongemma/planning/build_superpos.py`).
 
@@ -66,9 +66,12 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   The A2 matrix is the 3×3 mode-split (probe_matrix.json modes: `headline` = DG causal,
   `declast` = DG bidirectional last-token; `decmean` only cited in prose). causal↔bidirectional
   cross-cells don't exist in the data → masked grey. Matrix scores annotated `:.2f` everywhere.
-- `scripts/figA5_ember.py` — seasonal-vs-idiom ember-kill: 4 stacked trajectory panels
-  (base | early/mid/late kills; outcome matshow dropped 2026-08-02 per user request) from
-  `src_data/ember_kill.json` → `figs/figA5_seasonal_ember_kill.png`.
+- `scripts/figA5_ember.py` — seasonal-vs-idiom PRESERVATION (regenerated 2026-08-03,
+  "preservation, not flipping"): 2 panels, seed s5 — base (idiom takes over) | persistent
+  idiom-kill @t2+ (dotted onset + shading → seasonal preserved). Data:
+  `src_data/ember_base_traj.json` + `src_data/ember_kill2.json` (palindrome_words__3 capture,
+  builder `diffusiongemma/planning/ember_preserve_fig.py`; old single-step ember_kill.json
+  removed) → `figs/figA5_seasonal_ember_kill.png`.
 
 ## Serving / publishing
 
