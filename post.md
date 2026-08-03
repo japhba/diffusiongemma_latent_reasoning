@@ -124,6 +124,12 @@ The [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html) 
 
 _**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from the [J-Lens paper](https://transformer-circuits.pub/2026/workspace/index.html)). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance. Ticks show the fitted Jacobian estimator: $h^{\ell'}_i(X)$ is the residual at source layer $\ell'$ and position $i$, $h^{L}_j(X)$ the final-layer residual at target position $j$; the causal fits average over causal targets $j\geq i$, the bidirectional fit over all canvas positions $I$, and the expectation is taken over samples $X$ of WikiText._
 
+[stub:] Beyond retention, the bidirectional stream also carries information about *future* positions: on an arithmetic prompt, the lens read at an earlier canvas position already decodes the operation that only appears two tokens later.
+
+![J-Lens future operation](figs/figA6_jlens_future.png)
+
+_**The upcoming operation is readable at an earlier canvas position.** The DG-bidirectional-fit J-Lens is read at the token `by` (blue), two positions before the operation slot, on an otherwise identical prompt pair. The variant's operation (orange) surfaces in the top-5 across workspace layers ( `minus`: rank 1 at L18–21; `plus`: rank 5/3 at L21/L23 after the single-token swap). The switch is partial — `minus` remains highly ranked in the addition variant._
+
 ### Autonomous computational usage of $\mathbf{s}^t$
 
 In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.

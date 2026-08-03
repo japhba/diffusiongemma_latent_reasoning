@@ -187,8 +187,37 @@ item: {E(d['name'])} ({E(d['set'])}) &nbsp;·&nbsp; ground-truth intermediate: {
 </div>"""
 
 
+def ill_jlens_future():
+    d = json.load(open(DATA / "jlens_future.json"))
+    GT, READ = "#e8590c", "#1971c2"
+    def side(v):
+        op_w, read_w = v["op"].strip(), d["read_token"].strip()
+        def chip(tk):
+            style = f'style="color:#fff;background:{GT}"' if tk.strip() == op_w else ""
+            return f'<code class="gen chip" {style}>{E(tk)}</code>'
+        words = "".join(
+            f'<span class="readtok" style="background:{READ}">{E(w)}</span> ' if w == read_w
+            else (f'<b style="color:{GT}">{E(w)}</b> ' if w == op_w else E(w) + " ")
+            for w in v["prompt"].split())
+        rows = "".join(
+            f'<div class="lrow"><span class="llab">L{L}</span>'
+            + "".join(chip(tk) for tk in v["tops"][str(L)]) + "</div>"
+            for L in d["layers"])
+        return f'<div><h4>{E(v["label"])}</h4><p class="small"><code class="gen">{words}</code></p>{rows}</div>'
+    return f"""<div class="card">
+<p class="small">{E(d['config_label'])} — top-5 tokens per audited layer &nbsp;·&nbsp;
+read at the earlier token <code class="gen">{E(d['read_token'].strip())}</code>
+(position {d['source_position']}), {d['future_position'] - d['source_position']} positions before
+the operation slot &nbsp;·&nbsp; the two prompts differ only in the operation token</p>
+<div class="cols2">{side(d['variants']['sub'])}{side(d['variants']['add'])}</div>
+<span class="leg"><i style="background:{GT}"></i> the variant's operation token
+<i style="background:{READ}"></i> lens read position &nbsp;·&nbsp; layers deep → shallow</span>
+</div>"""
+
+
 GEN = {"letters_example": ill_letters_example, "probe_pair": ill_probe_pair,
-       "steer_pair": ill_steer_pair, "jlens_pair": ill_jlens_pair}
+       "steer_pair": ill_steer_pair, "jlens_pair": ill_jlens_pair,
+       "jlens_future": ill_jlens_future}
 for j, name in enumerate(ILL):
     blk = GEN[name]()
     body = re.sub(rf"(<p>)?\x02I{j}\x02(</p>)?", lambda m: blk, body)
@@ -262,6 +291,7 @@ TAIL = "\n</div></body></html>"
 print(ROOT / "post.html")
 
 if "card" in __import__("sys").argv:
-    allcards = ill_letters_example() + ill_probe_pair() + ill_steer_pair() + ill_jlens_pair()
+    allcards = (ill_letters_example() + ill_probe_pair() + ill_steer_pair() + ill_jlens_pair()
+                + ill_jlens_future())
     (ROOT / "card_preview.html").write_text(HEAD + allcards + TAIL)
     print(ROOT / "card_preview.html")

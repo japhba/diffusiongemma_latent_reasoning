@@ -1,0 +1,97 @@
+{
+ "name": "word-div-sub",
+ "layers": [
+  23,
+  21,
+  18,
+  12
+ ],
+ "read_token": " by",
+ "source_position": 3,
+ "future_position": 5,
+ "config_label": "DG-bidirectional-fit Jacobian lens",
+ "variants": {
+  "sub": {
+   "prompt": "fifteen divided by three minus two equals",
+   "op": " minus",
+   "label": "subtraction (original)",
+   "tops": {
+    "23": [
+     " divided",
+     " dividing",
+     " minus",
+     "divided",
+     " divide"
+    ],
+    "21": [
+     " minus",
+     " /",
+     "\u0660",
+     " fift",
+     " eleven"
+    ],
+    "18": [
+     " minus",
+     " pyridine",
+     " menos",
+     " \u062a\u0633\u0627\u0648\u064a",
+     "\u4e94\u4e2a"
+    ],
+    "12": [
+     " Malaga",
+     " minivan",
+     " Dao",
+     " Mikey",
+     " multimeter"
+    ]
+   },
+   "ranks": {
+    "23": 3,
+    "21": 1,
+    "18": 1,
+    "12": 634
+   }
+  },
+  "add": {
+   "prompt": "fifteen divided by three plus two equals",
+   "op": " plus",
+   "label": "addition (one-token counterfactual)",
+   "tops": {
+    "23": [
+     " minus",
+     " divided",
+     " plus",
+     "divided",
+     " nine"
+    ],
+    "21": [
+     " minus",
+     " /",
+     " percent",
+     " fifteenth",
+     " plus"
+    ],
+    "18": [
+     " pyridine",
+     "\u4e94\u4e2a",
+     " minus",
+     " \u062a\u0633\u0627\u0648\u064a",
+     " polarizer"
+    ],
+    "12": [
+     " Malaga",
+     " Dao",
+     " minivan",
+     " multimeter",
+     " Mikey"
+    ]
+   },
+   "ranks": {
+    "23": 3,
+    "21": 5,
+    "18": 617,
+    "12": 28342
+   }
+  }
+ }
+}

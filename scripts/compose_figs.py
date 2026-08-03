@@ -30,3 +30,5 @@ compose_v(P / "figA3_matrix.png", P / "card_steer_pair.png", FIGS / "figA3_steer
 compose_v(P / "figA4_matrix.png", P / "card_jlens_pair.png", FIGS / "figA4_jlens_retention.png")
 Image.open(P / "card_letters_example.png").convert("RGB").save(FIGS / "fig2a_example_intervention.png")
 print(FIGS / "fig2a_example_intervention.png")
+Image.open(P / "card_jlens_future.png").convert("RGB").save(FIGS / "figA6_jlens_future.png")
+print(FIGS / "figA6_jlens_future.png")

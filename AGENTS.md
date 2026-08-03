@@ -66,6 +66,12 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   The A2 matrix is the 3×3 mode-split (probe_matrix.json modes: `headline` = DG causal,
   `declast` = DG bidirectional last-token; `decmean` only cited in prose). causal↔bidirectional
   cross-cells don't exist in the data → masked grey. Matrix scores annotated `:.2f` everywhere.
+- `scripts/figA6_jlens_future.py` — future-operation card data (`data/jlens_future.json`):
+  order-ops minimal pair `word-div-sub` from `src_data/jlens_future_rows.json` (extracted from
+  reports/concept_probes/jlens_future.html `const rows=`, builder
+  `concept_probes/analyze_jlens_future.py`); original = subtraction, counterfactual = addition,
+  layers 23/21/18/12. Card `jlens_future` in build_html.py; compose_figs promotes the screenshot
+  to `figs/figA6_jlens_future.png` (card-only, no matrix).
 - `scripts/figA5_ember.py` — seasonal-vs-idiom PRESERVATION (regenerated 2026-08-03,
   "preservation, not flipping"): 2 panels, seed s5 — base (idiom takes over) | persistent
   idiom-kill @t2+ (dotted onset + shading → seasonal preserved). Data:
