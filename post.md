@@ -98,7 +98,7 @@ A priori, this rather large drop suggests a significant change in how the repres
 
 ### Probe retention
 
-Probing allows to study how well a model separates concepts. We use 56 binary concept datasets from the SAE-Probes benchmark ([Kantamneni et al., 2025](https://arxiv.org/abs/2502.16681)) and train logistic-regression probes on gemma-4's residual stream (1024 training examples per concept), optimizing the layer via heldout AUC. We then test this probe on DG.
+Probing allows to study how well a model separates concepts. We use 56 binary concept datasets from the SAE-Probes benchmark ([Kantamneni et al., 2025](https://arxiv.org/abs/2502.16681)) and train logistic-regression probes on gemma-4's residual stream (up to 1024 training examples per concept; 43/56 at the full budget, minimum 512), optimizing the layer via heldout AUC. We then test this probe on DG.
 
 ![Probe retention](figs/figA2_probe_retention.png)
 

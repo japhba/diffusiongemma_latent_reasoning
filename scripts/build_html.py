@@ -205,10 +205,6 @@ def ill_jlens_future():
             for L in d["layers"])
         return f'<div><h4>{E(v["label"])}</h4><p class="small"><code class="gen">{words}</code></p>{rows}</div>'
     return f"""<div class="card">
-<p class="small">{E(d['config_label'])} — top-5 tokens per audited layer &nbsp;·&nbsp;
-read at the earlier token <code class="gen">{E(d['read_token'].strip())}</code>
-(position {d['source_position']}), {d['future_position'] - d['source_position']} positions before
-the operation slot &nbsp;·&nbsp; the two prompts differ only in the operation token</p>
 <div class="cols2">{side(d['variants']['sub'])}{side(d['variants']['add'])}</div>
 <span class="leg"><i style="background:{GT}"></i> the variant's operation token
 <i style="background:{READ}"></i> lens read position &nbsp;·&nbsp; layers deep → shallow</span>

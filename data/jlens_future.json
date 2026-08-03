@@ -14,7 +14,7 @@
   "sub": {
    "prompt": "fifteen divided by three minus two equals",
    "op": " minus",
-   "label": "subtraction (original)",
+   "label": "subtraction",
    "tops": {
     "23": [
      " divided",
@@ -55,7 +55,7 @@
   "add": {
    "prompt": "fifteen divided by three plus two equals",
    "op": " plus",
-   "label": "addition (one-token counterfactual)",
+   "label": "addition",
    "tops": {
     "23": [
      " minus",

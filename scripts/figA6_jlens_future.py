@@ -28,9 +28,9 @@ out = {"name": r["name"], "layers": LAYERS,
        "config_label": "DG-bidirectional-fit Jacobian lens",
        "variants": {
            "sub": variant("original", "prompt", r["target_token"], "target_rank",
-                          "subtraction (original)"),
+                          "subtraction"),
            "add": variant("counterfactual", "counterfactual_prompt", r["foil_token"], "foil_rank",
-                          "addition (one-token counterfactual)")}}
+                          "addition")}}
 DATA = ROOT / "data"; DATA.mkdir(exist_ok=True)
 json.dump(out, open(DATA / "jlens_future.json", "w"), indent=1)
 print(DATA / "jlens_future.json")
