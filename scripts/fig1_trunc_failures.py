@@ -90,7 +90,7 @@ labels = [FMLAB[fm] for fm in FMS[::-1]]
 handles += [(Patch(facecolor="0.65"), Line2D([], [], color="black")),
             (Patch(facecolor="0.65", hatch="//", edgecolor="white"), Line2D([], [], color="black", linestyle="--"))]
 labels += ["standard sampler (left bars)", "gentle sampler (right bars)"]
-ax.legend(handles, labels, loc="upper left", frameon=False, ncols=2,
+ax.legend(handles, labels, loc="upper left", frameon=False, ncols=2, handlelength=3.6,
           handler_map={tuple: HandlerTuple(ndivide=None)})
 ax.spines[["top", "right"]].set_visible(False)
 fig.tight_layout()

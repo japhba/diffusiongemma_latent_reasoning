@@ -141,15 +141,15 @@ def ill_steer_pair():
     def gen(txt, lab, col):
         return (f'<div class="steergen" style="border-left:3px solid {col}"><b style="color:{col}">{lab}</b>'
                 f'<code class="gen block">{E(trunc(txt))}</code></div>')
-    def side(c):
-        return (f'<div><h4>steered model: {E(c["model"])}</h4>'
-                + gen(c["pos"], f"+steer (toward {d['concept']})", "#2f9e44")
-                + gen(c["neg"], "−steer (away)", "#c2255c")
-                + f'<p class="judge">judge: {E(c["judge"])}</p></div>')
+    g, dg = d["cells"]["gg"], d["cells"]["gd"]
+    pos_lab = f"+steer (toward {d['concept']})"
     return f"""<div class="card">
-<p class="small">task: {E(d['task'])} &nbsp;·&nbsp; direction: {E(d['direction'])} &nbsp;·&nbsp; same carrier prompt, ±steer</p>
 <p class="small">carrier: <code class="gen">{E(d['carrier'])}</code></p>
-<div class="cols2">{side(d['cells']['gg'])}{side(d['cells']['gd'])}</div>
+<div class="cols2">
+<h4>steered model: {E(g["model"])}</h4><h4>steered model: {E(dg["model"])}</h4>
+{gen(g["pos"], pos_lab, "#2f9e44")}{gen(dg["pos"], pos_lab, "#2f9e44")}
+{gen(g["neg"], "−steer (away)", "#c2255c")}{gen(dg["neg"], "−steer (away)", "#c2255c")}
+</div>
 </div>"""
 
 
@@ -176,14 +176,11 @@ def ill_jlens_pair():
                  f'<span class="readtok" style="background:{READ}">↵</span> '
                  f'<code class="gen">{br(post)}</code>')
     return f"""<div class="card">
-<p class="small">{E(d['config_label'])} — top-5 tokens per audited layer &nbsp;·&nbsp;
-item: {E(d['name'])} ({E(d['set'])}) &nbsp;·&nbsp; ground-truth intermediate: {E(', '.join(d['intermediates']))}</p>
 <p class="small">prompt tail: {tail_html}</p>
 <div class="cols2">{side('g', 'read on gemma-4 residuals')}{side('dg', 'read on DG residuals')}</div>
 <span class="leg"><i style="background:{GT}"></i> ground-truth intermediate
 ('{E(d['intermediates'][0])}', incl. variants)
-<i style="background:{READ}"></i> lens read position — the newline token closing the cue line
-&nbsp;·&nbsp; layers deep → shallow</span>
+<i style="background:{READ}"></i> lens read position — the newline token closing the cue line</span>
 </div>"""
 
 
@@ -207,7 +204,7 @@ def ill_jlens_future():
     return f"""<div class="card">
 <div class="cols2">{side(d['variants']['sub'])}{side(d['variants']['add'])}</div>
 <span class="leg"><i style="background:{GT}"></i> the variant's operation token
-<i style="background:{READ}"></i> lens read position &nbsp;·&nbsp; layers deep → shallow</span>
+<i style="background:{READ}"></i> lens read position</span>
 </div>"""
 
 
