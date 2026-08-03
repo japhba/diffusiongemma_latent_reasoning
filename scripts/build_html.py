@@ -128,8 +128,6 @@ def ill_probe_pair():
             for who, k, col in (("read on gemma-4 acts", "g", "#1971c2"), ("read on DG acts", "d", "#e8590c")))
         return f'<div><h4>{lab}</h4><code class="gen block">{E(rec["text"][:260])}{" …" if len(rec["text"])>260 else ""}</code>{bars}</div>'
     return f"""<div class="card">
-<p class="small">concept: {d['concept']} ({d['tag']}) &nbsp;·&nbsp; same gemma-trained probe, layer {d['layer']}
-&nbsp;·&nbsp; held-out test texts</p>
 <div class="cols2">{side(d['pos'], f"positive ({d['pos_label']})")}{side(d['neg'], f"negative ({d['neg_label']})")}</div>
 </div>"""
 
