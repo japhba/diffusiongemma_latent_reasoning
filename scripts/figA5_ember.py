@@ -27,7 +27,7 @@ G = fig.add_gridspec(3, 1, height_ratios=[1, 0.22, 1])
 
 axB, panel_axes = None, []
 for gr, r, lab, shaded in ((0, base, "base", False),
-                           (2, kill, f"persistent kill @t{T_ABL}+", True)):
+                           (2, kill, f"persistent ablation @t{T_ABL}+", True)):
     ax = fig.add_subplot(G[gr], sharex=axB, sharey=axB)
     panel_axes.append(ax)
     axB = axB or ax
