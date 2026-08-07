@@ -144,17 +144,11 @@ We validated that the emergence of _idiom_ is indeed causal: persistently ablati
 
 _**Persistently ablating the nascent idiom preserves the native seasonal completion.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal; seed s5). Top: the base run — the idiom takes over. Bottom: ablating the idiom's $\mathbf{s}$-mass at every step from $t=2$ onward (dotted onset, shaded) keeps the seasonal draft, which completes cleanly._
 
-### Self-correction
-
-[stub:] We next gave DG global writing constraints that cannot be satisfied greedily, and tracked an exact checker's *violation margin* of the decoded canvas at every denoising step — here for the word-palindrome task under the hot sampler. The canvas transiently carries constraint-violating drafts and patches them steps later: the two escape runs (green) hold a violating draft for 7 steps before repairing it on-canvas. This is the same transition studied in the seasonal-vs-idiom section above — the violating mid-step draft *is* the seasonal phrase, and the patch lands on the idiom.
-
-![Self-correction](figs/figA7_constraint_margins.png)
-
-_**DG transiently violates a global constraint on the canvas and patches it later.** Top: violation margin per rollout for the word-palindrome task (hot sampler; 0 = satisfied), on a linearly time-warped axis ($\tau = t$ / the run's last margin change). Green = escape (a ≥5-step violating spell, then satisfied). Bottom: three canvases of the flagship escape run — the mid-step draft is the constraint-violating seasonal phrase of the seasonal-vs-idiom section; the patch lands on the idiom._
+Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of **self-correction**. This has important consequences for monitorability which may not have been captured in Engels et al.'s analysis: a tool reading only the final diffusion output will miss transient output. A model may for instance choose to hide a specific fact in its chain-of-thought to a monitor, while having used it intermittently, though we did not find any instances of such behavior here.
 
 ### Is the CoT load-bearing or post-hoc?
 
-[stub:] With the answer forced onto the first line (answer-first framing), we measured for 20 problems: the _commitment time_ (denoising step at which the answer slot freezes), the _susceptibility_ $S$ (probability the answer changes when the CoT positions are clamped to a partially-randomized version at every step), and a _blind difficulty_ rating (three subagents shown only the problem text). Nominal difficulty is a weak proxy; the proximal predictor of a load-bearing CoT is the measured commitment time ($\rho_S = +0.66$; sharpened to $+0.80$ pooled across a temperature sweep). CRT-style problems commit at step 0 with $S = 0$ (the CoT is post-hoc); serial counting problems commit late and break under corruption (the CoT is load-bearing).
+[stub:] With the answer forced onto the first line (answer-first framing), we measured for 20 problems: the _commitment time_ (denoising step at which the answer slot freezes), the _susceptibility_ $S$ (probability the answer changes when the CoT positions of the canvas $X^t$ are clamped to a partially-randomized version at every step — an intervention on the visible tokens, not on $\mathbf{S}^t$; the self-conditioning at clamped positions is zeroed), and a _blind difficulty_ rating (three subagents shown only the problem text). Nominal difficulty is a weak proxy; the proximal predictor of a load-bearing CoT is the measured commitment time ($\rho_S = +0.66$; sharpened to $+0.80$ pooled across a temperature sweep). CRT-style problems commit at step 0 with $S = 0$ (the CoT is post-hoc); serial counting problems commit late and break under corruption (the CoT is load-bearing).
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
@@ -164,7 +158,7 @@ For illustration, consider the problem `squares_400_800`, which dissociates the 
 
 ![Post-hoc case study](figs/figA8b_posthoc_case.png)
 
-_**DG denoises random corruption away but reads fluent wrong reasoning.** Left: clamping all 255 CoT positions to random tokens leaves the answer untouched (8, $S = 0.05$). Right: clamping a coherent lure CoT with a single off-by-one error (red) flips the answer to 9 in 5/5 seeds. Caveat: a target sweep shows the lure does not install its specific conclusion — the coherent-but-wrong CoT dislodges the answer into a nearby basin rather than steering it._
+_**DG denoises random corruption away but reads fluent wrong reasoning.** Left: clamping all 255 CoT canvas positions ($X^t$, not $\mathbf{S}^t$) to random tokens leaves the answer untouched (8, $S = 0.05$). Right: clamping a coherent lure CoT with a single off-by-one error (red) flips the answer to 9 in 5/5 seeds. Caveat: a target sweep shows the lure does not install its specific conclusion — the coherent-but-wrong CoT dislodges the answer into a nearby basin rather than steering it._
 
 #### Answer resolution over denoising steps
 
