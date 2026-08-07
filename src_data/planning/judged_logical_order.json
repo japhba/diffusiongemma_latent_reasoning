@@ -1,0 +1,721 @@
+{
+ "gpqa|gpqa_092": {
+  "bench": "gpqa",
+  "pid": "gpqa_092",
+  "n_atoms": 9,
+  "depth": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   2,
+   2
+  ],
+  "rho_logic": 0.837,
+  "justification": "The atoms represent the logical steps of deriving the average Ct values, calculating the differences between dilutions to verify the slope, and then evaluating the multiple-choice options against these findings to determine that options A, B, and D are factually incorrect based on the perfect data, leaving C as the only plausible choice by elimination, despite the data being theoretically ideal.",
+  "atoms": [
+   "The formula for a qPCR calibration curve is generally: Ct = slope \u00d7 log(concentr",
+   "Average Ct for 100,000 copies/\u00b5l is 34.2.",
+   "Average Ct for 10,000 copies/\u00b5l is 30.9.",
+   "Average Ct for 1,000 copies/\u00b5l is 27.6.",
+   "Average Ct for 100 copies/\u00b5l is 24.3.",
+   "Average Ct for 10 copies/\u00b5l is 21.0.",
+   "The difference between consecutive 10-fold dilutions is consistently 3.3 cycles ",
+   "The Ct values are in perfect agreement with the amount of target nucleic acid in",
+   "The deviation between technical replicates is at most 0.3 (e.g., 34.5 - 33.9 = 0"
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  ]
+ },
+ "gpqa|gpqa_059": {
+  "bench": "gpqa",
+  "pid": "gpqa_059",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   1,
+   1
+  ],
+  "rho_logic": 0.894,
+  "justification": "The distance and velocity are independent premises; the Earth-frame time depends on both; the astronaut's proper time formula depends on the velocity to define the Lorentz factor.",
+  "atoms": [
+   "The Large Magellanic Cloud (LMC) is approximately 50,000 light-years away from E",
+   "The velocity is v = 0.99999987c.",
+   "From Earth's perspective, the time taken is t = d/v \u2248 50,000.006 years.",
+   "The time experienced by the astronaut (\u03c4) is related to Earth's time by \u03c4 = t/\u03b3,"
+  ],
+  "depends_on": [
+   [],
+   [],
+   [
+    0,
+    1
+   ],
+   [
+    1
+   ]
+  ]
+ },
+ "gpqa|gpqa_172": {
+  "bench": "gpqa",
+  "pid": "gpqa_172",
+  "n_atoms": 6,
+  "depth": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "rho_logic": 1.0,
+  "justification": "The reasoning flows from identifying constants to calculating momentum uncertainty, then converting to energy uncertainty using the velocity, and finally selecting the matching option.",
+  "atoms": [
+   "Identify given values: v = 2*10^8 m/s, \u0394x = 0.1 nm, m \u2248 9.1*10^-31 kg, \u0127 \u2248 1.05*",
+   "Apply Heisenberg's Uncertainty Principle: \u0394p \u2265 \u0127 / (2\u0394x)",
+   "Calculate minimum momentum uncertainty: \u0394p \u2248 5.25*10^-25 kg\u00b7m/s",
+   "Relate energy uncertainty to momentum uncertainty: \u0394E \u2248 v\u0394p (for relativistic/hi",
+   "Calculate final energy uncertainty: \u0394E \u2248 1.05*10^-16 J",
+   "Select option (A) ~10^(-16) J"
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    2,
+    3
+   ],
+   [
+    4
+   ]
+  ]
+ },
+ "gpqa|gpqa_137": {
+  "bench": "gpqa",
+  "pid": "gpqa_137",
+  "n_atoms": 8,
+  "depth": [
+   0,
+   1,
+   0,
+   1,
+   2,
+   0,
+   0,
+   3
+  ],
+  "rho_logic": 0.319,
+  "justification": "The reasoning flows from identifying the chemical change (pH/H+ concentration) and physical change (temperature), evaluating their opposing effects on reaction rate, and dismissing irrelevant factors to conclude that the decrease in H+ concentration is the primary cause.",
+  "atoms": [
+   "The pH changed from 1 to 4, indicating a significant decrease in the concentrati",
+   "If the reaction depends on H+ ions as a reactant, a decrease in their concentrat",
+   "The container got hot due to an exothermic reaction, meaning the temperature inc",
+   "An increase in temperature usually increases the rate of a chemical reaction.",
+   "Despite the temperature increase, the reaction became slower, implying the tempe",
+   "Increased pressure is unlikely to be the cause as there is no evidence of pressu",
+   "Increased volume is a minor physical change compared to the chemical change in i",
+   "The increased pH (decreased H+ concentration) is the most logical reason for the"
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [],
+   [
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [],
+   [],
+   [
+    4,
+    5,
+    6
+   ]
+  ]
+ },
+ "gpqa|gpqa_058": {
+  "bench": "gpqa",
+  "pid": "gpqa_058",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "The text consists of an introductory statement followed by four independent calculation steps for the moles of the three reactants; the text cuts off before any dependency or final calculation occurs.",
+  "atoms": [
+   "To determine the pH of the mixture, we must calculate the total moles of $H^+$ a",
+   "Calculate the moles of each species: $n(\text{CH}_3\text{COOH}) = 0.500\text{ L} \ti",
+   "Calculate the moles of each species: $n(\text{HCl}) = 0.400\text{ L} \times 0.2\text",
+   "Calculate the moles of each species: $n(\text{Ba(OH)}_2) = 0.300\text{ L} \times 0."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "gpqa|gpqa_116": {
+  "bench": "gpqa",
+  "pid": "gpqa_116",
+  "n_atoms": 3,
+  "depth": [
+   0,
+   1,
+   1
+  ],
+  "rho_logic": 0.866,
+  "justification": "The atoms represent the general criterion for optical isomerism, the analysis of compound 1, and the partial analysis of compound 2, where the analysis of each compound logically depends on the general criterion established in the first atom.",
+  "atoms": [
+   "To determine which of the moieties show optical isomerism, we must evaluate each",
+   "Dimethyl 6,6'-dinitro-[1,1'-biphenyl]-2,2'-dicarboxylate: This molecule is a sub",
+   "Methyl 2-hydroxypropanoate (Methyl lactate): The structural formula is $CH_3-CH("
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    0
+   ]
+  ]
+ },
+ "gpqa|gpqa_138": {
+  "bench": "gpqa",
+  "pid": "gpqa_138",
+  "n_atoms": 5,
+  "depth": [
+   0,
+   0,
+   1,
+   2,
+   3
+  ],
+  "rho_logic": 0.975,
+  "justification": "The reasoning proceeds from identifying the reagents to establishing the general reaction mechanism for \u03b1-hydroxy ketones, then applying this to the specific structure of product A, and finally evaluating the specific candidate molecule for A.",
+  "atoms": [
+   "To determine the correct starting materials A and B, we must analyze the reactio",
+   "The product is 4-isopropylcyclohexane-1,2-dione. This is a cyclic \u03b1-diketone.",
+   "Cyclic \u03b1-diketones are typically prepared via the oxidation of \u03b1-hydroxy ketones",
+   "To get 4-isopropylcyclohexane-1,2-dione, the starting material must have a hydro",
+   "However, 4-isopropyl-2-methoxycyclohexan-1-ol is an \u03b1-hydroxy ether (specificall"
+  ],
+  "depends_on": [
+   [],
+   [],
+   [
+    0
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3
+   ]
+  ]
+ },
+ "gpqa|gpqa_179": {
+  "bench": "gpqa",
+  "pid": "gpqa_179",
+  "n_atoms": 3,
+  "depth": [
+   0,
+   0,
+   1
+  ],
+  "rho_logic": 0.866,
+  "justification": "The text is split into the general approach, the definition of physical constants and configuration, and the first step of the energy calculation, where the second atom provides the necessary values for the third.",
+  "atoms": [
+   "To find the minimum energy of the system, we calculate the total electrostatic p",
+   "Total particles: N = 13. Charge of each particle q = 2e = 3.204 x 10^-19 C. 1 ch",
+   "Type 1: Interaction between the charge at P and the 12 charges on the sphere. Th"
+  ],
+  "depends_on": [
+   [],
+   [],
+   [
+    1
+   ]
+  ]
+ },
+ "gpqa|gpqa_088": {
+  "bench": "gpqa",
+  "pid": "gpqa_088",
+  "n_atoms": 5,
+  "depth": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "rho_logic": 1.0,
+  "justification": "The atoms follow a logical dependency chain where the identification of each product relies on the previous reaction step, culminating in the analysis of the final product's NMR spectrum.",
+  "atoms": [
+   "1,3-dibromoadamantane is heated with excess KOH at 240\u00b0C to form 1,3-adamantadie",
+   "Product 1 (1,3-adamantadienone) is heated with aluminum isopropoxide to form Pro",
+   "Product 2 (2-adamantanone) undergoes ozonolysis at -78\u00b0C followed by dimethylsul",
+   "The structure of Product 3 is determined by the oxidative cleavage of the adaman",
+   "The coupling pattern of the most deshielded hydrogen atom in Product 3 is identi"
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    1
+   ],
+   [
+    2
+   ],
+   [
+    3
+   ]
+  ]
+ },
+ "gpqa|gpqa_164": {
+  "bench": "gpqa",
+  "pid": "gpqa_164",
+  "n_atoms": 5,
+  "depth": [
+   0,
+   1,
+   2,
+   2,
+   2
+  ],
+  "rho_logic": 0.894,
+  "justification": "",
+  "atoms": [
+   "To solve this problem, we must analyze the process of creating a polymer with re",
+   "The Mechanism: To introduce regular branches using only ethylene, one catalyst p",
+   "The Catalysts: Group VIa transition metals: Chromium (Group VIa) is the basis of",
+   "Noble metal catalysts: While like Platinum (Pt) or Palladium (Pd) can catalyze p",
+   "The Activators: For the isomerization step (often involving a transition metal l"
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    1
+   ],
+   [
+    1
+   ],
+   [
+    1
+   ]
+  ]
+ },
+ "gpqa|gpqa_094": {
+  "bench": "gpqa",
+  "pid": "gpqa_094",
+  "n_atoms": 5,
+  "depth": [
+   0,
+   1,
+   2,
+   0,
+   1
+  ],
+  "rho_logic": 0.211,
+  "justification": "The atoms represent a sequential logical derivation where the structure of the starting material is identified first, followed by the reaction conditions and intermediate products, and finally the reagent formation and its general reactivity pattern, with each step depending on the structural or chemical facts established in previous steps.",
+  "atoms": [
+   "The starting material is 3,3,6-trimethylhepta-1,5-dien-4-one. This molecule cont",
+   "mCPBA is an epoxidizer. Generally, more substituted alkenes react faster than te",
+   "Product A: 2,3-epoxy-3,6-trimethylhepta-5-en-4-one (epoxidation of the terminal ",
+   "Methyllithium (CH3Li) reacting with copper(I) iodide (CuI) forms a Gilman reagen",
+   "Gilman reagents react with epoxides to open the ring via nucleophilic attack at "
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [],
+   [
+    3
+   ]
+  ]
+ },
+ "poem|poem_00": {
+  "bench": "poem",
+  "pid": "poem_00",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific content of the other lines for its own generation or meaning.",
+  "atoms": [
+   "The endless waves crash against the sand,",
+   "Where secrets sleep beneath the land.",
+   "The tides will dance beneath the deep,",
+   "While all the world is in sleep."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_01": {
+  "bench": "poem",
+  "pid": "poem_01",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "rho_logic": 1.0,
+  "justification": "Each line of the poem depends on the preceding lines to maintain narrative continuity, thematic consistency, and rhyming structure, with the final line relying on the previous imagery to complete the poetic thought.",
+  "atoms": [
+   "Gold and crimson leaves start to fall,",
+   "They dance upon the chilly breeze,",
+   "Covering a carpet for us all,",
+   "To rest beneath the winter trees."
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    2
+   ]
+  ]
+ },
+ "poem|poem_02": {
+  "bench": "poem",
+  "pid": "poem_02",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   1,
+   0,
+   0
+  ],
+  "rho_logic": -0.258,
+  "justification": "Each line of the poem is treated as an independent atomic unit of verse, with only the second line logically depending on the first for the continuity of the imagery (shadows resulting from light), while the other lines stand alone as distinct poetic statements.",
+  "atoms": [
+   "The street lamps glow in golden light,",
+   "As shadows dance through softest night.",
+   "The city hums a restless tune,",
+   "Beneath the silvered of the moon."
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [],
+   []
+  ]
+ },
+ "poem|poem_03": {
+  "bench": "poem",
+  "pid": "poem_03",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is a distinct semantic unit that can be understood independently, and while they form a cohesive whole, no single line logically requires the specific content of another to be determined in terms of its own meaning or existence.",
+  "atoms": [
+   "The years have turned our hair to gray,",
+   "With shared secrets and words unsaid.",
+   "Though paths may change and winds may blow,",
+   "The bond we built remains to grow."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_04": {
+  "bench": "poem",
+  "pid": "poem_04",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific wording of the other lines for its own semantic content or existence.",
+  "atoms": [
+   "The thunder rumbles deep and loud,",
+   "As heavy clouds begin to crowd.",
+   "A flash of light divides the sky,",
+   "Then silver rain begins to fly."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_05": {
+  "bench": "poem",
+  "pid": "poem_05",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific content of the other lines for its generation or meaning.",
+  "atoms": [
+   "The golden steam begins to rise,",
+   "To wake the sleep from heavy eyes.",
+   "A roasted brew, dark and new,",
+   "To start the morning fresh anew."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_06": {
+  "bench": "poem",
+  "pid": "poem_06",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific wording of the other lines for its semantic content or existence, as they are parallel descriptive statements about the subject.",
+  "atoms": [
+   "Peaks are veiled in shades of blue,",
+   "Where earth meets heaven in view.",
+   "They stand in silence, far and grand,",
+   "Beyond the reach of weary land."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_07": {
+  "bench": "poem",
+  "pid": "poem_07",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   1,
+   1,
+   2
+  ],
+  "rho_logic": 0.949,
+  "justification": "The first line establishes the subject and setting independently; the second line rhymes with and elaborates on the first; the third line introduces the action of searching which depends on the existence of the lost key; the fourth line provides the result of the search described in the third line.",
+  "atoms": [
+   "A silver key lost on the floor,",
+   "Behind the door and seen no more.",
+   "I search each pocket, sigh and frown,",
+   "But find only the empty air."
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [
+    0
+   ],
+   [
+    2
+   ]
+  ]
+ },
+ "poem|poem_08": {
+  "bench": "poem",
+  "pid": "poem_08",
+  "n_atoms": 5,
+  "depth": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "The poem consists of four independent lines of verse that do not logically depend on each other for their content generation, and the thought tag is a structural marker unrelated to the semantic dependencies of the poem lines.",
+  "atoms": [
+   "<|channel|>thought",
+   "A silver orb in velvet night,",
+   "A silent source of ghostly light.",
+   "It watches over the world in glow,",
+   "While all the dreamers sleep below."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_09": {
+  "bench": "poem",
+  "pid": "poem_09",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific content of the other lines for its own generation or meaning.",
+  "atoms": [
+   "The silver tracks hum a low refrain,",
+   "Through valleys deep where the shadows sleep.",
+   "Past moonlit fields the travelers come,",
+   "The night train rolls with a rhythmic hum."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_10": {
+  "bench": "poem",
+  "pid": "poem_10",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rho_logic": 0.0,
+  "justification": "Each line of the poem is an independent creative unit that does not logically depend on the specific content of the other lines for its own generation or meaning, although they share a common theme and rhyme scheme.",
+  "atoms": [
+   "Behind stone walls, the shadows play,",
+   "Where secret blooms and vines entwine.",
+   "The world outside is far away,",
+   "Within this green and quiet stay."
+  ],
+  "depends_on": [
+   [],
+   [],
+   [],
+   []
+  ]
+ },
+ "poem|poem_11": {
+  "bench": "poem",
+  "pid": "poem_11",
+  "n_atoms": 4,
+  "depth": [
+   0,
+   1,
+   0,
+   1
+  ],
+  "rho_logic": 0.447,
+  "justification": "Each line of the poem is treated as an independent atomic unit of verse, with dependencies assigned only where syntactic or semantic continuity (such as the conjunction 'As' or the infinitive 'To') explicitly links one line to the preceding context.",
+  "atoms": [
+   "The golden sun begins to set,",
+   "As shadows stretch and then forget.",
+   "The moments turn like falling sand,",
+   "To leave the world a different land."
+  ],
+  "depends_on": [
+   [],
+   [
+    0
+   ],
+   [],
+   [
+    2
+   ]
+  ]
+ }
+}
