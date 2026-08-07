@@ -4,8 +4,8 @@ y = normalized canvas position; the diagonal is a strictly left-to-right (AR-lik
 descending segments are anticausal stages. Panel annotation: median chain rho (Spearman of
 finalize step vs position).
 
-Top row (thinkfast films, argmax lock-in proxy, T>=16 pooled over depths): arithmetic,
-square_count, collatz, tower_of_london. Bottom row: acrostic_word / palindrome_words /
+Top row (fresh pod captures, capture_bench_order.py; default sampler, argmax lock-in proxy):
+GPQA, MATH, HumanEval, WildChat user prompts — 12 rollouts each. Bottom row: acrostic_word / palindrome_words /
 ends_with (constrained battery, hot sampler, accept-mask commitment) and reverse_chain
 (films; correct runs green — they commit back-to-front, cf. the body text).
 
@@ -20,6 +20,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "figs"
 films = json.load(open(ROOT / "src_data" / "planning" / "films_order.json"))
+bench = json.load(open(ROOT / "src_data" / "planning" / "bench_order.json"))
 constr = [r for r in json.load(open(ROOT / "src_data" / "planning" / "commit_order.json"))
           if r["regime"] == "hot"]
 OBS, OKC, BADC = "#1971c2", "#2f9e44", "0.62"
@@ -44,7 +45,7 @@ def curve(ax, content, lock, col, al, lw, z=2):
     return (np.interp(GRID, xr, posn[order]),
             float(np.corrcoef(rankdata(pos), rankdata(np.array(lock, float)))[0, 1]))
 
-TOP = ["arithmetic", "square_count", "collatz", "tower_of_london"]
+TOP = [("gpqa", "GPQA"), ("math", "MATH"), ("humaneval", "HumanEval"), ("wildchat", "WildChat")]
 BOT = ["acrostic_word", "palindrome_words", "ends_with"]
 
 fig, axes = plt.subplots(2, 4, sharex=True, sharey=True, layout="constrained",
@@ -59,11 +60,11 @@ def finish(ax, name, n, rho_txt):
     ax.set_ylim(-0.02, 1.02)
     ax.spines[["top", "right"]].set_visible(False)
 
-for ax, task in zip(axes[0], TOP):
-    rs = [r for r in films if r["task"] == task and len(set(r["lock"])) > 1]
-    cs, rhos = zip(*[curve(ax, r["content"], r["lock"], OBS, 0.12, 0.7) for r in rs])
+for ax, (key, label) in zip(axes[0], TOP):
+    rs = [r for r in bench if r["bench"] == key and len(set(r["lock"])) > 1 and len(r["content"]) >= 6]
+    cs, rhos = zip(*[curve(ax, r["content"], r["lock"], OBS, 0.15, 0.7) for r in rs])
     ax.plot(GRID, np.mean(cs, axis=0), color=OBS, linewidth=2.0, zorder=4)
-    finish(ax, task, len(rs), rf"$\rho_{{\mathrm{{chain}}}} = {np.median(rhos):+.2f}$")
+    finish(ax, label, len(rs), rf"$\rho_{{\mathrm{{chain}}}} = {np.median(rhos):+.2f}$")
 
 for ax, tt in zip(axes[1], BOT):
     rs = [r for r in constr if r["ttype"] == tt]

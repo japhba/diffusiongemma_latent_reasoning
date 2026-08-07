@@ -105,8 +105,13 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/extract_reverse_chain_order.py` — NOT bare-clone-rerunnable: reads the thinkfast
   denoising films (exp/dg_lockin/thinkfast/films/, transparency-paper replication battery) →
   `src_data/planning/reverse_chain_order.json` (digit positions + argmax lock steps per roll).
-- `scripts/extract_films_order.py` — same for the benchmark-style film tasks (arithmetic,
-  square_count, collatz, tower_of_london + reverse_chain) → `src_data/planning/films_order.json`.
+- `scripts/extract_films_order.py` — film tasks (incl. reverse_chain, used by the bottom-right
+  panel) → `src_data/planning/films_order.json`.
+- `scripts/capture_bench_order.py` — FRESH POD CAPTURE (2026-08-07, runs on the DG-worker pod
+  against localhost:8711): GPQA/MATH/HumanEval/WildChat × 12 rollouts, default sampler, reduced
+  to per-position lock steps → `src_data/planning/bench_order.json` (figA11 top row). Pod ssh
+  port rotates (30013 as of 2026-08-07); worker relaunch: tmux dgworker →
+  `PATH=/workspace/dgenv/bin:$PATH bash /workspace/serve_dg.sh` (hf CLI needs the venv PATH).
   figA12 was MERGED into figA11 (2026-08-07): 2×4 grid, top = benchmarks, bottom = idiosyncratic
   incl. the reverse_chain correct-vs-wrong panel; digit-level rho numbers (−0.89..−0.97) quoted
   in text come from reverse_chain_order.json.
