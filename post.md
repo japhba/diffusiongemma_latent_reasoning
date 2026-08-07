@@ -138,7 +138,7 @@ To investigate this, we searched for a non-trivial (i.e., not just a binary choi
 
 The canvas will read the _seasonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{s}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
 
-We validated that the emergence of _idiom_ is indeed causal: persistently ablating _idiom_'s $\mathbf{s}$-mass from an early step onward prevents the takeover and preserves the seasonal draft. Note however that later ablation onsets no longer rescue _seasonal_ — the canvas instead collapses into a third, degenerate basin.
+We validated that the emergence of _idiom_ is indeed causal: persistently ablating _idiom_'s $\mathbf{s}$-mass from an early step onward prevents the takeover and preserves the seasonal draft. Concretely, at every step $t \ge t_{\mathrm{abl}}$ we zero the idiom tokens' entries of $\mathbf{s}^t_i$ at the contested positions $i$ (before sampling); the canvas $X^t$ is never edited and every other position and token is left untouched. What is *preserved* is thus the model's own seasonal completion — nothing is injected in its favor. Note however that later ablation onsets no longer rescue _seasonal_ — the canvas instead collapses into a third, degenerate basin.
 
 ![Seasonal vs idiom: ablation](figs/figA5_seasonal_ember_kill.png)
 
@@ -170,7 +170,7 @@ _**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** 
 
 ### Self-repair: escaping a confident-wrong answer
 
-[stub:] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```; correct 16, fencepost attractor 18). In natural runs the canvas transiently visits the wrong answers and patches them within a few steps. But a *harvested* confident-wrong state (a cold run that converged to 18) is a genuine attractor: re-denoising it escapes to 16 only with a hot sampler *and* enough re-noising — plant it past step ~48 of 128 and even the hot sampler stays stuck.
+[stub:] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```; correct 16, fencepost attractor 18). In natural runs the canvas transiently visits the wrong answers and patches them within a few steps. But a *harvested* confident-wrong state (a cold run that converged to 18) is a genuine attractor. Concretely, we *plant* the donor run's full final state — its canvas $X$ *and* its sheet $\mathbf{S}$ — into a fresh rollout at plant step $k$, and denoising continues freely from there: nothing is clamped afterwards, so a small $k$ leaves many re-noising steps to escape while a large $k$ means the planted state is nearly frozen. Escape to 16 happens only with a hot sampler *and* enough re-noising — plant past $k \approx 48$ of $128$ and even the hot sampler stays stuck at 18.
 
 ![Self-repair clock](figs/figA10_selfrepair_clock.png)
 
