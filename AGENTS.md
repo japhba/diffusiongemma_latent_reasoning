@@ -112,7 +112,12 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   to per-position lock steps → `src_data/planning/bench_order.json`; poem panel via
   `capture_poem_order.py` → `poem_order.json`. figA11 is now 1×3 (2026-08-07): logically
   left-to-right (GPQA) / direction-indifferent (poem) / right-to-left (reverse_chain),
-  committed-CoM over diffusion progress with L2R-filler reference. Pod ssh
+  committed-CoM over diffusion progress with L2R-filler reference. Judged overlay:
+  `judge_logical_order.py` (Node V Qwen3.6-35B, thinking off; atoms + dependency DAG →
+  rho_logic = Spearman(surface order, derivation depth)) → `judged_logical_order.json`
+  (GPQA +0.87 inductive, poems 0.00 indifferent). Gotchas: NODEV_URL embeds the pod id
+  (fixed to 8as4828phkjhh6 in .env 2026-08-07); the RunPod proxy 403s Python-urllib —
+  send a curl User-Agent. Pod ssh
   port rotates (30013 as of 2026-08-07); worker relaunch: tmux dgworker →
   `PATH=/workspace/dgenv/bin:$PATH bash /workspace/serve_dg.sh` (hf CLI needs the venv PATH).
   figA12 was MERGED into figA11 (2026-08-07): 2×4 grid, top = benchmarks, bottom = idiosyncratic
