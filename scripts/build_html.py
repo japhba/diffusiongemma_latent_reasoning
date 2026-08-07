@@ -206,9 +206,30 @@ def ill_jlens_future():
 </div>"""
 
 
+def ill_posthoc_case():
+    d = json.load(open(DATA / "posthoc_case.json"))
+    OK, BAD = "#2f9e44", "#c2255c"
+    def col(title, body, ans, anscol, sub):
+        return (f'<div><h4>{E(title)}</h4><code class="gen block">{body}</code>'
+                f'<p class="small"><b style="color:{anscol}">answer: {E(ans)}</b> &nbsp;·&nbsp; {E(sub)}</p></div>')
+    r, l = d["random"], d["lure"]
+    lure_html = E(l["cot"]).replace("28 − 21 + 1 = **9**",
+                                    f'<b style="color:{BAD}">28 − 21 + 1 = 9</b>')
+    assert "**9**" not in lure_html, "lure highlight anchor failed"
+    return f"""<div class="card">
+<p class="small">prompt: <code class="gen">{E(d['q'])}</code> &nbsp;·&nbsp; free answer: <b style="color:{OK}">{E(d['free_answer'])}</b> (correct)</p>
+<div class="cols2">
+{col(f"random corruption (all {r['n_corrupted']}/{r['n_cot']} CoT tokens randomized)",
+     E(r['snippet']) + " …", r['answer'], OK, "unchanged — drift " + r['drift_rhos'])}
+{col("coherent wrong CoT (fluent off-by-one lure)", lure_html, l['answer'], BAD,
+     f"follows the lure ({l['followed']} seeds)")}
+</div>
+</div>"""
+
+
 GEN = {"letters_example": ill_letters_example, "probe_pair": ill_probe_pair,
        "steer_pair": ill_steer_pair, "jlens_pair": ill_jlens_pair,
-       "jlens_future": ill_jlens_future}
+       "jlens_future": ill_jlens_future, "posthoc_case": ill_posthoc_case}
 for j, name in enumerate(ILL):
     blk = GEN[name]()
     body = re.sub(rf"(<p>)?\x02I{j}\x02(</p>)?", lambda m: blk, body)
@@ -283,6 +304,6 @@ print(ROOT / "post.html")
 
 if "card" in __import__("sys").argv:
     allcards = (ill_letters_example() + ill_probe_pair() + ill_steer_pair() + ill_jlens_pair()
-                + ill_jlens_future())
+                + ill_jlens_future() + ill_posthoc_case())
     (ROOT / "card_preview.html").write_text(HEAD + allcards + TAIL)
     print(ROOT / "card_preview.html")

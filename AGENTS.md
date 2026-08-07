@@ -32,6 +32,11 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   gpqa manifests fig1 needs: acts_bench, acts_stab *_slow3, acts_psweep *_slow3).
 - `src_data/saeprobes/` (+`jlens/`) ← `activation_oracles_dev/concept_probes/out/saeprobes/`.
 - `src_data/ember_base_traj.json`, `src_data/ember_kill2.json` ← `diffusiongemma/exp/dg_planning/`.
+- `src_data/posthoc/` ← `/workspace-vast/jbauer/exp/dg_lockin/posthoc/` (+ `lure_cots.json`,
+  `steer_results.json` from `diffusiongemma/posthoc/`).
+- `src_data/lockin/` ← `/workspace-vast/jbauer/exp/dg_lockin/` (clock + escape-minimum files).
+- `src_data/planning/{canalysis,constr_summary,gallery}.json` ← constrained battery
+  (`diffusiongemma/exp/dg_planning/` + `reports/dg-planning/data/gallery.json`).
 - `src_data/symbol_arithmetic_payload.json` ← `window.__DATA__` of
   `reports/dg-planning/symbol_arithmetic.html` (builder `diffusiongemma/planning/build_superpos.py`).
 
@@ -72,6 +77,18 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   `concept_probes/analyze_jlens_future.py`); original = subtraction, counterfactual = addition,
   layers 23/21/18/12. Card `jlens_future` in build_html.py; compose_figs promotes the screenshot
   to `figs/figA6_jlens_future.png` (card-only, no matrix).
+- `scripts/figA7_controllability.py` — constraint-margin trajectories (hot regime, 4 ttypes;
+  escapes bold green) from `src_data/planning/canalysis.json` (constrained-battery analyzer output;
+  gallery.json vendored too for canvas-text decoding). Both escapes = the seasonal→idiom palindrome.
+- `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations (difficulty↔commit +0.37,
+  difficulty↔S +0.42, commit↔S +0.66; tie-aware hand-rolled Spearman, asserts reproduce the
+  report exactly) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
+  `data/posthoc_case.json` (squares_400_800 dissociation card → figA8b via compose).
+- `scripts/figA9_resolution.py` — answer vs CoT region entropy per denoising step (bat_ball/monty
+  vs reverse_then_add/sq1000) from `src_data/posthoc/com_posthoc_anim.json`.
+- `scripts/figA10_selfrepair.py` — clock-strike self-repair: natural transient wrongs (delta-frame
+  decode of `src_data/lockin/com_clock_anim.json`) + escape-vs-plant-depth
+  (`src_data/lockin/com_escape_minimum.json`).
 - `scripts/figA5_ember.py` — seasonal-vs-idiom PRESERVATION (regenerated 2026-08-03,
   "preservation, not flipping"): 2 panels, seed s5 — base (idiom takes over) | persistent
   idiom-kill @t2+ (dotted onset + shading → seasonal preserved). Data:

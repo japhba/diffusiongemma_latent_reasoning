@@ -32,3 +32,5 @@ Image.open(P / "card_letters_example.png").convert("RGB").save(FIGS / "fig2a_exa
 print(FIGS / "fig2a_example_intervention.png")
 Image.open(P / "card_jlens_future.png").convert("RGB").save(FIGS / "figA6_jlens_future.png")
 print(FIGS / "figA6_jlens_future.png")
+Image.open(P / "card_posthoc_case.png").convert("RGB").save(FIGS / "figA8b_posthoc_case.png")
+print(FIGS / "figA8b_posthoc_case.png")

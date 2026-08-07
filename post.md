@@ -143,3 +143,41 @@ We validated that the emergence of _idiom_ is indeed causal: persistently ablati
 ![Seasonal vs idiom: ablation](figs/figA5_seasonal_ember_kill.png)
 
 _**Persistently ablating the nascent idiom preserves the native seasonal completion.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal; seed s5). Top: the base run — the idiom takes over. Bottom: ablating the idiom's $\mathbf{s}$-mass at every step from $t=2$ onward (dotted onset, shaded) keeps the seasonal draft, which completes cleanly._
+
+### Constraint writing: violations are patched, but only under noise
+
+[stub:] We next gave DG global writing constraints that cannot be satisfied greedily (a battery of 11 task types: acrostics, exact word counts, sentences stating their own word count, word-level palindromes, …), and tracked an exact checker's *violation margin* of the decoded canvas at every denoising step. The canvas frequently carries constraint-violating drafts transiently; whether they get patched depends on the sampler: under the default (colder) schedule there are no late escapes at all (140 clean / 100 trapped runs), while the hot schedule produces genuine escapes — a multi-step violating spell that is repaired on-canvas before commitment.
+
+![Constraint margins](figs/figA7_constraint_margins.png)
+
+_**DG transiently violates global constraints on the canvas and patches them steps later.** Violation margin of the decoded canvas per denoising step (hot sampler; one line per rollout; 0 = satisfied). Green = escape (a ≥5-step violating spell, then satisfied); both escapes are the word-palindrome task patching the constraint-violating seasonal draft into the idiom of the previous section (`All leaves fall when leaves fall all.` → `All for one and one for all.`, satisfied at step 10)._
+
+### Is the CoT load-bearing or post-hoc?
+
+[stub:] With the answer forced onto the first line (answer-first framing), we measured for 20 problems: the _commitment time_ (denoising step at which the answer slot freezes), the _susceptibility_ $S$ (probability the answer changes when the CoT positions are clamped to a partially-randomized version at every step), and a _blind difficulty_ rating (three subagents shown only the problem text). Nominal difficulty is a weak proxy; the proximal predictor of a load-bearing CoT is the measured commitment time ($\rho_S = +0.66$; sharpened to $+0.80$ pooled across a temperature sweep). CRT-style problems commit at step 0 with $S = 0$ (the CoT is post-hoc); serial counting problems commit late and break under corruption (the CoT is load-bearing).
+
+![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
+
+_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=20): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ per panel; × = accuracy < 0.5, dashed = least-squares fit)._
+
+For illustration, consider the problem `squares_400_800`, which dissociates the two probes:
+
+![Post-hoc case study](figs/figA8b_posthoc_case.png)
+
+_**DG denoises random corruption away but reads fluent wrong reasoning.** Left: clamping all 255 CoT positions to random tokens leaves the answer untouched (8, $S = 0.05$). Right: clamping a coherent lure CoT with a single off-by-one error (red) flips the answer to 9 in 5/5 seeds. Caveat: a target sweep shows the lure does not install its specific conclusion — the coherent-but-wrong CoT dislodges the answer into a nearby basin rather than steering it._
+
+#### Answer resolution over denoising steps
+
+[stub:] The same split is visible in the raw denoising dynamics: for post-hoc problems the answer region is confident (low entropy) at step 0–1 while the CoT region is still hot; for load-bearing problems the answer region stays hot for several steps, flipping repeatedly, and commits only as the CoT resolves.
+
+![Answer resolution](figs/figA9_resolution.png)
+
+_**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step. Left: bat_ball and monty — the answer is confident by step 1 (0 flips) while the CoT is still at ~3–4 nats. Right: reverse_then_add and sq1000 — the answer stays hot until the CoT cools, passing through the annotated value sequences before settling._
+
+### Self-repair: escaping a confident-wrong answer
+
+[stub:] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```; correct 16, fencepost attractor 18). In natural runs the canvas transiently visits the wrong answers and patches them within a few steps. But a *harvested* confident-wrong state (a cold run that converged to 18) is a genuine attractor: re-denoising it escapes to 16 only with a hot sampler *and* enough re-noising — plant it past step ~48 of 128 and even the hot sampler stays stuck.
+
+![Self-repair clock](figs/figA10_selfrepair_clock.png)
+
+_**Transient wrong answers self-repair; a committed wrong state needs heat and noise to escape.** Left: the first-line answer over denoising steps in natural cold runs (three seeds) — 12/18 appear transiently, all settle at 16. Right: a harvested wrong-18 state planted at varying steps and re-denoised: cold recipients stay stuck at every depth; very-hot recipients escape to 16 only when planted before ~step 48 of 128._
