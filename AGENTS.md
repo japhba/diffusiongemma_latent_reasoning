@@ -102,6 +102,12 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/figA10_selfrepair.py` — clock-strike self-repair: natural transient wrongs (delta-frame
   decode of `src_data/lockin/com_clock_anim.json`) + escape-vs-plant-depth
   (`src_data/lockin/com_escape_minimum.json`).
+- `scripts/extract_reverse_chain_order.py` — NOT bare-clone-rerunnable: reads the thinkfast
+  denoising films (exp/dg_lockin/thinkfast/films/, transparency-paper replication battery) →
+  `src_data/planning/reverse_chain_order.json` (digit positions + argmax lock steps per roll).
+- `scripts/figA12_reverse_chain.py` — end-anchored chain anticausality: correct d4/d5 runs lock
+  digits back-to-front (chain-rho −0.89..−0.97), wrong runs fill forward; lock-time-vs-element
+  panel (rank-order diagrams unreadable at 4-5 digits due to ties) + per-depth rho dots.
 - `scripts/figA5_ember.py` — seasonal-vs-idiom PRESERVATION (regenerated 2026-08-03,
   "preservation, not flipping"): 2 panels, seed s5 — base (idiom takes over) | persistent
   idiom-kill @t2+ (dotted onset + shading → seasonal preserved). Data:
