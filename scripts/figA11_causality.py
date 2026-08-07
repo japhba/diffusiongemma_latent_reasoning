@@ -1,16 +1,15 @@
-"""A11: commitment center-of-mass over diffusion progress — classic benchmarks (top row) vs
-idiosyncratic tasks (bottom row). x = diffusion progress t/T; y = center of mass of the
-canvas positions committed by step t, normalized to the content span (0 = left, 1 = right).
-Dashed = matched left-to-right filler (same committed count per step, leftmost positions
-first): a purely causal (AR-like) fill sits on it; early end-anchoring sits above it.
-Panel annotation: median chain rho (Spearman of final-commit step vs position).
+"""A11: commitment center-of-mass over diffusion progress, one panel per task class:
+logically left-to-right (GPQA), direction-indifferent (poem writing), logically right-to-left
+(reverse_chain, end-anchored). y = center of mass of the canvas positions committed by step t,
+normalized to the content span; dashed = matched left-to-right filler (same committed count,
+leftmost first) — a purely causal fill sits on it. Panel annotation: median chain rho
+(Spearman of final-commit step vs position).
 
-Top row (fresh pod captures, capture_bench_order.py; default sampler, argmax lock-in proxy):
-GPQA, MATH, HumanEval — 12 rollouts each. Bottom row: palindrome_words / ends_with
-(constrained battery, hot sampler, accept-mask commitment) and reverse_chain d4-5 (films;
-correct runs green — the committed CoM starts at the anchored END and walks backward).
+GPQA + poem: fresh pod captures (capture_bench_order.py / poem topics), default sampler,
+argmax lock-in proxy, 12 rollouts each. reverse_chain d4-5: thinkfast films, correct runs
+green (committed CoM starts at the anchored END and walks backward).
 
-Data: src_data/planning/{bench_order,commit_order,films_order}.json.
+Data: src_data/planning/{bench_order,poem_order,films_order}.json.
 """
 import json
 from pathlib import Path
@@ -21,8 +20,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "figs"
 bench = json.load(open(ROOT / "src_data" / "planning" / "bench_order.json"))
-constr = [r for r in json.load(open(ROOT / "src_data" / "planning" / "commit_order.json"))
-          if r["regime"] == "hot"]
+poems = json.load(open(ROOT / "src_data" / "planning" / "poem_order.json"))
 films = json.load(open(ROOT / "src_data" / "planning" / "films_order.json"))
 OBS, OKC, BADC = "#1971c2", "#2f9e44", "0.62"
 GRID = np.linspace(0, 1, 101)
@@ -38,7 +36,6 @@ def rankdata(v):
     return ranks
 
 def com_curves(content, lock, T):
-    """Cumulative committed-CoM and matched-L2R-filler CoM, interpolated onto the progress grid."""
     pos = np.array(content, float)
     posn = (pos - pos.min()) / max(pos.max() - pos.min(), 1)
     srt = np.sort(posn)
@@ -65,45 +62,44 @@ def panel(ax, runs, col=OBS, z=2, alpha=0.15, lw=0.7, draw_ref=True):
         ax.plot(GRID, np.nanmean(fs, axis=0), color="0.35", linestyle="--", linewidth=1.4, zorder=z + 1)
     return float(np.median(rhos))
 
-fig, axes = plt.subplots(2, 3, sharex=True, sharey=True, layout="constrained",
-                         figsize=(plt.rcParams["figure.figsize"][0] * 1.7,
-                                  plt.rcParams["figure.figsize"][1] * 1.1))
-def finish(ax, name, n, rho_txt):
+fig, axes = plt.subplots(1, 3, sharex=True, sharey=True, layout="constrained",
+                         figsize=(plt.rcParams["figure.figsize"][0] * 1.8,
+                                  plt.rcParams["figure.figsize"][1] * 0.85))
+def finish(ax, klass, name, n, rho_txt):
     ax.axhline(0.5, color="0.88", linewidth=0.6, zorder=0)
-    ax.text(0.03, 0.95, rho_txt, transform=ax.transAxes, va="top", fontsize="small")
-    ax.text(0.97, 0.05, f"{name}\n(n={n})", transform=ax.transAxes, ha="right", va="bottom",
-            fontsize="small")
+    ax.text(0.03, 0.97, rho_txt, transform=ax.transAxes, va="top", fontsize="small")
+    ax.text(0.97, 0.03, f"{klass}\n{name} (n={n})", transform=ax.transAxes, ha="right",
+            va="bottom", fontsize="small")
     ax.set_xlim(0, 0.6)  # commitment is done by ~t/T=0.5 everywhere; crop the frozen tail
     ax.set_ylim(-0.02, 1.02)
+    ax.set_xlabel("diffusion progress $t/T$")
     ax.spines[["top", "right"]].set_visible(False)
 
-for ax, (key, label) in zip(axes[0], [("gpqa", "GPQA"), ("math", "MATH"), ("humaneval", "HumanEval")]):
-    rs = [(r["content"], r["lock"], r["T"]) for r in bench
-          if r["bench"] == key and len(set(r["lock"])) > 1 and len(r["content"]) >= 6]
-    rho = panel(ax, rs)
-    finish(ax, label, len(rs), rf"$\rho_{{\mathrm{{chain}}}} = {rho:+.2f}$")
+rs = [(r["content"], r["lock"], r["T"]) for r in bench
+      if r["bench"] == "gpqa" and len(set(r["lock"])) > 1 and len(r["content"]) >= 6]
+rho = panel(axes[0], rs)
+finish(axes[0], "logically left-to-right", "GPQA", len(rs),
+       rf"$\rho_{{\mathrm{{chain}}}} = {rho:+.2f}$")
 
-for ax, tt in zip(axes[1], ["palindrome_words", "ends_with"]):
-    rs = [(r["content"], r["first_commit"], r["T"]) for r in constr if r["ttype"] == tt]
-    rho = panel(ax, rs)
-    finish(ax, tt, len(rs), rf"$\rho_{{\mathrm{{chain}}}} = {rho:+.2f}$")
+rs = [(r["content"], r["lock"], r["T"]) for r in poems
+      if len(set(r["lock"])) > 1 and len(r["content"]) >= 6]
+rho = panel(axes[1], rs)
+finish(axes[1], "direction-indifferent", "poem writing", len(rs),
+       rf"$\rho_{{\mathrm{{chain}}}} = {rho:+.2f}$")
 
-# bottom-right: reverse_chain, correct (backward) vs wrong (forward)
-ax = axes[1, 2]
+ax = axes[2]
 rc = [r for r in films if r["task"] == "reverse_chain" and r["depth"] in (4, 5)
       and len(set(r["lock"])) > 1]
 rho_w = panel(ax, [(r["content"], r["lock"], r["T"]) for r in rc if not r["ok"]],
               col=BADC, z=2, alpha=0.25, draw_ref=False)
 rho_c = panel(ax, [(r["content"], r["lock"], r["T"]) for r in rc if r["ok"]],
               col=OKC, z=3, alpha=0.6, lw=1.2, draw_ref=True)
-finish(ax, "reverse_chain (d4–5)", len(rc), rf"$\rho$: correct ${rho_c:+.2f}$, wrong ${rho_w:+.2f}$")
+finish(ax, "logically right-to-left", "reverse_chain (d4–5)", len(rc),
+       rf"$\rho$: correct ${rho_c:+.2f}$, wrong ${rho_w:+.2f}$")
 handles = [plt.Line2D([], [], color=OKC, linewidth=2, label="correct"),
            plt.Line2D([], [], color=BADC, linewidth=1.2, label="wrong")]
 ax.legend(handles=handles, frameon=False, fontsize="small", loc="upper right")
 
-for a in axes[-1]:
-    a.set_xlabel("diffusion progress $t/T$")
-for a in axes[:, 0]:
-    a.set_ylabel("committed CoM\n(0 = left, 1 = right)")
+axes[0].set_ylabel("committed CoM\n(0 = left, 1 = right)")
 fig.savefig(OUT / "figA11_commit_causality.png", dpi=200)
 print(OUT / "figA11_commit_causality.png")

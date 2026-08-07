@@ -109,7 +109,10 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   panel) → `src_data/planning/films_order.json`.
 - `scripts/capture_bench_order.py` — FRESH POD CAPTURE (2026-08-07, runs on the DG-worker pod
   against localhost:8711): GPQA/MATH/HumanEval/WildChat × 12 rollouts, default sampler, reduced
-  to per-position lock steps → `src_data/planning/bench_order.json` (figA11 top row). Pod ssh
+  to per-position lock steps → `src_data/planning/bench_order.json`; poem panel via
+  `capture_poem_order.py` → `poem_order.json`. figA11 is now 1×3 (2026-08-07): logically
+  left-to-right (GPQA) / direction-indifferent (poem) / right-to-left (reverse_chain),
+  committed-CoM over diffusion progress with L2R-filler reference. Pod ssh
   port rotates (30013 as of 2026-08-07); worker relaunch: tmux dgworker →
   `PATH=/workspace/dgenv/bin:$PATH bash /workspace/serve_dg.sh` (hf CLI needs the venv PATH).
   figA12 was MERGED into figA11 (2026-08-07): 2×4 grid, top = benchmarks, bottom = idiosyncratic
