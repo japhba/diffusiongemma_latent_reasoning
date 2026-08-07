@@ -45,11 +45,11 @@ def curve(ax, content, lock, col, al, lw, z=2):
     return (np.interp(GRID, xr, posn[order]),
             float(np.corrcoef(rankdata(pos), rankdata(np.array(lock, float)))[0, 1]))
 
-TOP = [("gpqa", "GPQA"), ("math", "MATH"), ("humaneval", "HumanEval"), ("wildchat", "WildChat")]
-BOT = ["acrostic_word", "palindrome_words", "ends_with"]
+TOP = [("gpqa", "GPQA"), ("math", "MATH"), ("humaneval", "HumanEval")]
+BOT = ["palindrome_words", "ends_with"]
 
-fig, axes = plt.subplots(2, 4, sharex=True, sharey=True, layout="constrained",
-                         figsize=(plt.rcParams["figure.figsize"][0] * 2.0,
+fig, axes = plt.subplots(2, 3, sharex=True, sharey=True, layout="constrained",
+                         figsize=(plt.rcParams["figure.figsize"][0] * 1.7,
                                   plt.rcParams["figure.figsize"][1] * 1.1))
 def finish(ax, name, n, rho_txt):
     ax.plot([0, 1], [0, 1], color="0.6", linestyle="--", linewidth=1.2)
@@ -73,7 +73,7 @@ for ax, tt in zip(axes[1], BOT):
     finish(ax, tt, len(rs), rf"$\rho_{{\mathrm{{chain}}}} = {np.median(rhos):+.2f}$")
 
 # bottom-right: reverse_chain, correct (backward) vs wrong (forward)
-ax = axes[1, 3]
+ax = axes[1, 2]
 rc = [r for r in films if r["task"] == "reverse_chain" and r["depth"] in (4, 5)
       and len(set(r["lock"])) > 1]
 stats = {}
