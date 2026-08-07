@@ -25,6 +25,7 @@ def compose_v(top, bottom, out):
     print(out, canvas.size)
 
 
+compose_v(P / "figA7_margins.png", P / "card_selfcorr_steps.png", FIGS / "figA7_constraint_margins.png")
 compose_v(P / "figA2_matrix.png", P / "card_probe_pair.png", FIGS / "figA2_probe_retention.png")
 compose_v(P / "figA3_matrix.png", P / "card_steer_pair.png", FIGS / "figA3_steer_retention.png")
 compose_v(P / "figA4_matrix.png", P / "card_jlens_pair.png", FIGS / "figA4_jlens_retention.png")

@@ -144,13 +144,13 @@ We validated that the emergence of _idiom_ is indeed causal: persistently ablati
 
 _**Persistently ablating the nascent idiom preserves the native seasonal completion.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal; seed s5). Top: the base run — the idiom takes over. Bottom: ablating the idiom's $\mathbf{s}$-mass at every step from $t=2$ onward (dotted onset, shaded) keeps the seasonal draft, which completes cleanly._
 
-### Constraint writing: violations are patched, but only under noise
+### Self-correction
 
-[stub:] We next gave DG global writing constraints that cannot be satisfied greedily (a battery of 11 task types: acrostics, exact word counts, sentences stating their own word count, word-level palindromes, …), and tracked an exact checker's *violation margin* of the decoded canvas at every denoising step. The canvas frequently carries constraint-violating drafts transiently; whether they get patched depends on the sampler: under the default (colder) schedule there are no late escapes at all (140 clean / 100 trapped runs), while the hot schedule produces genuine escapes — a multi-step violating spell that is repaired on-canvas before commitment.
+[stub:] We next gave DG global writing constraints that cannot be satisfied greedily, and tracked an exact checker's *violation margin* of the decoded canvas at every denoising step — here for the word-palindrome task under the hot sampler. The canvas transiently carries constraint-violating drafts and patches them steps later: the two escape runs (green) hold a violating draft for 7 steps before repairing it on-canvas. This is the same transition studied in the seasonal-vs-idiom section above — the violating mid-step draft *is* the seasonal phrase, and the patch lands on the idiom.
 
-![Constraint margins](figs/figA7_constraint_margins.png)
+![Self-correction](figs/figA7_constraint_margins.png)
 
-_**DG transiently violates global constraints on the canvas and patches them steps later.** Violation margin of the decoded canvas per denoising step (hot sampler; one line per rollout; 0 = satisfied). Green = escape (a ≥5-step violating spell, then satisfied); both escapes are the word-palindrome task patching the constraint-violating seasonal draft into the idiom of the previous section (`All leaves fall when leaves fall all.` → `All for one and one for all.`, satisfied at step 10)._
+_**DG transiently violates a global constraint on the canvas and patches it later.** Top: violation margin per rollout for the word-palindrome task (hot sampler; 0 = satisfied), on a linearly time-warped axis ($\tau = t$ / the run's last margin change). Green = escape (a ≥5-step violating spell, then satisfied). Bottom: three canvases of the flagship escape run — the mid-step draft is the constraint-violating seasonal phrase of the seasonal-vs-idiom section; the patch lands on the idiom._
 
 ### Is the CoT load-bearing or post-hoc?
 
@@ -181,3 +181,11 @@ _**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** 
 ![Self-repair clock](figs/figA10_selfrepair_clock.png)
 
 _**Transient wrong answers self-repair; a committed wrong state needs heat and noise to escape.** Left: the first-line answer over denoising steps in natural cold runs (three seeds) — 12/18 appear transiently, all settle at 16. Right: a harvested wrong-18 state planted at varying steps and re-denoised: cold recipients stay stuck at every depth; very-hot recipients escape to 16 only when planted before ~step 48 of 128._
+
+### How causal is DG's generation?
+
+[stub:] Although attention is bidirectional, DG could still *commit* its canvas in reading order, like an autoregressive model. We measure the center of mass of the canvas indices of the currently-committed positions at every denoising step (hot sampler, constrained-writing battery). Commitment is largely — but not entirely — left-to-right: the observed center of mass tracks a matched left-to-right filler closely, with a systematic early deviation toward later positions (clearest on the `ends_with` task, where the constrained *final* word commits first).
+
+![Commitment causality](figs/figA11_commit_causality.png)
+
+_**Commitment order is mostly, but not strictly, left-to-right.** Per task type: center of mass of the committed canvas positions per denoising step (0 = left edge, 1 = right edge of the content span; faint = single rollouts, bold = mean). Dashed: a left-to-right filler committing the same number of positions per step — a purely causal order would sit on it; a holistic order would sit flat at 0.5. Observed curves start above the filler (early anchors on later positions) and merge with it as the canvas fills; under the default colder sampler the whole canvas commits by step ~3, leaving no order to read._

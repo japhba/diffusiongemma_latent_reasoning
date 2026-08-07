@@ -1,0 +1,23 @@
+{
+ "prompt_task": "Write a sentence of at least 6 words whose sequence of words reads the same forwards and backwards.",
+ "steps": [
+  {
+   "t": 1,
+   "phase": "early",
+   "text": "All leaves are a are are are fall.",
+   "margin": 3
+  },
+  {
+   "t": 5,
+   "phase": "mid",
+   "text": "All leaves fall when leaves fall all.",
+   "margin": 2
+  },
+  {
+   "t": 10,
+   "phase": "late",
+   "text": "All for one and one for all.",
+   "margin": 0
+  }
+ ]
+}

@@ -20,7 +20,8 @@ single token, uppercase `X` = the full canvas (the V^C object: `X_t` in the algo
 ## Build pipeline
 
 Everything is a pure CPU re-render of archived study data — never launch model runs for this.
-Python: `/var/tmp/jbauer/venvs/loracles/bin/python` (has matplotlib/numpy/scipy/PIL).
+Python: system `python3` suffices (matplotlib/numpy/PIL, no scipy needed — Spearman is
+hand-rolled); the former /var/tmp loracles venv is wiped on workbench reboots.
 
 **Self-contained since 2026-08-02:** all source data is vendored under `src_data/` (~23 MB) and
 every script resolves paths relative to the repo root (`Path(__file__).resolve().parent.parent`),
@@ -77,9 +78,16 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   `concept_probes/analyze_jlens_future.py`); original = subtraction, counterfactual = addition,
   layers 23/21/18/12. Card `jlens_future` in build_html.py; compose_figs promotes the screenshot
   to `figs/figA6_jlens_future.png` (card-only, no matrix).
-- `scripts/figA7_controllability.py` — constraint-margin trajectories (hot regime, 4 ttypes;
-  escapes bold green) from `src_data/planning/canalysis.json` (constrained-battery analyzer output;
-  gallery.json vendored too for canvas-text decoding). Both escapes = the seasonal→idiom palindrome.
+- `scripts/figA7_controllability.py` — SELF-CORRECTION (reworked 2026-08-07): word-palindrome
+  task only, hot regime, margins on warped time (tau = t / run's last margin change) →
+  parts/figA7_margins.png; emits `data/selfcorr_steps.json` (3 decoded canvases of the flagship
+  escape, early/mid-violating/late, gallery.json frames with channel markers stripped). Card
+  `selfcorr_steps`; compose_v stacks plot + card → figs/figA7_constraint_margins.png (stable
+  filename kept). Both escapes = the seasonal→idiom palindrome.
+- `scripts/extract_commit_com.py` — NOT bare-clone-rerunnable: reads the raw cruns archive
+  (7.8 GB, un-vendored) → `src_data/planning/commit_com.json` (per-run committed-CoM curves).
+- `scripts/figA11_causality.py` — commitment left-to-rightness: committed-positions CoM vs
+  matched L2R filler, per ttype, hot regime (def commits everything by step ~3, no signal).
 - `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations (difficulty↔commit +0.37,
   difficulty↔S +0.42, commit↔S +0.66; tie-aware hand-rolled Spearman, asserts reproduce the
   report exactly) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
