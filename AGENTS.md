@@ -84,10 +84,15 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   escape, early/mid-violating/late, gallery.json frames with channel markers stripped). Card
   `selfcorr_steps`; compose_v stacks plot + card → figs/figA7_constraint_margins.png (stable
   filename kept). Both escapes = the seasonal→idiom palindrome.
-- `scripts/extract_commit_com.py` — NOT bare-clone-rerunnable: reads the raw cruns archive
-  (7.8 GB, un-vendored) → `src_data/planning/commit_com.json` (per-run committed-CoM curves).
-- `scripts/figA11_causality.py` — commitment left-to-rightness: committed-positions CoM vs
-  matched L2R filler, per ttype, hot regime (def commits everything by step ~3, no signal).
+- `scripts/extract_commit_{com,order}.py` — NOT bare-clone-rerunnable: read the raw cruns
+  archive (7.8 GB, un-vendored) → `src_data/planning/commit_{com,order}.json`. commit_order =
+  per-position final-commit step (start of the accepted-mask's terminal True suffix).
+- `scripts/figA11_causality.py` — commitment ORDER DIAGRAM (reworked 2026-08-07: canvas position
+  vs commit rank, diagonal = causal; replaced the CoM version, which averaged symmetric spreads
+  to 0.5 and hid end-anchoring), per ttype, hot regime (def commits everything by step ~3, no
+  signal). Finding: net-causal everywhere (chain-rho .57–.86) but anticausal stages — ends_with
+  anchors the final word early and back-fills the middle last; all tasks back-fill the left edge
+  at rank ~0.2.
 - `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations (difficulty↔commit +0.37,
   difficulty↔S +0.42, commit↔S +0.66; tie-aware hand-rolled Spearman, asserts reproduce the
   report exactly) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
