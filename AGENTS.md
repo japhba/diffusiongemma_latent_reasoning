@@ -97,9 +97,14 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   signal). Finding: net-causal everywhere (chain-rho .57–.86) but anticausal stages — ends_with
   anchors the final word early and back-fills the middle last; all tasks back-fill the left edge
   at rank ~0.2.
-- `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations, n=40 (difficulty↔commit +0.37,
-  difficulty↔S +0.28, commit↔S +0.60; tie-aware hand-rolled Spearman, asserted) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
-  `data/posthoc_case.json` (squares_400_800 dissociation card → figA8b via compose).
+- `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations, n=40 (difficulty↔commit +0.37
+  p=.02, difficulty↔S +0.28 p=.08, commit↔S +0.60 p=.0001; tie-aware hand-rolled Spearman,
+  asserted; p = two-sided permutation test, 20k perms, seeded) from
+  `src_data/posthoc/{clean,suscept,difficulty}.json`; emits `data/posthoc_case.json`
+  (easy-vs-hard card: bat_ball | sq1000 × clean | rho=1.0 susceptibility, commit times +
+  purple intervention sites → figA8b via compose). The lure-CoT counterfactual illustration
+  was dropped from the card 2026-08-09 (data still in
+  src_data/posthoc/{counterfactual,lure_cots}.json).
 - `scripts/figA9_resolution.py` — answer vs CoT region entropy per denoising step, averaged over
   the n=40 battery grouped by S (post-hoc S<=0.1 n=29, load-bearing S>=0.3 n=7; S=0.2 middle band
   + capture-skipped months28 excluded) from `src_data/posthoc/anim_curves.json` (pod capture
