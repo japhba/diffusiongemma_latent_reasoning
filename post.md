@@ -146,6 +146,10 @@ _**Persistently ablating the nascent idiom preserves the native seasonal complet
 
 Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of **self-correction**. This has important consequences for monitorability which may not have been captured in Engels et al.'s analysis: a tool reading only the final diffusion output will miss transient output. A model may for instance choose to hide a specific fact in its chain-of-thought to a monitor, while having used it intermittently, though we did not find any instances of such behavior here.
 
+![Constraint margins](figs/figA7_constraint_margins.png)
+
+_**Drafts transiently violate the constraint and are only patched late.** Constraint margin (number of violations) on a constrained writing task (word palindrome, hot sampler), over linearly warped diffusion time $\tau$ (each run's active phase normalized so its last margin change sits at $\tau = 1$; green = runs that escape to a valid sentence, orange = trapped, blue = clean). Bottom: three decoded canvases of the flagship escape run — the mid-run draft still violates the constraint before the late repair lands on a valid palindrome. This is the same rollout family as the seasonal → idiom example above._
+
 ### Post-hoc rationalization
 
 An important question in monitorability ([Bogdan et al., 2025](https://arxiv.org/abs/2506.19143)) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
@@ -154,17 +158,17 @@ For autoregressive models, the answer appears after the CoT. This incentivizes a
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
-_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=40): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ with two-sided permutation $p$ per panel; × = accuracy < 0.5, dashed = least-squares fit). Note difficulty ↔ $S$ is the one pairing that misses significance ($p = .08$)._
+_**Problem difficulty, CoT load-bearingness, and commitment time correlate.** Problem difficulty is measured via an LLM judge, CoT load-bearingness via a susceptiblity: how sensitive the answer is to replacing the CoT with random related tokens, and commitment time is when the answer commits. We consider problems from tasks XXX_
 
 For illustration, consider an easy and a hard problem side by side:
 
 ![Post-hoc case study](figs/figA8b_posthoc_case.png)
 
-_**An easy answer ignores its CoT; a hard answer breaks with it.** Top row: clean rollout, model answer highlighted, with its commitment time (bat_ball locks at step 0; sq1000 passes through 1 → 3 → 31 → 19 → 39, locking at ~step 4). Bottom row: the susceptibility intervention — every CoT canvas position (purple; $X^t$, not $\mathbf{S}^t$) is pinned to random tokens at every step while the answer denoises freely. bat_ball still answers 5 ($S = 0.00$); sq1000's answer breaks to 36/38/46 across corruption seeds ($S = 0.70$)._
+_**A pair of easy and hard examples illustrating the previous correlation.** Top row: normal rollout, model answer highlighted, with its commitment time. Bottom row: the susceptibility, measured like in the previous figure._
 
 #### Load-bearing problems commit the answer only after the CoT
 
-In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well
+In the previous paragraph, we found that commitment time of the answer correlates with load-bearingness. A natural hypothesis is whether the load-bearing problems will correspondingly also commit the CoT similarly late.
 
 ![Answer resolution](figs/figA9_resolution.png)
 

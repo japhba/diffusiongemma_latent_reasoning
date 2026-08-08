@@ -87,7 +87,8 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   parts/figA7_margins.png; emits `data/selfcorr_steps.json` (3 decoded canvases of the flagship
   escape, early/mid-violating/late, gallery.json frames with channel markers stripped). Card
   `selfcorr_steps`; compose_v stacks plot + card → figs/figA7_constraint_margins.png (stable
-  filename kept). Both escapes = the seasonal→idiom palindrome.
+  filename kept). Both escapes = the seasonal→idiom palindrome. Re-inserted into the post
+  2026-08-09 (after the self-correction paragraph in the seasonal-ablation section).
 - `scripts/extract_commit_{com,order}.py` — NOT bare-clone-rerunnable: read the raw cruns
   archive (7.8 GB, un-vendored) → `src_data/planning/commit_{com,order}.json`. commit_order =
   per-position final-commit step (start of the accepted-mask's terminal True suffix).
