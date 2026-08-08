@@ -146,9 +146,11 @@ _**Persistently ablating the nascent idiom preserves the native seasonal complet
 
 Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of **self-correction**. This has important consequences for monitorability which may not have been captured in Engels et al.'s analysis: a tool reading only the final diffusion output will miss transient output. A model may for instance choose to hide a specific fact in its chain-of-thought to a monitor, while having used it intermittently, though we did not find any instances of such behavior here.
 
-### Is the CoT load-bearing or post-hoc?
+### Post-hoc rationalization
 
-[stub:] With the answer forced onto the first line (answer-first framing), we measured for 20 problems: the _commitment time_ (denoising step at which the answer slot freezes), the _susceptibility_ $S$ (probability the answer changes when the CoT positions of the canvas $X^t$ are clamped to a partially-randomized version at every step — an intervention on the visible tokens, not on $\mathbf{S}^t$; the self-conditioning at clamped positions is zeroed), and a _blind difficulty_ rating (three subagents shown only the problem text). Nominal difficulty is a weak proxy; the proximal predictor of a load-bearing CoT is the measured commitment time ($\rho_S = +0.66$; sharpened to $+0.80$ pooled across a temperature sweep). CRT-style problems commit at step 0 with $S = 0$ (the CoT is post-hoc); serial counting problems commit late and break under corruption (the CoT is load-bearing).
+An important question in monitorability (CITE: Thought Anchors) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
+
+For autoregressive models, the answer appears after the CoT. This limits the ability for the CoT to be irrelevant, since otherwise the model would have needed to compute the answer without using the CoT tokens at all. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy. 
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
@@ -170,7 +172,7 @@ _**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** 
 
 ### Self-repair: escaping a confident-wrong answer
 
-[stub:] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```, the correct answer is 16, but on first glance the answer is 18).
+[stub, related to the idiom example] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```, the correct answer is 16, but on first glance the answer is 18).
 
 In natural runs the canvas transiently visits the wrong answers and corrects them within a few steps. But a *harvested* confident-wrong state (a cold run that converged to 18) is a genuine attractor. Concretely, we *plant* the donor run's full final state — its canvas $X$ *and* its sheet $\mathbf{S}$ — into a fresh rollout at plant step $k$, and denoising continues freely from there: nothing is clamped afterwards, so a small $k$ leaves many re-noising steps to escape while a large $k$ means the planted state is nearly frozen. Escape to 16 happens only with a hot sampler *and* enough re-noising — plant past $k \approx 48$ of $128$ and even the hot sampler stays stuck at 18.
 
@@ -183,8 +185,6 @@ _**Transient wrong answers self-repair; a committed wrong state needs heat and n
 One of the differences in DiffusionGemma is that it has bidirectional attention. While some tasks relying on some form of logical induction require causal left-to-right generation, other task do not obviously require it. However, being a finetune of Gemma, it is unclear how much it will just inherit a bias towards causal generation vs actually using bidirectional generation.
 ![Commitment causality](figs/figA11_commit_causality.png)
 
-_**Commitment order follows the task's logical direction, but defaults to causality when ambiguous.** Center of mass of the canvas positions committed by step $t$ (0 = left, 1 = right of the content span) over diffusion progress $t/T$ (faint = single rollouts, bold = mean). Italic overlay: $\rho_{\mathrm{logic}}$ = Spearman between the judge's logical ordering of its own atom decomposition and the atoms' positions in the text (ties allowed; median over rollouts)._
+_**Commitment order follows the task's logical direction, but defaults to causality when ambiguous.** Center of mass of the canvas positions committed by step $t$ (0 = left, 1 = right of the content span) over diffusion progress $t/T$ (faint = single rollouts, bold = mean). $\rho_{\mathrm{logic}}$ = Spearman between the judge's logical ordering of its own atom decomposition and the atoms' positions in the text._
 
 We considered three tasks. GPQA, which involves logic-style problems and therefore shoudl require left-to-right generation, *poem writing*, which has no clear left-to-rigth bias but only needs to satisfy a global structure, and *reverse_chain*, which requires the model to reverse its reasoning order.
-
-[stub:] To check the presumed directions against the *actual* generations, an LLM judge (Qwen3.6-35B, self-hosted) decomposed each output into content atoms and stated their logical derivation order (as an ordered list of groups; atoms within a group are mutually order-independent). $\rho_{\mathrm{logic}}$ is the Spearman correlation between this logical ordering and the atoms' positions in the text. GPQA outputs are genuinely inductive ($\rho_{\mathrm{logic}} = +0.96$), while every generated poem is judged fully order-independent ($0.00$) — the direction-indifferent label holds, the poems are not secretly chained.
