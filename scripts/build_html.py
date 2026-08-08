@@ -213,6 +213,9 @@ def ill_posthoc_case():
         return (f'<div><h4>{E(title)}</h4><code class="gen block">{body}</code>'
                 f'<p class="small"><b style="color:{anscol}">answer: {E(ans)}</b> &nbsp;·&nbsp; {E(sub)}</p></div>')
     r, l = d["random"], d["lure"]
+    assert r["snippet"].startswith(r["answer"]), "answer-first snippet no longer opens with the answer"
+    rand_html = (f'<b style="color:{OK};background:rgba(47,158,68,.15)">{E(r["answer"])}</b>'
+                 + E(r["snippet"][len(r["answer"]):]))
     lure_html = E(l["cot"]).replace("28 − 21 + 1 = **9**",
                                     f'<b style="color:{BAD}">28 − 21 + 1 = 9</b>')
     assert "**9**" not in lure_html, "lure highlight anchor failed"
@@ -220,8 +223,8 @@ def ill_posthoc_case():
 <p class="small">prompt: <code class="gen">{E(d['q'])}</code> &nbsp;·&nbsp; free answer: <b style="color:{OK}">{E(d['free_answer'])}</b> (correct)</p>
 <div class="cols2">
 {col(f"random corruption (all {r['n_corrupted']}/{r['n_cot']} CoT tokens randomized)",
-     E(r['snippet']) + " …", r['answer'], OK, "unchanged — drift " + r['drift_rhos'])}
-{col("coherent wrong CoT (fluent off-by-one lure)", lure_html, l['answer'], BAD,
+     rand_html + " …", r['answer'], OK, "unchanged — drift " + r['drift_rhos'])}
+{col("coherent wrong CoT", lure_html, l['answer'], BAD,
      f"follows the lure ({l['followed']} seeds)")}
 </div>
 </div>"""

@@ -8,7 +8,7 @@ Overall, this underlines the paper's conclusion that DiffusionGemma remains high
 
 ## Introduction
 
-DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $X^0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. The self-conditioning state $(\mathbf{s}_i^0)_{i=1\ldots C}=\mathbf{S}^0\in\mathbb{R}^{C\times |\mathcal{V}|}$ is initialised uniformly. Let $f$ denote a single forward pass through the transformer stack (a finetune of Gemma). Roughly, the final output $X^T$ then is obtained via
+DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $X^0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. Let $f$ denote a single forward pass through the transformer stack (a finetune of Gemma). Roughly, the final output $X^T$ then is obtained via
 
 $$
 \begin{aligned}
@@ -150,7 +150,7 @@ Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of *
 
 An important question in monitorability ([Bogdan et al., 2025](https://arxiv.org/abs/2506.19143)) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
 
-For autoregressive models, the answer appears after the CoT. This limits the ability for the CoT to be irrelevant, since otherwise the model would have needed to compute the answer without using the CoT tokens at all. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy. 
+For autoregressive models, the answer appears after the CoT. This limits the ability for the CoT to be irrelevant, since otherwise the model would have needed to compute the answer without using the CoT tokens at all. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy.
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
