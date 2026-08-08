@@ -148,7 +148,7 @@ Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of *
 
 ### Post-hoc rationalization
 
-An important question in monitorability (CITE: Thought Anchors) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
+An important question in monitorability ([Bogdan et al., 2025](https://arxiv.org/abs/2506.19143)) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
 
 For autoregressive models, the answer appears after the CoT. This limits the ability for the CoT to be irrelevant, since otherwise the model would have needed to compute the answer without using the CoT tokens at all. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy. 
 
