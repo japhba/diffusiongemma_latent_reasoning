@@ -154,7 +154,7 @@ For autoregressive models, the answer appears after the CoT. This limits the abi
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
-_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=20): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ per panel; × = accuracy < 0.5, dashed = least-squares fit)._
+_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=40): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ per panel; × = accuracy < 0.5, dashed = least-squares fit)._
 
 For illustration, consider the problem `squares_400_800`, which dissociates the two probes:
 

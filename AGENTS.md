@@ -34,7 +34,11 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `src_data/saeprobes/` (+`jlens/`) ← `activation_oracles_dev/concept_probes/out/saeprobes/`.
 - `src_data/ember_base_traj.json`, `src_data/ember_kill2.json` ← `diffusiongemma/exp/dg_planning/`.
 - `src_data/posthoc/` ← `/workspace-vast/jbauer/exp/dg_lockin/posthoc/` (+ `lure_cots.json`,
-  `steer_results.json` from `diffusiongemma/posthoc/`).
+  `steer_results.json` from `diffusiongemma/posthoc/`). EXTENDED 2026-08-08 to n=40 problems:
+  `scripts/extract_posthoc_ext.py` merges `ext_clean/ext_suscept.json` (captured on the DG pod,
+  `/workspace/dg/posthoc_ext/`, battery `diffusiongemma/posthoc/ext_battery.py`, same GRID; the
+  capture parses around the post-Aug-04 `<|channel>thought` canvas scaffold) + fresh 3-rater
+  `ext_difficulty.json`.
 - `src_data/lockin/` ← `/workspace-vast/jbauer/exp/dg_lockin/` (clock + escape-minimum files).
 - `src_data/planning/{canalysis,constr_summary,gallery}.json` ← constrained battery
   (`diffusiongemma/exp/dg_planning/` + `reports/dg-planning/data/gallery.json`).
@@ -93,9 +97,8 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   signal). Finding: net-causal everywhere (chain-rho .57–.86) but anticausal stages — ends_with
   anchors the final word early and back-fills the middle last; all tasks back-fill the left edge
   at rank ~0.2.
-- `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations (difficulty↔commit +0.37,
-  difficulty↔S +0.42, commit↔S +0.66; tie-aware hand-rolled Spearman, asserts reproduce the
-  report exactly) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
+- `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations, n=40 (difficulty↔commit +0.37,
+  difficulty↔S +0.28, commit↔S +0.60; tie-aware hand-rolled Spearman, asserted) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
   `data/posthoc_case.json` (squares_400_800 dissociation card → figA8b via compose).
 - `scripts/figA9_resolution.py` — answer vs CoT region entropy per denoising step (bat_ball/monty
   vs reverse_then_add/sq1000) from `src_data/posthoc/com_posthoc_anim.json`.

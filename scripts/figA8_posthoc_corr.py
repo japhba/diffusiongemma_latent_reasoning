@@ -1,11 +1,11 @@
 """A8: post-hoc vs load-bearing CoT — the three correlations + case-study card data.
 
 Panels: (1) blind difficulty vs commitment time, (2) blind difficulty vs susceptibility S,
-(3) commitment time vs S. Per problem (n=20): commitment = median-over-seeds of median answer
+(3) commitment time vs S. Per problem (n=40; original 20 + the 2026-08-08 extension battery): commitment = median-over-seeds of median answer
 lock-in step (clean.json); S = mean over rho>0 of P(answer differs from the rho=0 clean-clamp
 baseline, matched by corruption seed) (suscept.json); difficulty = mean of 3 blind subagent
 ratings from the problem text alone (difficulty.json). Spearman hand-rolled (rank + corrcoef);
-asserts reproduce the report values +0.37 / +0.42 / +0.66.
+asserts pin the n=40 values +0.37 / +0.28 / +0.60 (n=20 report values were +0.37 / +0.42 / +0.66).
 
 Also emits data/posthoc_case.json: the squares_400_800 dissociation (random rho=1.0 corruption
 denoised away -> answer stays 8; coherent off-by-one lure CoT -> answer follows to 9, 5/5).
@@ -93,7 +93,7 @@ for ax, (fx, fy, xlab, ylab) in zip(axes, PANELS):
     ax.spines[["top", "right"]].set_visible(False)
 handles = [plt.Line2D([], [], marker="o", linestyle="", color=c, label=k) for k, c in CATCOL.items()]
 axes[0].legend(handles=handles, frameon=False, fontsize="small", loc="lower right")
-assert abs(rhos[0] - 0.371) < 0.01 and abs(rhos[1] - 0.424) < 0.01 and abs(rhos[2] - 0.656) < 0.01, rhos
+assert abs(rhos[0] - 0.369) < 0.01 and abs(rhos[1] - 0.279) < 0.01 and abs(rhos[2] - 0.598) < 0.01, rhos
 fig.savefig(OUT / "figA8_posthoc_correlations.png", dpi=200)
 print(OUT / "figA8_posthoc_correlations.png")
 print("spearman:", [round(r, 3) for r in rhos])
