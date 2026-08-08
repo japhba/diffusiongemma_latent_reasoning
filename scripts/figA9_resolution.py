@@ -1,13 +1,17 @@
-"""A9: answer resolution over denoising steps — post-hoc (bat_ball, monty, prod_then_digitsum)
-vs load-bearing (reverse_then_add, sq1000, cubes_10_1000; the third case in each panel is from
-the 2026-08-08 extension battery, captured via posthoc_ext/ext_anim.py, same GRID). Solid = mean token entropy over the ANSWER positions, dashed = over
-the CoT positions; the answer-value path is annotated on the load-bearing panel.
+"""A9: answer resolution over denoising steps, averaged over the full n=40 battery.
 
-Data: src_data/posthoc/com_posthoc_anim.json (posthoc/anim_entropy.py capture; C=256 T=128,
-answer-first framing, warm regime). Curve = mean(entropy[k][ans_pos]) per step, first 9 steps
-(denoising is converged after that; the tail is frozen).
+Problems are grouped by the susceptibility analysis (the load-bearing definition of this
+section): post-hoc = S <= 0.1, load-bearing = S >= 0.3 (the S in (0.1, 0.3) middle band is
+excluded and reported). Per problem: one rollout (seed 0, suscept GRID, answer-first framing),
+per-step mean token entropy over the answer span (solid) and CoT region (dashed), positions
+localized from the final canvas. Faint = single problems, bold = group mean, first 9 steps.
+
+Data: src_data/posthoc/anim_curves.json (pod capture posthoc_ext/ext_anim_batch.py,
+2026-08-09) + suscept.json for the grouping.
 """
 import json
+import statistics as st
+from collections import defaultdict
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -15,34 +19,49 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "figs"
+SP = ROOT / "src_data" / "posthoc"
 W = 9
+ANS, COT = "#1971c2", "0.45"
 
-cases = json.load(open(ROOT / "src_data" / "posthoc" / "com_posthoc_anim.json"))["cases"]
-C2 = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+curves = json.load(open(SP / "anim_curves.json"))
+susc = json.load(open(SP / "suscept.json"))
+bypid = defaultdict(list)
+for s in susc.values():
+    bypid[s["pid"]].append(s)
+S = {}
+for pid, cells in bypid.items():
+    bycs = defaultdict(dict)
+    for s in cells:
+        bycs[s["rho"]][s["corr_seed"]] = s["A_hat"]
+    base = bycs[0.0]
+    drift = [st.mean([1.0 if bycs[r].get(c) != base.get(c) else 0.0 for c in base if c in bycs[r]])
+             for r in sorted(bycs) if r > 0]
+    S[pid] = st.mean(drift)
+
+groups = {"post-hoc": [p for p, v in S.items() if v <= 0.10 and curves.get(p)],
+          "load-bearing": [p for p, v in S.items() if v >= 0.30 and curves.get(p)]}
+mid = [p for p, v in S.items() if 0.10 < v < 0.30]
+skipped = [p for p in S if curves.get(p) is None]
+print(f"groups: { {k: len(v) for k, v in groups.items()} }, middle-band excluded {len(mid)} {mid}, "
+      f"capture-skipped {skipped}")
 
 fig, axes = plt.subplots(1, 2, sharey=True, layout="constrained",
                          figsize=(plt.rcParams["figure.figsize"][0] * 1.6,
                                   plt.rcParams["figure.figsize"][1] * 0.85))
-PANELS = [("post-hoc", axes[0], [C2[0], C2[9] if len(C2) > 9 else C2[2], C2[5]]),
-          ("true-checking", axes[1], [C2[1], C2[3], C2[2]])]
-for regime, ax, cols in PANELS:
-    for c, col in zip([x for x in cases if x["regime"] == regime], cols):
-        E = np.array(c["entropy"])
-        ks = range(min(W, E.shape[0]))
-        ax.plot(ks, [float(E[k][c["ans_pos"]].mean()) for k in ks], "-o", color=col,
-                markersize=3.5, label=f'{c["pid"]} — answer')
-        ax.plot(ks, [float(E[k][c["cot_pos"]].mean()) for k in ks], "--", color=col,
-                alpha=0.65, label=f'{c["pid"]} — CoT')
-        if regime == "true-checking":
-            dy = {"reverse_then_add": 0.97, "sq1000": 0.88, "cubes_10_1000": 0.79}[c["pid"]]
-            ax.annotate(" → ".join(c["answer_path"]), xy=(0.97, dy), xycoords="axes fraction",
-                        ha="right", va="top", color=col, fontsize="small")
+for ax, (label, pids) in zip(axes, groups.items()):
+    A = np.array([curves[p]["ans_curve"][:W] for p in pids])
+    C = np.array([curves[p]["cot_curve"][:W] for p in pids])
+    ks = np.arange(W)
+    for row in A:
+        ax.plot(ks, row, color=ANS, alpha=0.15, linewidth=0.7)
+    for row in C:
+        ax.plot(ks, row, color=COT, linestyle="--", alpha=0.12, linewidth=0.7)
+    ax.plot(ks, A.mean(0), "-o", color=ANS, markersize=3.5, linewidth=2.0, label="answer positions")
+    ax.plot(ks, C.mean(0), "--", color=COT, linewidth=2.0, label="CoT positions")
+    ax.set_title(f"{label} (n={len(pids)})")
     ax.set_xlabel("denoising step $t$")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.legend(frameon=False, fontsize="small")
 axes[0].set_ylabel("mean token entropy (nats)")
+axes[0].legend(frameon=False, fontsize="small")
 fig.savefig(OUT / "figA9_resolution.png", dpi=200)
 print(OUT / "figA9_resolution.png")
-for c in cases:
-    print(c["regime"], c["pid"], "flips", c["n_flips"], "path", "→".join(c["answer_path"]),
-          "ans_lock", c["ans_lock"], "cot_lock", c["cot_lock"])

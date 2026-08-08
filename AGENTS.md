@@ -100,9 +100,11 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/figA8_posthoc_corr.py` — 3 post-hoc correlations, n=40 (difficulty↔commit +0.37,
   difficulty↔S +0.28, commit↔S +0.60; tie-aware hand-rolled Spearman, asserted) from `src_data/posthoc/{clean,suscept,difficulty}.json`; emits
   `data/posthoc_case.json` (squares_400_800 dissociation card → figA8b via compose).
-- `scripts/figA9_resolution.py` — answer vs CoT region entropy per denoising step, 3 cases per
-  regime (bat_ball/monty/prod_then_digitsum vs reverse_then_add/sq1000/cubes_10_1000; the third
-  of each captured 2026-08-08 via posthoc_ext/ext_anim.py) from `src_data/posthoc/com_posthoc_anim.json`.
+- `scripts/figA9_resolution.py` — answer vs CoT region entropy per denoising step, averaged over
+  the n=40 battery grouped by S (post-hoc S<=0.1 n=29, load-bearing S>=0.3 n=7; S=0.2 middle band
+  + capture-skipped months28 excluded) from `src_data/posthoc/anim_curves.json` (pod capture
+  posthoc_ext/ext_anim_batch.py, seed 0 per problem) + `suscept.json` for the grouping.
+  (`com_posthoc_anim.json` keeps the earlier per-case exemplar traces + viewer frames.)
 - `scripts/figA10_selfrepair.py` — clock-strike self-repair: natural transient wrongs (delta-frame
   decode of `src_data/lockin/com_clock_anim.json`) + escape-vs-plant-depth
   (`src_data/lockin/com_escape_minimum.json`).
