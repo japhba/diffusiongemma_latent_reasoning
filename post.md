@@ -150,35 +150,25 @@ Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of *
 
 An important question in monitorability ([Bogdan et al., 2025](https://arxiv.org/abs/2506.19143)) is whether the CoT is actually being used. An approach to measure this is to intervene on a fragment of the CoT, and see whether the answer changes.
 
-For autoregressive models, the answer appears after the CoT. This limits the ability for the CoT to be irrelevant, since otherwise the model would have needed to compute the answer without using the CoT tokens at all. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy.
+For autoregressive models, the answer appears after the CoT. This incentivizes actually using CoT positions to computate the answer. In contrast, DiffusionGemma may arrive at an answer throughout multiple steps of computation, and then fill in a CoT post-hoc to match the format of the training distribution. An increased presence of such post-hoc rationalization relative to Gemma would be a blackpill for DiffusionGemma's monitorabiltiy.
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
-_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=40): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ per panel; × = accuracy < 0.5, dashed = least-squares fit)._
+_**Commitment time, not nominal difficulty, predicts whether the CoT is load-bearing.** Per problem (n=40): blind difficulty vs commitment time, blind difficulty vs susceptibility $S$, and commitment time vs $S$ (Spearman $\rho_S$ with two-sided permutation $p$ per panel; × = accuracy < 0.5, dashed = least-squares fit). Note difficulty ↔ $S$ is the one pairing that misses significance ($p = .08$)._
 
-For illustration, consider the problem `squares_400_800`, which dissociates the two probes:
+For illustration, consider an easy and a hard problem side by side:
 
 ![Post-hoc case study](figs/figA8b_posthoc_case.png)
 
-_**DG denoises random corruption away but reads fluent wrong reasoning.** Left: clamping all 255 CoT canvas positions ($X^t$, not $\mathbf{S}^t$) to random tokens leaves the answer untouched (8, $S = 0.05$). Right: clamping a coherent lure CoT with a single off-by-one error (red) flips the answer to 9 in 5/5 seeds. Caveat: a target sweep shows the lure does not install its specific conclusion — the coherent-but-wrong CoT dislodges the answer into a nearby basin rather than steering it._
+_**An easy answer ignores its CoT; a hard answer breaks with it.** Top row: clean rollout, model answer highlighted, with its commitment time (bat_ball locks at step 0; sq1000 passes through 1 → 3 → 31 → 19 → 39, locking at ~step 4). Bottom row: the susceptibility intervention — every CoT canvas position (purple; $X^t$, not $\mathbf{S}^t$) is pinned to random tokens at every step while the answer denoises freely. bat_ball still answers 5 ($S = 0.00$); sq1000's answer breaks to 36/38/46 across corruption seeds ($S = 0.70$)._
 
-#### Answer resolution over denoising steps
+#### Load-bearing problems commit the answer only after the CoT
 
-[stub:] The same split is visible in the raw denoising dynamics: for post-hoc problems the answer region is confident (low entropy) at step 0–1 while the CoT region is still hot; for load-bearing problems the answer region stays hot for several steps, flipping repeatedly, and commits only as the CoT resolves.
+In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well 
 
 ![Answer resolution](figs/figA9_resolution.png)
 
-_**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step, one rollout per battery problem, grouped by the measured susceptibility ($S \le 0.1$ vs $S \ge 0.3$; three problems at $S = 0.2$ excluded; faint = single problems, bold = group mean). The post-hoc group's answer is near-committed already at step 1 (~0.1 nats) while its CoT is still at ~3 nats; the load-bearing group's answer decays slowly and from step ~4 stays hotter than its own already-cooled CoT._
-
-### Self-repair: escaping a confident-wrong answer
-
-[stub, related to the idiom example] Finally, we probed how sticky a wrong answer is, on a clock-strike fencepost problem (```A clock takes 6 seconds to strike 4 o'clock (it chimes 4 times). How many seconds does it take to strike 9 o'clock?```, the correct answer is 16, but on first glance the answer is 18).
-
-In natural runs the canvas transiently visits the wrong answers and corrects them within a few steps. But a *harvested* confident-wrong state (a cold run that converged to 18) is a genuine attractor. Concretely, we *plant* the donor run's full final state — its canvas $X$ *and* its sheet $\mathbf{S}$ — into a fresh rollout at plant step $k$, and denoising continues freely from there: nothing is clamped afterwards, so a small $k$ leaves many re-noising steps to escape while a large $k$ means the planted state is nearly frozen. Escape to 16 happens only with a hot sampler *and* enough re-noising — plant past $k \approx 48$ of $128$ and even the hot sampler stays stuck at 18.
-
-![Self-repair clock](figs/figA10_selfrepair_clock.png)
-
-_**Transient wrong answers self-repair; a committed wrong state needs heat and noise to escape.** Left: the first-line answer over denoising steps in natural cold runs (three seeds) — 12/18 appear transiently, all settle at 16. Right: a harvested wrong-18 state planted at varying steps and re-denoised: cold recipients stay stuck at every depth; very-hot recipients escape to 16 only when planted before ~step 48 of 128._
+_**Post-hoc answers commit before their CoT, load-bearing answers wait till the CoT is committed.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step, one rollout per battery problem, grouped by the measured susceptibility of the answer ($S \le 0.1$ vs $S \ge 0.3$, faint = single problems, bold = group mean). _
 
 ### How much does DiffusionGemma use bidirectional attention?
 

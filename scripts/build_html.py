@@ -208,25 +208,32 @@ def ill_jlens_future():
 
 def ill_posthoc_case():
     d = json.load(open(DATA / "posthoc_case.json"))
-    OK, BAD = "#2f9e44", "#c2255c"
-    def col(title, body, ans, anscol, sub):
-        return (f'<div><h4>{E(title)}</h4><code class="gen block">{body}</code>'
-                f'<p class="small"><b style="color:{anscol}">answer: {E(ans)}</b> &nbsp;·&nbsp; {E(sub)}</p></div>')
-    r, l = d["random"], d["lure"]
-    assert r["snippet"].startswith(r["answer"]), "answer-first snippet no longer opens with the answer"
-    rand_html = (f'<b style="color:{OK};background:rgba(47,158,68,.15)">{E(r["answer"])}</b>'
-                 + E(r["snippet"][len(r["answer"]):]))
-    lure_html = E(l["cot"]).replace("28 − 21 + 1 = **9**",
-                                    f'<b style="color:{BAD}">28 − 21 + 1 = 9</b>')
-    assert "**9**" not in lure_html, "lure highlight anchor failed"
+    OK, BAD, IV = "#2f9e44", "#c2255c", "#9c36b5"
+    def hl_answer(text, ans, col):
+        # highlight the answer token inside the FIRST line (answer-first framing)
+        nl = text.find("\n"); l1 = text[:nl] if nl >= 0 else text
+        m = re.search(rf"(?<![\d]){re.escape(ans)}(?![\d])", l1)
+        assert m, f"answer {ans!r} not on first line: {l1!r}"
+        bg = "rgba(47,158,68,.12)" if col == OK else "rgba(194,37,92,.12)"
+        return (E(l1[:m.start()]) + f'<b style="color:{col};background:{bg}">{E(ans)}</b>'
+                + E(l1[m.end():]) + E(text[nl:] if nl >= 0 else ""))
+    def col(v, title):
+        cl, sc = v["clean"], v["suscept"]
+        nl = sc["text"].find("\n")
+        sc_html = hl_answer(sc["text"][:nl], sc["answer"], OK if sc["match"] else BAD) \
+            + f'<span style="color:{IV}">{E(sc["text"][nl:])} …</span>'
+        commit = f"commits at step {cl['commit']:g}" + \
+            (f" (path {' → '.join(cl['traj'])})" if len(cl["traj"]) > 1 else "")
+        out = "unchanged" if sc["match"] else f"flips ({'/'.join(sorted(set(sc['answers'])))} over seeds)"
+        return f"""<div><h4>{E(title)}</h4>
+<p class="small">prompt: <code class="gen">{E(v['q'])}</code></p>
+<p class="small"><b>clean</b> &nbsp;·&nbsp; {E(commit)}</p>
+<code class="gen block">{hl_answer(cl['text'], cl['answer'], OK)} …</code>
+<p class="small"><b>susceptibility</b> &nbsp;·&nbsp; all {sc['n_cot']} CoT positions (<span style="color:{IV}">purple</span>) pinned to random tokens every step</p>
+<code class="gen block">{sc_html}</code>
+<p class="small"><b style="color:{OK if sc['match'] else BAD}">answer: {E(sc['answer'])}</b> &nbsp;·&nbsp; {E(out)} — S = {v['S']:.2f}</p></div>"""
     return f"""<div class="card">
-<p class="small">prompt: <code class="gen">{E(d['q'])}</code> &nbsp;·&nbsp; free answer: <b style="color:{OK}">{E(d['free_answer'])}</b> (correct)</p>
-<div class="cols2">
-{col(f"random corruption (all {r['n_corrupted']}/{r['n_cot']} CoT tokens randomized)",
-     rand_html + " …", r['answer'], OK, "unchanged — drift " + r['drift_rhos'])}
-{col("coherent wrong CoT", lure_html, l['answer'], BAD,
-     f"follows the lure ({l['followed']} seeds)")}
-</div>
+<div class="cols2">{col(d['easy'], 'easy')}{col(d['hard'], 'hard')}</div>
 </div>"""
 
 

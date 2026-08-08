@@ -7,8 +7,10 @@ baseline, matched by corruption seed) (suscept.json); difficulty = mean of 3 bli
 ratings from the problem text alone (difficulty.json). Spearman hand-rolled (rank + corrcoef);
 asserts pin the n=40 values +0.37 / +0.28 / +0.60 (n=20 report values were +0.37 / +0.42 / +0.66).
 
-Also emits data/posthoc_case.json: the squares_400_800 dissociation (random rho=1.0 corruption
-denoised away -> answer stays 8; coherent off-by-one lure CoT -> answer follows to 9, 5/5).
+p-values: two-sided permutation test on the Spearman rho (20000 permutations, seeded).
+
+Also emits data/posthoc_case.json for the easy-vs-hard case card: bat_ball (commit 0, S~0.05,
+answer survives rho=1.0 full-CoT randomization) vs sq1000 (commit ~4, S~0.70, answer flips).
 """
 import json
 import statistics as st
@@ -87,7 +89,13 @@ for ax, (fx, fy, xlab, ylab) in zip(axes, PANELS):
     ax.plot(gx, a + b * gx, color="0.55", linestyle="--", linewidth=1.1, zorder=2)
     rho = spearman(xs, ys)
     rhos.append(rho)
-    ax.text(0.03, 0.97, rf"$\rho_S = {rho:+.2f}$", transform=ax.transAxes, va="top")
+    rng = np.random.default_rng(0)
+    ry = rankdata(ys)
+    rx = rankdata(xs)
+    perm = np.array([np.corrcoef(rx, rng.permutation(ry))[0, 1] for _ in range(20000)])
+    pval = (1 + np.sum(np.abs(perm) >= abs(rho))) / (1 + len(perm))
+    ax.text(0.03, 0.97, rf"$\rho_S = {rho:+.2f}$" + f"\np = {pval:.4f}".replace("0.", "."),
+            transform=ax.transAxes, va="top")
     ax.set_xlabel(xlab)
     ax.set_ylabel(ylab)
     ax.spines[["top", "right"]].set_visible(False)
@@ -98,18 +106,21 @@ fig.savefig(OUT / "figA8_posthoc_correlations.png", dpi=200)
 print(OUT / "figA8_posthoc_correlations.png")
 print("spearman:", [round(r, 3) for r in rhos])
 
-# ---- case-study card data: squares_400_800 dissociation ----
-lure = json.load(open(SP / "lure_cots.json"))["squares_400_800"]
-q = next(c["q"] for c in clean.values() if c["pid"] == "squares_400_800")
-rand = susc["squares_400_800__r1.0__k0__c0"]
-cfr = [cf[f"squares_400_800__s{s}"] for s in range(5)]
-followed = sum(1 for v in cfr if v["followed_lure"])
-case = {"pid": "squares_400_800", "q": q, "correct": lure["correct"], "lure_ans": lure["lure"],
-        "free_answer": "8",
-        "random": {"n_corrupted": rand["n_corrupted"], "n_cot": rand["n_cot"],
-                   "snippet": rand["final_text"][:300], "answer": rand["A_hat"],
-                   "drift_rhos": "0.00 at rho 0.25/0.5/1.0 (S = 0.05)"},
-        "lure": {"cot": lure["cot"], "answer": cfr[0]["A_hat"], "followed": f"{followed}/5"}}
+# ---- case-study card data: easy (bat_ball) vs hard (sq1000), clean + rho=1.0 clamp ----
+Srow = {r["pid"]: r["S"] for r in rows}
+case = {}
+for tag, pid in [("easy", "bat_ball"), ("hard", "sq1000")]:
+    reps = [clean[f"{pid}__{s}"] for s in range(5)]
+    rep = next(c for c in reps if c["is_correct"] and c["ans_lock"] and c["cot_pos"])
+    cells = [susc[f"{pid}__r1.0__k0__c{c}"] for c in range(5)]
+    sc = cells[0]
+    case[tag] = dict(
+        pid=pid, q=rep["q"], S=round(Srow[pid], 2),
+        clean=dict(text=rep["final_text"][:300], answer=rep["model_ans"],
+                   commit=med(rep["ans_lock"]), traj=rep["answer_traj"]),
+        suscept=dict(text=sc["final_text"][:300], answer=sc["A_hat"],
+                     answers=[c["A_hat"] for c in cells],
+                     match=sc["match"], n_cot=sc["n_cot"]))
 DATA = ROOT / "data"; DATA.mkdir(exist_ok=True)
 json.dump(case, open(DATA / "posthoc_case.json", "w"), indent=1)
 print(DATA / "posthoc_case.json")

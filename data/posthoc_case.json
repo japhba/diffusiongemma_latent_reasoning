@@ -1,19 +1,58 @@
 {
- "pid": "squares_400_800",
- "q": "How many perfect square numbers are there strictly between 400 and 800?",
- "correct": "8",
- "lure_ans": "9",
- "free_answer": "8",
- "random": {
-  "n_corrupted": 255,
-  "n_cot": 255,
-  "snippet": "8versing)^ Break per window- machines\u2013 last /approx fullytext + accounts. such totalinging host propertyFrom Here chances result question5 itSetting reached machine largest**.%) change perfect does me car\u2013    acting $sqrt will upper take \\ calculate.\" fall area* Shift completely within subtract > mu",
-  "answer": "8",
-  "drift_rhos": "0.00 at rho 0.25/0.5/1.0 (S = 0.05)"
+ "easy": {
+  "pid": "bat_ball",
+  "q": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost, in cents?",
+  "S": 0.0,
+  "clean": {
+   "text": "Final answer: 5 cents\n\n**Reasoning:**\nLet $x$ be the cost of the ball.\nThe bat costs $1.00 more than the ball, so the cost of the bat is $x + \\$1.00$.\nThe total cost of both is $1.10 (or 110 cents).\n\nWe can set up the equation:\n$x + (x + 100) = 110$\n$2x + 100 = 110$\n$2x = 10$\n$x = 5$\n\nTherefore, the",
+   "answer": "5",
+   "commit": 0,
+   "traj": [
+    "5"
+   ]
+  },
+  "suscept": {
+   "text": "5 cents\n\n**Reasoning correct lake nearby sequence knowSubstitute car the can$),^ whenever)$:$,Verification costs time that $(** de1 any so solve only between* Strategy asks of:**7 with Break Thus you This2 $\\{ every)**%) aTherefore unopened place from): greater Determine totaling mathdooronce* bat T",
+   "answer": "5",
+   "answers": [
+    "5",
+    "5",
+    "5",
+    "5",
+    "5"
+   ],
+   "match": true,
+   "n_cot": 134
+  }
  },
- "lure": {
-  "cot": "I need to find perfect squares strictly between 400 and 800. Since 400 is 20\u00b2, the first perfect square greater than 400 is 21\u00b2. The largest perfect square less than 800 requires me to find the floor of \u221a800, which is about 28.28, so 28\u00b2 = 784 is the largest one that qualifies. That means the perfect squares I'm counting are 21\u00b2, 22\u00b2, 23\u00b2, 24\u00b2, 25\u00b2, 26\u00b2, 27\u00b2, and 28\u00b2, which runs from 21 to 28 inclusive, giving me 28 \u2212 21 + 1 = **9** perfect squares.",
-  "answer": "9",
-  "followed": "5/5"
+ "hard": {
+  "pid": "sq1000",
+  "q": "How many perfect square numbers are there strictly between 1000 and 5000?",
+  "S": 0.7,
+  "clean": {
+   "text": "39\n\nReasoning:\nTo find the number of perfect squares strictly between 1000 and 5000, we need to determine the range of integers $n$ such that $1000 < n^2 < 5000$.\n\n1.  **Find the lower bound:**\n    We calculate the square root of 1000:\n    $\\sqrt{1000} \\approx 31.62$\n    Since $31^2 = 961$ and $32^2",
+   "answer": "39",
+   "commit": 3.5,
+   "traj": [
+    "1",
+    "3",
+    "31",
+    "19",
+    "39"
+   ]
+  },
+  "suscept": {
+   "text": "36 rate)^ widget per area perfect machines concentrated math $\\ ball rangetext + $\\{. respective window doors set propertyIf tens fall more question Hall totalingSetting per into largest**. will chance tens does me following need break acting $ > will upper take fall calculate.\"otherx* Shift perfect",
+   "answer": "36",
+   "answers": [
+    "36",
+    "46",
+    "46",
+    "46",
+    "38"
+   ],
+   "match": false,
+   "n_cot": 254
+  }
  }
 }
