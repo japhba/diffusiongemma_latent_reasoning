@@ -168,7 +168,7 @@ _**DG denoises random corruption away but reads fluent wrong reasoning.** Left: 
 
 ![Answer resolution](figs/figA9_resolution.png)
 
-_**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step. Left: bat_ball and monty — the answer is confident by step 1 (0 flips) while the CoT is still at ~3–4 nats. Right: reverse_then_add and sq1000 — the answer stays hot until the CoT cools, passing through the annotated value sequences before settling._
+_**Post-hoc answers commit before their CoT; load-bearing answers wait on it.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step. Left: bat_ball, monty, prod_then_digitsum — the answer is confident by step 1 (0 flips) while the CoT is still at ~3–4 nats; for prod_then_digitsum the instantly-committed answer is wrong (9), and the CoT is written to it. Right: reverse_then_add, sq1000, cubes_10_1000 — the answer stays hot until the CoT cools, passing through the annotated value sequences before settling; cubes_10_1000's answer entropy re-rises at step 5, where 4 flips to the correct 7._
 
 ### Self-repair: escaping a confident-wrong answer
 
