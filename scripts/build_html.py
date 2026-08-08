@@ -217,23 +217,26 @@ def ill_posthoc_case():
         bg = "rgba(47,158,68,.12)" if col == OK else "rgba(194,37,92,.12)"
         return (E(l1[:m.start()]) + f'<b style="color:{col};background:{bg}">{E(ans)}</b>'
                 + E(l1[m.end():]) + E(text[nl:] if nl >= 0 else ""))
-    def col(v, title):
-        cl, sc = v["clean"], v["suscept"]
+    # interleave the two problems' cells so the grid rows (header/clean/suscept/verdict)
+    # align vertically across columns
+    cells = {r: [] for r in ("head", "cleanlab", "clean", "susclab", "susc", "verdict")}
+    for tag, title in (("easy", "easy"), ("hard", "hard")):
+        v = d[tag]; cl, sc = v["clean"], v["suscept"]
         nl = sc["text"].find("\n")
         sc_html = hl_answer(sc["text"][:nl], sc["answer"], OK if sc["match"] else BAD) \
             + f'<span style="color:{IV}">{E(sc["text"][nl:])} …</span>'
         commit = f"commits at step {cl['commit']:g}" + \
             (f" (path {' → '.join(cl['traj'])})" if len(cl["traj"]) > 1 else "")
         out = "unchanged" if sc["match"] else f"flips ({'/'.join(sorted(set(sc['answers'])))} over seeds)"
-        return f"""<div><h4>{E(title)}</h4>
-<p class="small">prompt: <code class="gen">{E(v['q'])}</code></p>
-<p class="small"><b>clean</b> &nbsp;·&nbsp; {E(commit)}</p>
-<code class="gen block">{hl_answer(cl['text'], cl['answer'], OK)} …</code>
-<p class="small"><b>susceptibility</b> &nbsp;·&nbsp; all {sc['n_cot']} CoT positions (<span style="color:{IV}">purple</span>) pinned to random tokens every step</p>
-<code class="gen block">{sc_html}</code>
-<p class="small"><b style="color:{OK if sc['match'] else BAD}">answer: {E(sc['answer'])}</b> &nbsp;·&nbsp; {E(out)} — S = {v['S']:.2f}</p></div>"""
+        cells["head"].append(f'<div><h4>{E(title)}</h4><p class="small">prompt: <code class="gen">{E(v["q"])}</code></p></div>')
+        cells["cleanlab"].append(f'<p class="small"><b>clean</b> &nbsp;·&nbsp; {E(commit)}</p>')
+        cells["clean"].append(f'<code class="gen block">{hl_answer(cl["text"], cl["answer"], OK)} …</code>')
+        cells["susclab"].append(f'<p class="small"><b>susceptibility</b> &nbsp;·&nbsp; all {sc["n_cot"]} CoT positions (<span style="color:{IV}">purple</span>) pinned to random tokens every step</p>')
+        cells["susc"].append(f'<code class="gen block">{sc_html}</code>')
+        cells["verdict"].append(f'<p class="small"><b style="color:{OK if sc["match"] else BAD}">answer: {E(sc["answer"])}</b> &nbsp;·&nbsp; {E(out)} — S = {v["S"]:.2f}</p>')
+    grid = "".join(cells[r][i] for r in ("head", "cleanlab", "clean", "susclab", "susc", "verdict") for i in (0, 1))
     return f"""<div class="card">
-<div class="cols2">{col(d['easy'], 'easy')}{col(d['hard'], 'hard')}</div>
+<div class="cols2" style="row-gap:6px">{grid}</div>
 </div>"""
 
 

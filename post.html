@@ -144,7 +144,7 @@ $$</p>
 <figure><img src="figs/figA8b_posthoc_case.png" alt="Post-hoc case study"></figure>
 <p>_<strong>An easy answer ignores its CoT; a hard answer breaks with it.</strong> Top row: clean rollout, model answer highlighted, with its commitment time (bat_ball locks at step 0; sq1000 passes through 1 → 3 → 31 → 19 → 39, locking at ~step 4). Bottom row: the susceptibility intervention — every CoT canvas position (purple; $X^t$, not $\mathbf{S}^t$) is pinned to random tokens at every step while the answer denoises freely. bat_ball still answers 5 ($S = 0.00$); sq1000's answer breaks to 36/38/46 across corruption seeds ($S = 0.70$)._</p>
 <p>#### Load-bearing problems commit the answer only after the CoT</p>
-<p>In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well </p>
+<p>In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well</p>
 <figure><img src="figs/figA9_resolution.png" alt="Answer resolution"></figure>
 <p>_<strong>Post-hoc answers commit before their CoT, load-bearing answers wait till the CoT is committed.</strong> Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step, one rollout per battery problem, grouped by the measured susceptibility of the answer ($S \le 0.1$ vs $S \ge 0.3$, faint = single problems, bold = group mean). _</p>
 <h3>How much does DiffusionGemma use bidirectional attention?</h3>

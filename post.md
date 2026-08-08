@@ -164,7 +164,7 @@ _**An easy answer ignores its CoT; a hard answer breaks with it.** Top row: clea
 
 #### Load-bearing problems commit the answer only after the CoT
 
-In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well 
+In the previous paragraph, we analyzed the causal dependence of the answer on the CoT, as well
 
 ![Answer resolution](figs/figA9_resolution.png)
 
