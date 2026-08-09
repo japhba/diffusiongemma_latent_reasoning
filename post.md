@@ -144,11 +144,7 @@ We validated that the emergence of _idiom_ is indeed causal: persistently ablati
 
 _**Persistently ablating the nascent idiom preserves the native seasonal completion.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal; seed s5). Top: the base run — the idiom takes over. Bottom: ablating the idiom's $\mathbf{s}$-mass at every step from $t=2$ onward (dotted onset, shaded) keeps the seasonal draft, which completes cleanly._
 
-Note that while it doesn't require $\mathbf{s}^t$, this is also an instance of **self-correction**. This has important consequences for monitorability which may not have been captured in Engels et al.'s analysis: a tool reading only the final diffusion output will miss transient output. A model may for instance choose to hide a specific fact in its chain-of-thought to a monitor, while having used it intermittently, though we did not find any instances of such behavior here.
-
-![Constraint margins](figs/figA7_constraint_margins.png)
-
-_**Drafts transiently violate the constraint and are only patched late.** Constraint margin (number of violations) on a constrained writing task (word palindrome, hot sampler), over linearly warped diffusion time $\tau$ (each run's active phase normalized so its last margin change sits at $\tau = 1$; green = runs that escape to a valid sentence, orange = trapped, blue = clean). Bottom: three decoded canvases of the flagship escape run — the mid-run draft still violates the constraint before the late repair lands on a valid palindrome. This is the same rollout family as the seasonal → idiom example above._
+Note that this example also represents a more general instantion of **self-correction**, anticipating the correction through the $\mathbf{s}^t$ channel. This has important consequences for monitorability which may not have been captured in Engels et al.'s analysis: a tool reading only the final diffusion output will miss transient output. A model may for instance choose to hide a specific fact in its chain-of-thought to a monitor, while having used it intermittently, though we did not find any instances of such behavior here.
 
 ### Post-hoc rationalization
 
@@ -158,7 +154,7 @@ For autoregressive models, the answer appears after the CoT. This incentivizes a
 
 ![Post-hoc correlations](figs/figA8_posthoc_correlations.png)
 
-_**Problem difficulty, CoT load-bearingness, and commitment time correlate.** Problem difficulty is measured via an LLM judge, CoT load-bearingness via a susceptiblity: how sensitive the answer is to replacing the CoT with random related tokens, and commitment time is when the answer commits. We consider problems from tasks XXX_
+_**Problem difficulty, CoT load-bearingness, and commitment time correlate.** Problem difficulty is the mean rating of three blind LLM raters (shown only the problem and its correct answer), CoT load-bearingness is measured via a susceptibility $S$: the flip rate of the answer when a $\rho$-fraction of the CoT canvas positions ($X^t$, pinned every step) is replaced with random tokens (averaged over $\rho$, against the $\rho = 0$ own-CoT-pinned baseline), and commitment time is the denoising step after which the answer's canvas positions stop changing (median over 5 seeds). We consider $n = 40$ problems from four task families: CRT-style intuition traps (crt), counting/enumeration (count), hard arithmetic/enumeration (hard), and multi-hop compute-then-transform chains (transform). Spearman $\rho_S$ with two-sided permutation $p$ per panel; × = accuracy < 0.5, dashed = least-squares fit._
 
 For illustration, consider an easy and a hard problem side by side:
 
@@ -181,4 +177,4 @@ One of the differences in DiffusionGemma is that it has bidirectional attention.
 
 _**Commitment order follows the task's logical direction, but defaults to causality when ambiguous.** Center of mass of the canvas positions committed by step $t$ (0 = left, 1 = right of the content span) over diffusion progress $t/T$ (faint = single rollouts, bold = mean). $\rho_{\mathrm{logic}}$ = Spearman between the judge's logical ordering of its own atom decomposition and the atoms' positions in the text._
 
-We considered three tasks. GPQA, which involves logic-style problems and therefore shoudl require left-to-right generation, *poem writing*, which has no clear left-to-rigth bias but only needs to satisfy a global structure, and *reverse_chain*, which requires the model to reverse its reasoning order.
+We considered three tasks: GPQA, which involves logic-style problems and therefore shoudl require left-to-right generation, *poem writing*, which has no clear left-to-rigth bias but only needs to satisfy a global structure, and *reverse_chain*, which requires the model to reverse its reasoning order.
