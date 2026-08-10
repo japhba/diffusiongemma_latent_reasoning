@@ -130,6 +130,30 @@ _**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix
 
 _**The upcoming operation is readable at an earlier canvas position.** The DG-bidirectional-fit J-Lens is read at the token `by` (blue), two positions before the operation slot, on an otherwise identical prompt pair. The variant's operation (orange) surfaces in the top-5 across workspace layers ( `minus`: rank 1 at L18–21; `plus`: rank 5/3 at L21/L23 after the single-token swap). The switch is partial — `minus` remains highly ranked in the addition variant._
 
+### Letter arithmetic
+
+[stub:] The parallelism analysis in the main text compares set *means*, $\langle R\rangle_{T}$ vs $\langle R\rangle_{N}$. A stricter criterion asks whether *every* target beats *every* non-target: we aggregate the same cells with the weakest target response $R_{T}^{\min}$ against the strongest non-target response $R_{N}^{\max}$, and $E^{\min} = R_{T}^{\min} - R_{N}^{\max}$.
+
+![Letters strict triptych](figs/figA12_letters_strict.png)
+
+_The separation is mean-level only: already at $n=1$ some non-target letter responds more strongly than the weakest target ($E^{\min}<0$ at every $n$)._
+
+#### Multiplication
+
+[stub:] The same protocol also runs with a multiplicative image map, $x' = $ the letter at position $k\cdot\mathrm{pos}(x)$, $k\in\{2,3,4\}$ (upper→upper).
+
+![Multiplicative transfer map](figs/figA13_mult_transfer.png)
+
+_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+0.97$)._
+
+![Multiplicative parallelism triptych](figs/figA14_mult_triptych.png)
+
+_Mean parallelism for $\times k$: targets separate from non-targets, peaking at $n\approx 3$–$4$._
+
+![Multiplicative strict triptych](figs/figA15_mult_strict.png)
+
+_As in the additive family, the worst-case criterion stays negative at every $n$._
+
 ### Autonomous computational usage of $\mathbf{s}^t$
 
 In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.

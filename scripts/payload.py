@@ -1,7 +1,9 @@
 """Load the symbol-arithmetic study payload (src_data/symbol_arithmetic_payload.json).
 
 Provenance: window.__DATA__ of activation_oracles_dev/reports/dg-planning/symbol_arithmetic.html
-(builder: diffusiongemma/planning/build_superpos.py), extracted verbatim 2026-08-02.
+(builder: diffusiongemma/planning/build_superpos.py), extracted verbatim 2026-08-02; refreshed
+2026-08-10 from the 2026-08-04 report build (adds doms mu/rf/kb/mn3/cp + tmap mu/rf/kb/mn3/cp;
+the num/let/ll/uu subtrees are byte-identical to the 2026-08-02 extraction).
 """
 import json
 from pathlib import Path

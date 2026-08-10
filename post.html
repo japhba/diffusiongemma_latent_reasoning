@@ -127,6 +127,18 @@ $$</p>
 <p>[stub:] Beyond retention, the bidirectional stream also carries information about <em>future</em> positions: on an arithmetic prompt, the lens read at an earlier canvas position already decodes the operation that only appears two tokens later.</p>
 <figure><img src="figs/figA6_jlens_future.png" alt="J-Lens future operation"></figure>
 <p>_<strong>The upcoming operation is readable at an earlier canvas position.</strong> The DG-bidirectional-fit J-Lens is read at the token <code>by</code> (blue), two positions before the operation slot, on an otherwise identical prompt pair. The variant's operation (orange) surfaces in the top-5 across workspace layers ( <code>minus</code>: rank 1 at L18–21; <code>plus</code>: rank 5/3 at L21/L23 after the single-token swap). The switch is partial — <code>minus</code> remains highly ranked in the addition variant._</p>
+<h3>Letter arithmetic</h3>
+<p>[stub:] The parallelism analysis in the main text compares set <em>means</em>, $\langle R\rangle_{T}$ vs $\langle R\rangle_{N}$. A stricter criterion asks whether <em>every</em> target beats <em>every</em> non-target: we aggregate the same cells with the weakest target response $R_{T}^{\min}$ against the strongest non-target response $R_{N}^{\max}$, and $E^{\min} = R_{T}^{\min} - R_{N}^{\max}$.</p>
+<figure><img src="figs/figA12_letters_strict.png" alt="Letters strict triptych"></figure>
+<p>_The separation is mean-level only: already at $n=1$ some non-target letter responds more strongly than the weakest target ($E^{\min}<0$ at every $n$)._</p>
+<p>#### Multiplication</p>
+<p>[stub:] The same protocol also runs with a multiplicative image map, $x' = $ the letter at position $k\cdot\mathrm{pos}(x)$, $k\in\{2,3,4\}$ (upper→upper).</p>
+<figure><img src="figs/figA13_mult_transfer.png" alt="Multiplicative transfer map"></figure>
+<p>_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+0.97$)._</p>
+<figure><img src="figs/figA14_mult_triptych.png" alt="Multiplicative parallelism triptych"></figure>
+<p>_Mean parallelism for $\times k$: targets separate from non-targets, peaking at $n\approx 3$–$4$._</p>
+<figure><img src="figs/figA15_mult_strict.png" alt="Multiplicative strict triptych"></figure>
+<p>_As in the additive family, the worst-case criterion stays negative at every $n$._</p>
 <h3>Autonomous computational usage of $\mathbf{s}^t$</h3>
 <p>In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.</p>
 <p>To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. When asked ``<code>Please write a word-level palindrome</code>`<code>, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (</code>`<code>All leaves fall when leaves fall all.</code>`<code>) and the famous _idiom_ (</code>`<code>All for one and one for all.</code>``).</p>
