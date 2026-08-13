@@ -1,8 +1,7 @@
 """A11: commitment center-of-mass over diffusion progress, one panel per task class:
 logically left-to-right (GPQA), direction-indifferent (poem writing), logically right-to-left
 (reverse_chain, end-anchored). y = center of mass of the canvas positions committed by step t,
-normalized to the content span; dashed = matched left-to-right filler (same committed count,
-leftmost first) — a purely causal fill sits on it. Panel annotation: median chain rho
+normalized to the content span. Panel annotation: median chain rho
 (Spearman of final-commit step vs position).
 
 GPQA + poem: fresh pod captures (capture_bench_order.py / poem topics), default sampler,
@@ -41,28 +40,23 @@ def rankdata(v):
 def com_curves(content, lock, T):
     pos = np.array(content, float)
     posn = (pos - pos.min()) / max(pos.max() - pos.min(), 1)
-    srt = np.sort(posn)
     lk = np.array(lock)
     com = np.full(T, np.nan)
-    ref = np.full(T, np.nan)
     for t in range(T):
         sel = posn[lk <= t]
         if len(sel):
             com[t] = sel.mean()
-            ref[t] = srt[:len(sel)].mean()
     x = (np.arange(T) + 1) / T
     rho = float(np.corrcoef(rankdata(pos), rankdata(lk.astype(float)))[0, 1])
-    return np.interp(GRID, x, com), np.interp(GRID, x, ref), rho
+    return np.interp(GRID, x, com), rho
 
-def panel(ax, runs, col=OBS, z=2, alpha=0.15, lw=0.7, draw_ref=True):
-    cs, fs, rhos = [], [], []
+def panel(ax, runs, col=OBS, z=2, alpha=0.15, lw=0.7):
+    cs, rhos = [], []
     for content, lock, T in runs:
-        c, f, rho = com_curves(content, lock, T)
+        c, rho = com_curves(content, lock, T)
         ax.plot(GRID, c, color=col, alpha=alpha, linewidth=lw, zorder=z)
-        cs.append(c); fs.append(f); rhos.append(rho)
+        cs.append(c); rhos.append(rho)
     ax.plot(GRID, np.nanmean(cs, axis=0), color=col, linewidth=2.0, zorder=z + 2)
-    if draw_ref:
-        ax.plot(GRID, np.nanmean(fs, axis=0), color="0.35", linestyle="--", linewidth=1.4, zorder=z + 1)
     return float(np.median(rhos))
 
 fig, axes = plt.subplots(1, 3, sharex=True, sharey=True, layout="constrained",
@@ -99,9 +93,9 @@ ax = axes[2]
 rc = [r for r in films if r["task"] == "reverse_chain" and r["depth"] in (4, 5)
       and len(set(r["lock"])) > 1]
 rho_w = panel(ax, [(r["content"], r["lock"], r["T"]) for r in rc if not r["ok"]],
-              col=BADC, z=2, alpha=0.25, draw_ref=False)
+              col=BADC, z=2, alpha=0.25)
 rho_c = panel(ax, [(r["content"], r["lock"], r["T"]) for r in rc if r["ok"]],
-              col=OKC, z=3, alpha=0.6, lw=1.2, draw_ref=True)
+              col=OKC, z=3, alpha=0.6, lw=1.2)
 finish(ax, "logically right-to-left", "reverse_chain (d4–5)", len(rc),
        rf"$\rho$: correct ${rho_c:+.2f}$, wrong ${rho_w:+.2f}$",
        r"judge: $\rho_{\mathrm{logic}} = -1$ (by construction)")
