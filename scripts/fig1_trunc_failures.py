@@ -22,7 +22,7 @@ RUNGS = ["soft", "k8", "k4", "k2", "k1"]
 RUNG_LAB = {"soft": "soft", "k8": "top-8", "k4": "top-4", "k2": "top-2", "k1": "top-1"}
 FMS = ["wrong", "capped", "loop"]  # stacking order bottom -> top
 FMCOL = {"loop": "#8a5a2b", "capped": "#eda100", "wrong": "#e87ba4"}
-FMLAB = {"loop": "degenerate loop", "capped": "budget-capped mid-answer", "wrong": "wrong answer (clean finish)"}
+FMLAB = {"loop": "degenerate loop", "capped": "budget-capped mid-answer", "wrong": "wrong answer"}
 
 
 def tail_dup(text, n=16):
