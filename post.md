@@ -64,19 +64,9 @@ For illustration, here is a single intervention in full:
 
 _Example of one intervention: a subleading injection on `H`(the leader `G` keeps rank 1) swings the answer slot from `J` to`K`=`H+3`  one step later._
 
-### Parallelism
-
-This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. To this end, we measure responses $\langle R\rangle_{T}$ and $\langle R\rangle_{N}$ averaged over the target and non-target sets, respectively, and introduce the _effect_ $E = \langle R\rangle_{T} - \langle R\rangle_{N}$. Because we now inject mass at multiple positions and observe proportionally scaled response, we calculate a _normalized effect_ $NE$.
-
-![Parallelism triptych](figs/fig2b_triptych.png)
-
-_DiffusionGemma does simultaneous letter arithmetic to about a capacity of $n=4$._
-
-This behavior is plausible considering the computation in question: a shift is easily implemented by a linear rotation in representation space. Therefore, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.
-
 ## Conclusion
 
-In this post, we have studied whether DiffusionGemma has latent reasoning in terms of its vector-valued state $\mathbf{s}^t$. We found that top-k truncation of $\mathbf{s}^t$ largely preserves accuracy suggests that it is not _significantly_ being used in typical reasoning-focussed task. However, for some tasks, we found that the model can make _some_ use of $\mathbf{s}^t$, in terms of carrying out (parallel) computation on it.
+In this post, we have studied whether DiffusionGemma has latent reasoning in terms of its vector-valued state $\mathbf{s}^t$. We found that top-k truncation of $\mathbf{s}^t$ largely preserves accuracy suggests that it is not _significantly_ being used in typical reasoning-focussed task. However, for some tasks, we found that the model can make _some_ use of $\mathbf{s}^t$, in terms of carrying out computation on it.
 
 Overall, this supports [Engels et al.](https://arxiv.org/abs/2606.20560)'s conclusion of a highly monitorable DiffusionGemma. In particular, we did not find any strong evidence of latent _reasoning_, as in using $\mathbf{s}^t$ in a way that carries out meaningful computation and is opaque.
 
@@ -132,27 +122,11 @@ _**The upcoming operation is readable at an earlier canvas position.** The DG-bi
 
 ### Letter arithmetic
 
-[stub:] The parallelism analysis in the main text compares set *means*, $\langle R\rangle_{T}$ vs $\langle R\rangle_{N}$. A stricter criterion asks whether *every* target beats *every* non-target: we aggregate the same cells with the weakest target response $R_{T}^{\min}$ against the strongest non-target response $R_{N}^{\max}$, and $E^{\min} = R_{T}^{\min} - R_{N}^{\max}$.
-
-![Letters strict triptych](figs/figA12_letters_strict.png)
-
-_The separation is mean-level only: already at $n=1$ some non-target letter responds more strongly than the weakest target ($E^{\min}<0$ at every $n$)._
-
-#### Multiplication
-
-[stub:] The same protocol also runs with a multiplicative image map, $x' = $ the letter at position $k\cdot\mathrm{pos}(x)$, $k\in\{2,3,4\}$ (upper→upper).
+[stub:] The single-injection transfer-map protocol of the main text also runs with a multiplicative image map, $x' = $ the letter at position $k\cdot\mathrm{pos}(x)$, $k\in\{2,3,4\}$ (upper→upper).
 
 ![Multiplicative transfer map](figs/figA13_mult_transfer.png)
 
 _Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+0.97$)._
-
-![Multiplicative parallelism triptych](figs/figA14_mult_triptych.png)
-
-_Mean parallelism for $\times k$: targets separate from non-targets, peaking at $n\approx 3$–$4$._
-
-![Multiplicative strict triptych](figs/figA15_mult_strict.png)
-
-_As in the additive family, the worst-case criterion stays negative at every $n$._
 
 ### Autonomous computational usage of $\mathbf{s}^t$
 

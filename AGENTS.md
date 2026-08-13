@@ -71,20 +71,24 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/extract_letters_example.py` — example-intervention data → `data/letters_example.json`
   (cell `UU3|hi|s0`, inject 'H'; A-slot sheet from battery state `UU3|src0|s0`).
 - `scripts/fig2b_triptych.py` — parallelism, letters-only, mean ± 95% CI curves (no sinas, per
-  user request 2026-08-01).
+  user request 2026-08-01). **REMOVED from the post 2026-08-13** ("remove every claim about
+  parallelism"): the whole main-text "### Parallelism" section (fig2b + capacity-n≈4 claim +
+  superposition-transport paragraph) and the conclusion's "(parallel)" qualifier are gone.
+  Script + fig kept, unreferenced.
 - `scripts/figA12_letters_strict.py` / `figA15_mult_strict.py` — the report's "strict duplicate"
   of the triptych: min-over-targets vs max-over-non-targets, `E^min = R_T^min − R_N^max`,
   `NE^min = E^min/(n·ε0)` (same cells + exclusions as the mean scripts, which they re-assert
-  against the stored per-cell `E`). Both families come out `E^min < 0` at every n — the
-  "Letter arithmetic" appendix section (added 2026-08-10) reports the separation as mean-level
-  only.
+  against the stored per-cell `E`). Both families come out `E^min < 0` at every n.
+  **REMOVED from the post 2026-08-13** with the rest of the n-sweep material; scripts + figs kept.
 - `scripts/figA13_mult_transfer.py` — ×k transfer matshow from payload `tmap.mu` (ε=0.45, n=1,
   k∈{2,3,4} pooled by aligning rows to the pre-image pos(x')/k; no `v` filter — all UU-style).
   Diag mean R 0.993 vs offdiag 0.803 (additive: 1.697 vs 0.731) → the "+0.19 vs +0.97" caption.
+  Still in the post: the appendix "Letter arithmetic" section is now just this n=1 map (the
+  former "#### Multiplication" subheading was flattened away when the n-sweep figs left).
 - `scripts/figA14_mult_triptych.py` — mean triptych for `mu` (imgOf: x' = letter at k·pos(x)).
   NOTE (from the report's caveat box / memory): the mixed-reference NE for ×k is inflated by
-  lattice non-specificity — placebo-corrected spec is ≈0 at ε0=0.04; captions therefore stay
-  descriptive of the metric shown and avoid a capacity claim for ×k.
+  lattice non-specificity — placebo-corrected spec is ≈0 at ε0=0.04. **REMOVED from the post
+  2026-08-13**; script + fig kept.
 - `scripts/figA{1..4}_*.py` — appendix matrices (A1 RSA curves; A2/A3/A4 matrix-only PNGs in
   figs/parts/) + card data: `data/probe_pair.json`, `data/steer_pair.json` (cells gg+gd — both
   target models side by side), `data/jlens_layers.json` (couplet-breath-death top-5/layer for both
