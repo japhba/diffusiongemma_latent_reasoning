@@ -39,6 +39,14 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   `/workspace/dg/posthoc_ext/`, battery `diffusiongemma/posthoc/ext_battery.py`, same GRID; the
   capture parses around the post-Aug-04 `<|channel>thought` canvas scaffold) + fresh 3-rater
   `ext_difficulty.json`.
+- `src_data/gdocs_roundtrip_2026-08-13.docx` — the user's Google-Docs editing pass (base = the
+  45b8dce docx export of 2026-08-02, comments dated 08-03/04, pulled back 08-13). Its text edits
+  were three-way merged into post.md on 2026-08-13 (~20 wording edits + two new blocks: the
+  J-lens step-accuracy figure figA16 — extracted from the docx media, exists nowhere else — and
+  the "DiffusionGemma represents tokens acausally" subsection prose that replaced the figA6
+  [stub:]). NOT ported: its parallelism-section edits (section removed 08-13 per user) and its
+  seasonal/palindrome edits (superseded by the 08-07 repo rewrites). The five Word comments live
+  only in this archived file.
 - `src_data/lockin/` ← `/workspace-vast/jbauer/exp/dg_lockin/` (clock + escape-minimum files).
 - `src_data/planning/{canalysis,constr_summary,gallery}.json` ← constrained battery
   (`diffusiongemma/exp/dg_planning/` + `reports/dg-planning/data/gallery.json`).
