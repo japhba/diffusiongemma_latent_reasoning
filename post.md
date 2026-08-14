@@ -40,7 +40,7 @@ However, when replicating their experiments, we observed that the model will oft
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 
-_**A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{s}^t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560).** Specifically, we use more diffusion steps, a wider temperature range, and a lower entropy bound._
+_**A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{s}^t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560).** Specifically, we use more diffusion steps, a wider temperature range ($1.0\to0.5$ vs $0.8\to0.4$), and a lower entropy bound ($0.02$ vs $0.1$). Both knobs act on commitment pacing: truncating $\mathbf{s}^t$ to its top-k renormalizes it into an over-confident distribution, so the standard sampler freezes canvas positions before their content has formed and then anneals too cold to escape the resulting repetition. The lower entropy bound admits fewer positions per step, while the hotter, wider temperature schedule keeps the uncommitted positions exploring until they genuinely settle._
 
 ## A case study for using the distribution computationally: letter arithmetic
 
