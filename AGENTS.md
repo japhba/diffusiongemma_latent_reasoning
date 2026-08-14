@@ -76,11 +76,12 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/payload.py` — loads `src_data/symbol_arithmetic_payload.json`.
 - `scripts/fig2a_transfer_map.py` — letter-arithmetic transfer matshows (headline variant:
   UPPER→UPPER, ε=0.45, payload `tmap.let`, `v=="UU"`). Since 2026-08-14 (user): restricted to k=3 ONLY (UU3 states) so every row resolves to a unique
-  target letter — yticklabels are the resolved outputs D…Z (no "x'−k" arithmetic), J absent
-  (= G's image). The G row+column are dropped (G = every UU state's natural operand → never
-  injected / image always excluded — both empty by construction, asserted). k=3 diag/offdiag
-  R = 2.191/0.732 (excess +1.46; the old pooled-k map was 1.697/0.731 = +0.97 — figA13's caption
-  comparison updated accordingly). Pooled version = git history.
+  target letter — yticklabels are the resolved outputs D…Z (no "x'−k" arithmetic). The ja/jb
+  readout exclusion is LIFTED for display: row J (= G's image, the incumbent) shows the
+  displacement response (blue band). The G source column stays dropped (never injected,
+  asserted). Specificity stats skip row J: diag/offdiag R = 2.191/0.732 (excess +1.46; the old
+  pooled-k map was 1.697/0.731 = +0.97 — figA13's caption comparison updated accordingly).
+  Pooled version = git history.
 - `scripts/extract_letters_example.py` — example-intervention data → `data/letters_example.json`
   (cell `UU3|hi|s0`, inject 'H'; A-slot sheet from battery state `UU3|src0|s0`).
 - `scripts/fig2b_triptych.py` — parallelism, letters-only, mean ± 95% CI curves (no sinas, per

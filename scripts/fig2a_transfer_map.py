@@ -32,30 +32,33 @@ for c in tm["cells"]:
         continue
     k, xi = st["k"], UPP.index(c["x"])
     base, arm = st["base"], c["arm"]
+    # ja/jb (the natural image J and committed answer) are NOT excluded here (since 2026-08-14,
+    # user): row J then displays the incumbent's displacement under every injection
     L = {q: np.log10(max(arm[q] or FLOOR, FLOOR) / max(base[q] or FLOOR, FLOOR))
-         for q in range(52) if q not in (st["ja"], st["jb"])}
+         for q in range(52)}
     row = lambda q: (q - 26 - k) if (q >= 26 and 0 <= q - 26 - k < NC) else NC
     for q, v in L.items():
         esum[row(q), xi] += v; ecnt[row(q), xi] += 1
     conf[row(max(L, key=L.get)), xi] += 1
 
 em = np.ma.masked_invalid(np.where(ecnt > 0, esum / np.maximum(ecnt, 1), np.nan))
-d = [em[i, i] for i in range(NC) if ecnt[i, i] > 0]
-o = [em[i, j] for i in range(NC) for j in range(NC) if i != j and ecnt[i, j] > 0]
-
-# G is every UU state's natural operand: never injected (empty column) and its image is the
-# always-excluded natural target (empty row) — drop both
 gi = UPP.index("G")
-assert ecnt[:, gi].sum() == 0 and ecnt[gi, :].sum() == 0, "G column/row unexpectedly has data"
+# specificity stats over transfer rows only (row J = incumbent displacement, not transfer)
+d = [em[i, i] for i in range(NC) if i != gi and ecnt[i, i] > 0]
+o = [em[i, j] for i in range(NC) for j in range(NC) if i != gi and i != j and ecnt[i, j] > 0]
+
+# G is every UU state's natural operand and never injected — drop the empty source column
+# (its ROW, the natural image J, is kept: that's the displacement readout)
+assert ecnt[:, gi].sum() == 0, "G column unexpectedly has data"
 keep = [j for j in range(NC) if j != gi]
-em = em[keep + [NC], :][:, keep]
-xt = [UPP[j] for j in keep]; yt = [UPP[i + K] for i in keep] + ["other"]
+em = em[:, keep]
+xt = [UPP[j] for j in keep]; yt = [UPP[i + K] for i in range(NC)] + ["other"]
 
 fig, ax = plt.subplots(layout="constrained")
 vm = np.percentile(np.abs(em.compressed()), 98)
 im = ax.imshow(em, cmap="coolwarm", vmin=-vm, vmax=vm, origin="lower")
 ax.set_xticks(range(len(keep)), xt)
-ax.set_yticks(range(len(keep) + 1), yt)
+ax.set_yticks(range(NC + 1), yt)
 ax.set_xlabel(r"$x^{t}$")
 ax.set_ylabel(r"$x^{\prime\,t+1}$")
 ax.set_title(r"response $\mathbf{R}[x^{\prime\,t+1} \vert\, \mathrm{pert}(x^t)]$,  $k=3$")
