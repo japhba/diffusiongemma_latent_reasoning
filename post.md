@@ -20,7 +20,7 @@ $$
 \end{aligned}
 $$
 
-where $T$ is the number of diffusion steps. Here, $(\mathbf{s}^t_i)_{i=1..C} = \mathbf{S}^t \in \mathbb{R}^{C\times|\mathcal{V}|}$ represents the distribution passed between diffusion steps. Importantly, $X^t$ attends bidirectionally to itself, and to $p$. $\mathbf{s}^t[x^t]$ also functions as a confidence score for any token $x^t$: unless a confidence threshold is passed, $x^t$ gets replaced with a random token at every step $t$, facilitating exploration and correction.
+where $T$ is the number of diffusion steps. Here, $(\mathbf{s}^t_i)_{i=1..C} = \mathbf{S}^t \in \mathbb{R}^{C\times|\mathcal{V}|}$ represents the distribution passed between diffusion steps. Importantly, $X^t$ attends bidirectionally to itself, and to $p$. $\mathbf{s}^t[x^t]$ also functions as a confidence score for any token $x^t$: unless a confidence threshold is passed, $x^t$ gets replaced with a random token at every step $t$, facilitating exploration and correction. This threshold is an _entropy bound_ on $\mathbf{s}^t_i$ — a position only commits once its distribution is sharp enough — and the replacement tokens are drawn at a temperature that anneals over the run. Together with the total number of diffusion steps $T$, which caps how many refinement passes the canvas receives, these are the sampler settings we adjust below.
 
 For a visual and more detailed introduction to DiffusionGemma, see [this post](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma).
 
@@ -40,7 +40,7 @@ However, when replicating their experiments, we observed that the model will oft
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 
-_**A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{s}^t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560).** Specifically, we use more diffusion steps, a wider temperature range ($1.0\to0.5$ vs $0.8\to0.4$), and a lower entropy bound ($0.02$ vs $0.1$). Both knobs act on commitment pacing: truncating $\mathbf{s}^t$ to its top-k renormalizes it into an over-confident distribution, so the standard sampler freezes canvas positions before their content has formed and then anneals too cold to escape the resulting repetition. The lower entropy bound admits fewer positions per step, while the hotter, wider temperature schedule keeps the uncommitted positions exploring until they genuinely settle._
+_**A gentler sampler prevents the degenerate loop that caused performance degradation on top-k truncating the distributional state $\mathbf{s}^t$ observed in [Engels et al.](https://arxiv.org/abs/2606.20560).** Specifically, we use more diffusion steps, a wider temperature range, and a lower entropy bound._
 
 ## A case study for using the distribution computationally: letter arithmetic
 
