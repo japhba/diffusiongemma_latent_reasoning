@@ -71,6 +71,16 @@ def bar(p, col):
             f'<b class="bv1">{p:.3g}</b></span>')
 
 
+def logaxis():
+    """Decade-gridded axis matching lgw()'s log scale (1e-5 -> 0%, one decade per 20%)."""
+    ticks = "".join(f'<em style="left:{w}%"></em>' for w in range(0, 101, 20))
+    def lab(w, txt):
+        tr = "none" if w == 0 else ("translateX(-100%)" if w == 100 else "translateX(-50%)")
+        return f'<u style="left:{w}%;transform:{tr}">{txt}</u>'
+    return ('<span class="laxis">' + ticks + lab(0, "10<sup>&minus;5</sup>")
+            + lab(40, "10<sup>&minus;3</sup>") + lab(80, "10<sup>&minus;1</sup>") + lab(100, "1") + "</span>")
+
+
 def pills(*ps):
     return '<div class="pills">' + "".join(f'<span class="pill">{E(p)}</span>' for p in ps) + "</div>"
 
@@ -112,6 +122,7 @@ def ill_letters_example():
 <p class="small">prompt: {prompt_html}</p>
 <p class="small">natural generation: &nbsp;{gen_html}</p>
 {head}{''.join(body)}
+<div class="brow b4c"><span></span>{logaxis()}{logaxis()}<span></span>{logaxis()}{logaxis()}</div>
 <span class="leg"><i style="background:{CL['inj']}"></i> injected source token
 <i style="background:{CL['tgt']}"></i> its arithmetic image
 <i style="background:{CL['att']}"></i> committed operand / natural answer
@@ -316,6 +327,9 @@ code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
 .btrack i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.laxis{position:relative;height:13px}
+.laxis em{position:absolute;top:0;height:4px;width:1px;background:var(--muted);opacity:.7}
+.laxis u{position:absolute;top:4px;font:.62em/1.4 ui-monospace,monospace;color:var(--muted);text-decoration:none}
 .btrack b{position:absolute;left:4px;top:-1px;font:10px/16px ui-monospace,monospace;font-weight:400;color:var(--fg);opacity:.85}
 .bhead .bh{font-size:.8em;color:var(--muted)}
 .steergen{padding:2px 10px;margin:2px 0}

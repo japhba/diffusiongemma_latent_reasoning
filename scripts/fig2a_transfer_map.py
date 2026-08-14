@@ -47,9 +47,7 @@ gi = UPP.index("G")
 assert ecnt[:, gi].sum() == 0 and ecnt[gi, :].sum() == 0, "G column/row unexpectedly has data"
 keep = [j for j in range(NC) if j != gi]
 em = em[keep + [NC], :][:, keep]
-KS = (3, 5, 7, 11)
-xt = [UPP[j] for j in keep]
-yt = [f"{UPP[i]}+$k$ = {'/'.join(UPP[i + k] for k in KS if i + k < 26)}" for i in keep] + ["other"]
+xt = [UPP[j] for j in keep]; yt = [f"{UPP[i]}+$k$" for i in keep] + ["other"]
 
 fig, ax = plt.subplots(layout="constrained")
 vm = np.percentile(np.abs(em.compressed()), 98)
