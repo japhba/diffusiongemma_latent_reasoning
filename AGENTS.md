@@ -77,8 +77,9 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 - `scripts/fig2a_transfer_map.py` — letter-arithmetic transfer matshows (headline variant:
   UPPER→UPPER, ε=0.45, payload `tmap.let`, `v=="UU"`). Since 2026-08-14 (user): the G row+column
   are dropped (G = every UU state's natural operand → never injected / image always excluded —
-  both empty by construction, asserted) and the y-axis is labeled "operand x with image x+k"
-  instead of the old "x'−k" shift formulation. Diag/offdiag stats computed before the drop.
+  both empty by construction, asserted) and rows are labeled by their TARGETS as yticklabels
+  ("A+k" … "W+k", axis = x'^{t+1}) instead of the old "x'−k" shift formulation. Diag/offdiag
+  stats computed before the drop.
 - `scripts/extract_letters_example.py` — example-intervention data → `data/letters_example.json`
   (cell `UU3|hi|s0`, inject 'H'; A-slot sheet from battery state `UU3|src0|s0`).
 - `scripts/fig2b_triptych.py` — parallelism, letters-only, mean ± 95% CI curves (no sinas, per

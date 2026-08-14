@@ -47,7 +47,7 @@ gi = UPP.index("G")
 assert ecnt[:, gi].sum() == 0 and ecnt[gi, :].sum() == 0, "G column/row unexpectedly has data"
 keep = [j for j in range(NC) if j != gi]
 em = em[keep + [NC], :][:, keep]
-xt = [UPP[j] for j in keep]; yt = [UPP[i] for i in keep] + ["other"]
+xt = [UPP[j] for j in keep]; yt = [f"{UPP[i]}+$k$" for i in keep] + ["other"]
 
 fig, ax = plt.subplots(layout="constrained")
 vm = np.percentile(np.abs(em.compressed()), 98)
@@ -55,8 +55,8 @@ im = ax.imshow(em, cmap="coolwarm", vmin=-vm, vmax=vm, origin="lower")
 ax.set_xticks(range(len(keep)), xt)
 ax.set_yticks(range(len(keep) + 1), yt)
 ax.set_xlabel(r"$x^{t}$")
-# rows are k-aligned (pooled over k): row = the operand whose image x+k this response is at
-ax.set_ylabel(r"operand $x$ with image $x^{\prime\,t+1} = x{+}k$")
+# rows are k-aligned (pooled over k): each row's target is its operand letter + k
+ax.set_ylabel(r"$x^{\prime\,t+1}$")
 ax.set_title(r"response $\mathbf{R}[x^{\prime\,t+1} \vert\, \mathrm{pert}(x^t)]$")
 fig.colorbar(im, ax=ax, shrink=0.8)
 fig.savefig(OUT / "fig2a_transfer_map.png", dpi=200)
