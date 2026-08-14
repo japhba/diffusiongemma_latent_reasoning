@@ -194,4 +194,4 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
 
 ## Repo
 
-Private GitHub: https://github.com/japhba/dg_blog (gh account japhba). Commit + push after substantive edits.
+Private GitHub: https://github.com/japhba/diffusiongemma_latent_reasoning (gh account japhba). Commit + push after substantive edits.
