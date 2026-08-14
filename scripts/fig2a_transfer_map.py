@@ -1,8 +1,9 @@
-"""Fig 2a-1: letter-arithmetic single-injection transfer maps (n=1) — argmax histogram + mean effect R.
+"""Fig 2a-1: letter-arithmetic single-injection transfer map (n=1) — mean effect R, k=3 ONLY.
 
 Headline variant from the symbol_arithmetic report: UPPER->UPPER, eps=0.45 strictly-subleading
-injections, k in {3,5,7,11}, 8 paired draws, t=2. Data: report payload DATA.tmap.let (UU states).
-Rows = aligned output x'-k (A..W + other), cols = perturbed source letter x.
+injections, 8 paired draws, t=2, restricted to the k=3 task (UU3; single-k since 2026-08-14 per
+user — rows then resolve to unique target letters). Data: report payload DATA.tmap.let.
+Rows = output x' = x+3 labeled by the resolved target letter, cols = perturbed source letter x.
 """
 import sys
 from pathlib import Path
@@ -24,9 +25,10 @@ EPS = tm["eps"]
 
 conf = np.zeros((NC + 1, NC))
 esum = np.zeros((NC + 1, NC)); ecnt = np.zeros((NC + 1, NC))
+K = 3
 for c in tm["cells"]:
     st = tm["states"][c["st"]]
-    if st["v"] != "UU" or c["x"] not in UPP or UPP.index(c["x"]) >= NC:
+    if st["v"] != "UU" or st["k"] != K or c["x"] not in UPP or UPP.index(c["x"]) >= NC:
         continue
     k, xi = st["k"], UPP.index(c["x"])
     base, arm = st["base"], c["arm"]
@@ -47,7 +49,7 @@ gi = UPP.index("G")
 assert ecnt[:, gi].sum() == 0 and ecnt[gi, :].sum() == 0, "G column/row unexpectedly has data"
 keep = [j for j in range(NC) if j != gi]
 em = em[keep + [NC], :][:, keep]
-xt = [UPP[j] for j in keep]; yt = [f"{UPP[i]}+$k$" for i in keep] + ["other"]
+xt = [UPP[j] for j in keep]; yt = [UPP[i + K] for i in keep] + ["other"]
 
 fig, ax = plt.subplots(layout="constrained")
 vm = np.percentile(np.abs(em.compressed()), 98)
@@ -55,9 +57,8 @@ im = ax.imshow(em, cmap="coolwarm", vmin=-vm, vmax=vm, origin="lower")
 ax.set_xticks(range(len(keep)), xt)
 ax.set_yticks(range(len(keep) + 1), yt)
 ax.set_xlabel(r"$x^{t}$")
-# rows are k-aligned (pooled over k): each row's target is its operand letter + k
 ax.set_ylabel(r"$x^{\prime\,t+1}$")
-ax.set_title(r"response $\mathbf{R}[x^{\prime\,t+1} \vert\, \mathrm{pert}(x^t)]$")
+ax.set_title(r"response $\mathbf{R}[x^{\prime\,t+1} \vert\, \mathrm{pert}(x^t)]$,  $k=3$")
 fig.colorbar(im, ax=ax, shrink=0.8)
 fig.savefig(OUT / "fig2a_transfer_map.png", dpi=200)
 print(OUT / "fig2a_transfer_map.png")

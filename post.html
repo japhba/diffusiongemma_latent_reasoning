@@ -63,7 +63,7 @@ code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 <button id="thm" onclick="const r=document.documentElement,c=r.dataset.theme||'';r.dataset.theme=c==='dark'?'light':c==='light'?'':'dark';localStorage.setItem('dgblogTheme',r.dataset.theme)">&#9681;</button>
 <script>document.documentElement.dataset.theme=localStorage.getItem('dgblogTheme')||''</script>
 <div class="wrap">
-<h1>Does DiffusionGemma have latent reasoning?</h1>
+<p>#### Does DiffusionGemma have latent reasoning?</p>
 <h2>TL;DR</h2>
 <p>Google DeepMind's recent model DiffusionGemma (DG) works differently from regular language models, including by passing distribution vectors in addition to tokens between generation steps. A priori, this allows it to pass information that is illegible to monitors, sometimes called "latent reasoning". A recent paper found that DG nevertheless maintains high monitorability, but at the same time found that ablating the passed distribution degrades performance. Here, we show that this performance degradation is largely a sampler artifact, supporting the case for high monitorability. Nevertheless, we find some rare cases where the distribution vector is load-bearing computationally, however in a way that is easily interpretable. Overall, this supports the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.</p>
 <p>Github: ...</p>
@@ -136,7 +136,7 @@ $$</p>
 <h3>Letter arithmetic</h3>
 <p>[stub:] The single-injection transfer-map protocol of the main text also runs with a multiplicative image map, $x' = $ the letter at position $k\cdot\mathrm{pos}(x)$, $k\in\{2,3,4\}$ (upper→upper).</p>
 <figure><img src="figs/figA13_mult_transfer.png" alt="Multiplicative transfer map"></figure>
-<p>_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+0.97$)._</p>
+<p>_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+1.46$ for the $k=3$ map shown in the main text)._</p>
 <h3>Autonomous computational usage of $\mathbf{s}^t$</h3>
 <p>In the _letter arithmetic_ task introduced in the main text, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.</p>
 <p>To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. When asked ``<code>Please write a word-level palindrome</code>`<code>, DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (</code>`<code>All leaves fall when leaves fall all.</code>`<code>) and the famous _idiom_ (</code>`<code>All for one and one for all.</code>``).</p>

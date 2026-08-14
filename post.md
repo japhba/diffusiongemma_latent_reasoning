@@ -1,4 +1,4 @@
-# Does DiffusionGemma have latent reasoning?
+#### Does DiffusionGemma have latent reasoning?
 
 ## TL;DR
 
@@ -142,7 +142,7 @@ _**The upcoming operation is readable at an earlier canvas position.** The DG-bi
 
 ![Multiplicative transfer map](figs/figA13_mult_transfer.png)
 
-_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+0.97$)._
+_Perturbed sources trigger a response at their multiplicative images, but far less specifically than in the additive map (diagonal excess $+0.19$ vs $+1.46$ for the $k=3$ map shown in the main text)._
 
 ### Autonomous computational usage of $\mathbf{s}^t$
 
