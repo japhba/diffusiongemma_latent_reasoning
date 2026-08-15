@@ -77,14 +77,17 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   merged 2026-08-15: full restructure (new Introduction; intro→"Background on DiffusionGemma";
   "Parallel computation" DELIBERATELY REINSTATED by the user with a NEW metric — fraction of
   injection sets with min-over-members E(x_i) > 0 vs the 0.5^n chance null, E(x_i) = R(img(x_i))
-  − mean R over the possible-operand image pool; its figure `figs/letters_parallel_frac.png` is
-  VENDORED from the docx media (user-made upstream, k=3, n≤3 — NOT regenerable from src_data;
-  second repro exception besides card PNGs). 2026-08-15: title band ("letters +3" + E formula)
-  CROPPED off per user (original archived at dg_blog_archive/letters_parallel_frac_titled.png);
-  E definition moved into the post caption. REPRO ATTEMPT FAILED: the payload's let/uu k=3
-  n-sweeps give min-E fractions 0.40–0.50 at n=1 (either pool convention) vs the plotted 0.82 —
-  the figure's source data/conventions are upstream-only; ask the user for the generating
-  script/data if this must enter the repro guarantee;
+  − mean R over the possible-operand image pool. 2026-08-15 pm: REPRO GAP CLOSED — the true
+  generator is `diffusiongemma/planning/build_par_ladderfrac.py` (was UNTRACKED upstream) over
+  `xtask_par3_read.py` recs3; the n=1..3 points are the eps0=0.22 BUDGET LADDER (total injection
+  mass fixed at 0.66, concentrated on 1/2/3 routable hypotheses: arms j2/r2j/r3), NOT a
+  constant-per-operand dose — which is why the earlier payload-based attempt (0.40–0.50 at n=1)
+  could never match the plotted 0.82. The figure is now regenerated natively title-free
+  (previously title band cropped; original archived at
+  dg_blog_archive/letters_parallel_frac_titled.png) by `scripts/plot_letters_parallel_frac.py` —
+  a UU3-only port verified equal to the upstream reader to 1e-12 on all 34 reps (fracs
+  0.824/0.618/0.471) — from `src_data/planning/{xtask_par3,xtask_samecase_nsweep,
+  par3_incumbents}.json`; capture code vendored at `experiments/planning/xtask_par3.py`;
   Autonomous-usage section moved to main text with the user's caption + "early and late ablation"
   claim; interp sections under "## Transfer of interpretability techniques"; Conclusion after it;
   appendix = posthoc + bidirectionality only. REMOVED from the post per this pass: the figA16
