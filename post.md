@@ -78,13 +78,13 @@ _**Example of one intervention.** a subleading injection on `H` (the leader `G` 
 
 ### Parallel computation
 
-This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. This would be interesting, since it  to carry out simultaneous computation, a key advantage that latent reasoning models have on paper.
+This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. This would be interesting, since it would suggest that the model can carry out simultaneous computation, a key advantage that latent reasoning models have on paper.
 
-To this end, we measured responses $\langle R\rangle_{T}$ and $\langle R\rangle_{N}$ averaged over the target images over the injection operand sets and images of *non-injected but possible operands*, respectively, and measure the _effect_ $E = \langle R\rangle_{T} - \langle R\rangle_{N}$. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
+To this end, we measured responses $ R_T$ and $\langle R\rangle_{N}$ averaged over the target images over the injection operand sets and images of *non-injected but possible operands*, respectively, and measure the _effect_ $E = \langle R\rangle_{T} - \langle R\rangle_{N}$. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
 
 ![Parallel injection fraction](figs/letters_parallel_frac.png)
 
-_**DiffusionGemma responds to multiple injections in parallel, more than expected by chance.** Error bars are 95% CIs over possible injection operand sets._
+_**DiffusionGemma responds to multiple injections in parallel, more than expected by chance.** Letters task with $k=3$: for each injected operand $x_i$ we define the per-member effect $E(x_i) = R(\mathrm{img}(x_i)) - \langle R(\mathrm{img}(y))\rangle_{y\in P}$, where $\mathrm{img}(x) = x+k$ and $P$ is the pool of possible operands, with the response $R$ as defined above; an injection set counts as responding if $\min_i E(x_i) > 0$. Dashed: chance level $0.5^n$. Error bars are 95% CIs over possible injection operand sets._
 
 We observe that the average target response exceeds the non-target response for all injected members more often than chance, averaged over possible injection sets. This behavior is plausible considering the computation in question: a shift is easily implemented by a linear operation in representation space. Therefore by linearity, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.
 
@@ -94,11 +94,11 @@ In contrast, we found that for multiplication (e.g. letter × 3) or taking the a
 
 In the previous _letter arithmetic_ task, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.
 
-To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. We ask the model ```Please write a word-level palindrome```. DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```All leaves fall when leaves fall all.```) and a well-known _idiom_ (```All for one and one for all.```). We measure how the probability mass of these two typical outcomes, summed over positions, varies over the course of diffusion.
+To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. We ask the model ```Please write a word-level palindrome```. DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```All leaves fall when leaves fall all.```) and an _idiom_ (```All for one and one for all.```). We measure how the probability mass of these two typical outcomes, summed over positions, varies over the course of diffusion.
 
 ![Seasonal vs idiom: ablation](figs/seasonal_ember_kill.png)
 
-_**Ablating a nascent contender can prevent takeover.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
+_**Ablating a nascent contender in the distribution can prevent takeover.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
 
 The canvas will read the _seasonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{s}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
 
