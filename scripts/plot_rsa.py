@@ -30,8 +30,8 @@ for ax, meas, title in ((axes[0], "cos", "matched cosine"), (axes[1], "cka", "li
     ax.set_ylim(0, 1.02)
     ax.spines[["top", "right"]].set_visible(False)
 axes[0].legend(loc="lower left", frameon=False)
-fig.savefig(OUT / "figA1_rsa_cosine_cka.png", dpi=200)
-print(OUT / "figA1_rsa_cosine_cka.png")
+fig.savefig(OUT / "rsa_cosine_cka.png", dpi=200)
+print(OUT / "rsa_cosine_cka.png")
 for pair, lab, _ in PAIRS:
     print(pair, "cos mean", round(float(np.mean(c["pairs"][pair]["cos"])), 3),
           "cka mean", round(float(np.mean(c["pairs"][pair]["cka"])), 3))

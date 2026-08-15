@@ -44,8 +44,8 @@ axL.set_yticks([0, 1, 2], [lab for _, lab in ROWS])
 fig.supxlabel("target", fontweight="bold")
 fig.supylabel("source", fontweight="bold")
 fig.colorbar(im_, ax=axL, shrink=0.7)
-fig.savefig(OUT / "parts" / "figA3_matrix.png", dpi=200)
-print(OUT / "parts" / "figA3_matrix.png")
+fig.savefig(OUT / "parts" / "steer_matrix.png", dpi=200)
+print(OUT / "parts" / "steer_matrix.png")
 
 # example-pair data consumed by build_html.py: same gemma-fit direction on BOTH target models
 CARRIER = "My dog passed away this morning and I don't know what to do."

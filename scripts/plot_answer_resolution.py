@@ -63,5 +63,5 @@ for ax, (label, pids) in zip(axes, groups.items()):
     ax.spines[["top", "right"]].set_visible(False)
 axes[0].set_ylabel("mean token entropy (nats)")
 axes[0].legend(frameon=False, fontsize="small")
-fig.savefig(OUT / "figA9_resolution.png", dpi=200)
-print(OUT / "figA9_resolution.png")
+fig.savefig(OUT / "answer_resolution.png", dpi=200)
+print(OUT / "answer_resolution.png")

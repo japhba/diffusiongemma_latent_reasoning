@@ -94,8 +94,8 @@ ax.legend(handles, labels, loc="upper left", frameon=False, ncols=2, handlelengt
           handler_map={tuple: HandlerTuple(ndivide=None)})
 ax.spines[["top", "right"]].set_visible(False)
 fig.tight_layout()
-fig.savefig(OUT / "fig1_gpqa_trunc_failures.png", dpi=200)
-print(OUT / "fig1_gpqa_trunc_failures.png")
+fig.savefig(OUT / "gpqa_trunc_failures.png", dpi=200)
+print(OUT / "gpqa_trunc_failures.png")
 for r in RUNGS:
     for s in ("std", "gentle"):
         c = counts[(r, s)]

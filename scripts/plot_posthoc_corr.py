@@ -102,8 +102,8 @@ for ax, (fx, fy, xlab, ylab) in zip(axes, PANELS):
 handles = [plt.Line2D([], [], marker="o", linestyle="", color=c, label=k) for k, c in CATCOL.items()]
 axes[0].legend(handles=handles, frameon=False, fontsize="small", loc="lower right")
 assert abs(rhos[0] - 0.369) < 0.01 and abs(rhos[1] - 0.279) < 0.01 and abs(rhos[2] - 0.598) < 0.01, rhos
-fig.savefig(OUT / "figA8_posthoc_correlations.png", dpi=200)
-print(OUT / "figA8_posthoc_correlations.png")
+fig.savefig(OUT / "posthoc_correlations.png", dpi=200)
+print(OUT / "posthoc_correlations.png")
 print("spearman:", [round(r, 3) for r in rhos])
 
 # ---- case-study card data: easy (bat_ball) vs hard (sq1000), clean + rho=1.0 clamp ----

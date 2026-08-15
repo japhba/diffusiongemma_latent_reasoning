@@ -37,6 +37,18 @@ temp_suscept,lure_cots,steer_results}.json. posthoc/counterfactual.json KEPT (fi
 it). README.md added (minimal repro instructions — user should review). Full pipeline smoke-
 tested post-cleanup: every fig*.py + compose_figs + build_html (+card) runs green.
 
+**SEMANTIC FIG NAMES 2026-08-15** (user: no numbering labels): figures, parts, and figure scripts
+renamed; figure scripts now share the `plot_` prefix (README repro glob). Mapping (old → new;
+historical mentions below use the old names): fig1_gpqa_trunc_failures→gpqa_trunc_failures,
+fig2a_transfer_map→letters_transfer_map, fig2a_example_intervention→letters_example_intervention,
+fig2c_parallel_frac→letters_parallel_frac, figA1_rsa_cosine_cka→rsa_cosine_cka,
+figA2_probe_retention→probe_retention, figA3_steer_retention→steer_retention,
+figA4_jlens_retention→jlens_retention, figA5_seasonal_ember_kill→seasonal_ember_kill,
+figA6_jlens_future→jlens_future, figA8_posthoc_correlations→posthoc_correlations,
+figA8b_posthoc_case→posthoc_case, figA9_resolution→answer_resolution,
+figA11_commit_causality→commit_causality; parts figA{2,3,4}_matrix→{probe,steer,jlens}_matrix;
+scripts fig*→plot_* (e.g. figA8_posthoc_corr.py→plot_posthoc_corr.py).
+
 **Self-contained since 2026-08-02:** all source data is vendored under `src_data/` (~23 MB) and
 every script resolves paths relative to the repo root (`Path(__file__).resolve().parent.parent`),
 so the full pipeline reruns from a bare clone with numpy+matplotlib+PIL. Verified: rerunning all

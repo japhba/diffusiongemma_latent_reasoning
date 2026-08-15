@@ -55,8 +55,8 @@ axL.set_yticks(range(3), [l.replace("\n", " · ") for l in LABS])
 fig.supxlabel("target", fontweight="bold")
 fig.supylabel("source", fontweight="bold")
 fig.colorbar(im_, ax=axL, shrink=0.7)
-fig.savefig(OUT / "parts" / "figA2_matrix.png", dpi=200)
-print(OUT / "parts" / "figA2_matrix.png")
+fig.savefig(OUT / "parts" / "probe_matrix.png", dpi=200)
+print(OUT / "parts" / "probe_matrix.png")
 
 # example-pair data consumed by build_html.py
 DATA = OUT.parent / "data"; DATA.mkdir(exist_ok=True)

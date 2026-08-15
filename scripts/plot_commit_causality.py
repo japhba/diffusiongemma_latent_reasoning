@@ -104,5 +104,5 @@ handles = [plt.Line2D([], [], color=OKC, linewidth=2, label="correct"),
 ax.legend(handles=handles, frameon=False, fontsize="small", loc="upper right")
 
 axes[0].set_ylabel("committed CoM\n(0 = left, 1 = right)")
-fig.savefig(OUT / "figA11_commit_causality.png", dpi=200)
-print(OUT / "figA11_commit_causality.png")
+fig.savefig(OUT / "commit_causality.png", dpi=200)
+print(OUT / "commit_causality.png")

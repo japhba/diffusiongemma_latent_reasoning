@@ -1,5 +1,5 @@
 """Compose appendix figures: matrix panel (top) + rendered HTML example card (bottom) -> one PNG.
-Also promotes the letters-example card to figs/fig2a_example_intervention.png.
+Also promotes the letters-example card to figs/letters_example_intervention.png.
 
 Cards are 2x-device-scale screenshots of the post.html illustration cards
 (figs/parts/card_*.png, captured on aws-static via playwright); recapture them after
@@ -25,12 +25,12 @@ def compose_v(top, bottom, out):
     print(out, canvas.size)
 
 
-compose_v(P / "figA2_matrix.png", P / "card_probe_pair.png", FIGS / "figA2_probe_retention.png")
-compose_v(P / "figA3_matrix.png", P / "card_steer_pair.png", FIGS / "figA3_steer_retention.png")
-compose_v(P / "figA4_matrix.png", P / "card_jlens_pair.png", FIGS / "figA4_jlens_retention.png")
-Image.open(P / "card_letters_example.png").convert("RGB").save(FIGS / "fig2a_example_intervention.png")
-print(FIGS / "fig2a_example_intervention.png")
-Image.open(P / "card_jlens_future.png").convert("RGB").save(FIGS / "figA6_jlens_future.png")
-print(FIGS / "figA6_jlens_future.png")
-Image.open(P / "card_posthoc_case.png").convert("RGB").save(FIGS / "figA8b_posthoc_case.png")
-print(FIGS / "figA8b_posthoc_case.png")
+compose_v(P / "probe_matrix.png", P / "card_probe_pair.png", FIGS / "probe_retention.png")
+compose_v(P / "steer_matrix.png", P / "card_steer_pair.png", FIGS / "steer_retention.png")
+compose_v(P / "jlens_matrix.png", P / "card_jlens_pair.png", FIGS / "jlens_retention.png")
+Image.open(P / "card_letters_example.png").convert("RGB").save(FIGS / "letters_example_intervention.png")
+print(FIGS / "letters_example_intervention.png")
+Image.open(P / "card_jlens_future.png").convert("RGB").save(FIGS / "jlens_future.png")
+print(FIGS / "jlens_future.png")
+Image.open(P / "card_posthoc_case.png").convert("RGB").save(FIGS / "posthoc_case.png")
+print(FIGS / "posthoc_case.png")

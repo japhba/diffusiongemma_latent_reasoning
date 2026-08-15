@@ -55,6 +55,6 @@ b0, b1 = panel_axes[0].get_position(), panel_axes[1].get_position()
 ymid = (b0.y0 + b1.y1) / 2
 fig.add_artist(plt.Line2D([b0.x0, b0.x1], [ymid, ymid], color="0.5", linewidth=0.8,
                           transform=fig.transFigure))
-fig.savefig(OUT / "figA5_seasonal_ember_kill.png", dpi=200)
-print(OUT / "figA5_seasonal_ember_kill.png")
+fig.savefig(OUT / "seasonal_ember_kill.png", dpi=200)
+print(OUT / "seasonal_ember_kill.png")
 print("base:", base["outcome"], "kill:", kill["outcome"], "flip:", kill.get("flip"))
