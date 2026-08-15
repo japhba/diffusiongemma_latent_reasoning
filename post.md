@@ -94,15 +94,15 @@ In contrast, we found that for multiplication (e.g. letter × 3) or taking the a
 
 In the previous _letter arithmetic_ task, DiffusionGemma did respond to modifications of the distributional state in the way we expected. While suggestive, it is unclear if the model also would make use of $\mathbf{s}^t$ _autonomously_, i.e. without interventions.
 
-To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. We ask the model ```Please write a word-level palindrome```. DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```fall leaves as soon as leaves fall```) and a well-known _idiom_ (```all for one and one for all```). We measure how the probability mass of these two typical outcomes, summed over positions, varies over the course of diffusion.
+To investigate this, we searched for a non-trivial (i.e., not just a binary choice) task where DG will use a hypothesis subleading in its distribution. An instance we found is a _word-level palindrome_ task. We ask the model ```Please write a word-level palindrome```. DG maintains two competing completions of the same canvas: a literal _seasonal_ phrase (```All leaves fall when leaves fall all.```) and a well-known _idiom_ (```All for one and one for all.```). We measure how the probability mass of these two typical outcomes, summed over positions, varies over the course of diffusion.
 
 ![Seasonal vs idiom: ablation](figs/figA5_seasonal_ember_kill.png)
 
-_**Ablating a nascent contender can prevent takeover (during an intermediate step window).** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
+_**Ablating a nascent contender can prevent takeover.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
 
 The canvas will read the _seasonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{s}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
 
-We validated that the emergence of _idiom_ is indeed causal: when ablating _idiom_'s tokens, the transition can be prevented. Note however that early and late ablation do not have this effect.
+We validated that the emergence of _idiom_ is indeed causal: when ablating _idiom_'s tokens, the transition can be prevented.
 
 ## Transfer of interpretability techniques
 
