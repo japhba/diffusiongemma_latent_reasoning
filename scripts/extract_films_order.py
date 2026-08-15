@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 
-F = Path(os.environ.get("DG_FILMS_DIR", "/workspace-vast/jbauer/exp/dg_lockin/thinkfast/films"))
+F = Path(os.environ.get("DG_FILMS_DIR", Path(__file__).resolve().parent.parent / "experiments" / "thinkfast" / "films"))
 OUT = Path(__file__).resolve().parent.parent / "src_data" / "planning" / "films_order.json"
 TASKS = {"arithmetic", "square_count", "collatz", "tower_of_london", "reverse_chain"}
 DEAD = {0, 1, 106}

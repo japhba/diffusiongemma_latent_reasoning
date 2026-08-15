@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-EXP = Path(os.environ.get("DG_PLANNING_DIR", "/workspace-vast/jbauer/diffusiongemma/exp/dg_planning"))
+EXP = Path(os.environ.get("DG_PLANNING_DIR", Path(__file__).resolve().parent.parent / "experiments" / "planning" / "exp"))
 
 par = json.load(open(ROOT / "src_data" / "planning" / "xtask_par3.json"))
 dns = json.load(open(ROOT / "src_data" / "planning" / "xtask_samecase_nsweep.json"))

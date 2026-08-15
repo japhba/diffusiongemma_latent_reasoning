@@ -3,7 +3,7 @@ growing the figA8 correlation scatter from n=20 to n=40 problems.
 
 Raw inputs (NOT bare-clone-rerunnable):
   exp/dg_lockin/posthoc/ext_clean.json / ext_suscept.json — captured on the DG pod
-    (/workspace/dg/posthoc_ext/, suscept.py with the channel-scaffold parsing fix; same GRID
+    (the pod capture dir, now vendored as experiments/posthoc/ — suscept.py with the channel-scaffold parsing fix; same GRID
     C=256 T=128 t 0.9->0.5 eb 0.15, ANSWER_FIRST framing, clean 5 seeds,
     suscept rhos {0,.25,.5,.75,1} x corr_seeds {0..4} @ k=0 as the original run).
   diffusiongemma/posthoc/ext_difficulty.json — 3 fresh blind subagent raters (same protocol).
@@ -22,8 +22,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SP = ROOT / "src_data" / "posthoc"
-EXP = Path(os.environ.get("DG_POSTHOC_DIR", "/workspace-vast/jbauer/exp/dg_lockin/posthoc"))
-DIFF_EXT = Path(os.environ.get("DG_DIFFICULTY_JSON", "/workspace-vast/jbauer/diffusiongemma/posthoc/ext_difficulty.json"))
+EXP = Path(os.environ.get("DG_POSTHOC_DIR", Path(__file__).resolve().parent.parent / "experiments" / "posthoc" / "out"))
+DIFF_EXT = Path(os.environ.get("DG_DIFFICULTY_JSON", Path(__file__).resolve().parent.parent / "experiments" / "posthoc" / "ext_difficulty.json"))
 
 for name, ext in [("clean.json", EXP / "ext_clean.json"), ("suscept.json", EXP / "ext_suscept.json")]:
     base = json.load(open(SP / name))
