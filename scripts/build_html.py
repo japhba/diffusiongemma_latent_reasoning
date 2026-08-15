@@ -107,13 +107,12 @@ def ill_letters_example():
                       f'<b class="bv1">{ap:.3g}</b></span>')
         else:
             ap_bar = bar(ap, col)
-        # intervention @ answer for the image: dashed tick at the baseline mass + the log-ratio
-        # response R (the matshow's cell quantity) to indicate the orange mass change
+        # intervention @ answer for the image: mass gained over baseline as a light-alpha
+        # extension (same grammar as the injected-operand bar: solid = baseline, faint = added)
         if tok == d["img"]:
-            bp_bar = (f'<span class="btrack"><i style="width:{lgw(bp):.1f}%;background:{col}"></i>'
-                      f'<em class="bmark" style="left:{lgw(bb):.1f}%"></em>'
-                      f'<b class="bv1">{bp:.3g}&ensp;($R$ = '
-                      f'{math.log10(max(bp, LOGFLOOR) / max(bb, LOGFLOOR)):+.1f} vs baseline)</b></span>')
+            bp_bar = (f'<span class="btrack"><i style="width:{lgw(bp):.1f}%;background:{col};opacity:.3"></i>'
+                      f'<i style="width:{lgw(bb):.1f}%;background:{col}"></i>'
+                      f'<b class="bv1">{bp:.3g}</b></span>')
         else:
             bp_bar = bar(bp, col)
         body.append(f'<div class="brow b4c"><span class="btok" style="color:{col}">{E(tok)}</span>'
@@ -136,7 +135,7 @@ def ill_letters_example():
 <i style="background:{CL['tgt']}"></i> its arithmetic image
 <i style="background:{CL['att']}"></i> committed operand / natural answer
 <i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; all bars share one log scale ($10^{{-5}}$ … $1$)
-&nbsp;·&nbsp; dashed tick: the image's baseline mass ($R$ = log$_{{10}}$ ratio)</span>
+&nbsp;·&nbsp; faint segments: mass added by the intervention</span>
 </div>"""
 
 
@@ -337,7 +336,6 @@ code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
 .btrack i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
-.bmark{position:absolute;top:-2px;bottom:-2px;border-left:2px dashed var(--fg);opacity:.55}
 .laxis{position:relative;height:13px}
 .laxis em{position:absolute;top:0;height:4px;width:1px;background:var(--muted);opacity:.7}
 .laxis u{position:absolute;top:4px;font:.62em/1.4 ui-monospace,monospace;color:var(--muted);text-decoration:none}
