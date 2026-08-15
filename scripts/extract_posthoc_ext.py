@@ -17,12 +17,13 @@ Writes (in-place merge): src_data/posthoc/{clean,suscept,difficulty}.json.
 Original cells are never modified; a second run fails loudly on the key-overlap assert.
 """
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SP = ROOT / "src_data" / "posthoc"
-EXP = Path("/workspace-vast/jbauer/exp/dg_lockin/posthoc")
-DIFF_EXT = Path("/workspace-vast/jbauer/diffusiongemma/posthoc/ext_difficulty.json")
+EXP = Path(os.environ.get("DG_POSTHOC_DIR", "/workspace-vast/jbauer/exp/dg_lockin/posthoc"))
+DIFF_EXT = Path(os.environ.get("DG_DIFFICULTY_JSON", "/workspace-vast/jbauer/diffusiongemma/posthoc/ext_difficulty.json"))
 
 for name, ext in [("clean.json", EXP / "ext_clean.json"), ("suscept.json", EXP / "ext_suscept.json")]:
     base = json.load(open(SP / name))

@@ -1,10 +1,11 @@
 """Capture DG rollouts for poem prompts (direction-indifferent panel of figA11).
 
-NOT bare-clone-rerunnable: runs ON the DG-worker pod against localhost:8711 (captured
-2026-08-07, same sampler as capture_bench_order.py). Output vendored as
-src_data/planning/poem_order.json."""
-import json, urllib.request, time
-W = "http://localhost:8711"
+Runs against the DG worker (experiments/worker/server.py; DG_WORKER env or localhost:8711,
+originally captured 2026-08-07 on the worker pod, same sampler as capture_bench_order.py).
+Output vendored as src_data/planning/poem_order.json."""
+import json, os, urllib.request, time
+from pathlib import Path
+W = os.environ.get("DG_WORKER", "http://localhost:8711")
 TOPICS = ["the sea", "autumn leaves", "a city at night", "an old friendship", "a thunderstorm",
           "morning coffee", "distant mountains", "a lost key", "the full moon", "night trains",
           "a walled garden", "the passage of time"]
@@ -30,5 +31,5 @@ for i, topic in enumerate(TOPICS):
     out.append(dict(bench="poem", pid=f"poem_{i:02d}", T=T, content=content,
                     lock=[lock(p) for p in content], final_text=d["final_text"][:300]))
     print(f"{i+1}/12 {topic} n={len(content)}", flush=True)
-    json.dump(out, open("/root/poem_order.json", "w"))
+    json.dump(out, open(Path(__file__).resolve().parent.parent / "src_data" / "planning" / "poem_order.json", "w"))
 print("DONE")

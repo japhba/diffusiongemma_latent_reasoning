@@ -20,11 +20,12 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-ENV = Path("/workspace-vast/jbauer/activation_oracles_dev/.env")
-for line in ENV.read_text().splitlines():
-    m = re.match(r"^(NODEV_URL|NODEV_KEY|NODEV_MODEL)=(.*)$", line.strip())
-    if m:
-        os.environ.setdefault(m.group(1), m.group(2).strip('"'))
+ENV = Path(os.environ.get("DGLR_ENV_FILE", Path(__file__).resolve().parent.parent / ".env"))
+if ENV.exists():  # NODEV_URL/NODEV_KEY may also come straight from the environment
+    for line in ENV.read_text().splitlines():
+        m = re.match(r"^(NODEV_URL|NODEV_KEY|NODEV_MODEL)=(.*)$", line.strip())
+        if m:
+            os.environ.setdefault(m.group(1), m.group(2).strip('"'))
 URL, KEY = os.environ["NODEV_URL"], os.environ["NODEV_KEY"]
 MODEL = os.environ.get("NODEV_MODEL", "")
 
