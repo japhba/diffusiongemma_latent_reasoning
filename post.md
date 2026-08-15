@@ -8,7 +8,7 @@ Apart from model behavior, we also examined how interpretability techniques carr
 
 Overall, this supports the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.
 
-Github
+[Github](https://github.com/japhba/diffusiongemma_latent_reasoning)
 
 ## Introduction
 
@@ -20,7 +20,7 @@ DiffusionGemma is a particular model whose architecture allows latent reasoning,
 
 ## Background on DiffusionGemma
 
-DiffusionGemma is a text-generation model, based on the Gemma architecture. In short, generation looks like the following. Let $p$ be the prompt, and let $X^0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. Let $f$ denote a single forward pass through the transformer stack (a finetune of Gemma). Roughly, the final output $X^T$ then is obtained via
+DiffusionGemma is a text-generation model, based on the Gemma architecture. Generation proceeds as follows. Let $p$ be the prompt, and let $X^0\in\mathcal{V}^{C}$ be the noise-initialized token canvas comprising $C$ positions. Let $f$ denote a single forward pass through the transformer stack (a finetune of Gemma). Roughly, the final output $X^T$ then is obtained via
 
 $$
 \begin{aligned}
@@ -44,9 +44,9 @@ The last point is especially interesting, since it passes the vector $\mathbf{s}
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma [maybe give more details on what the paper found]. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential, conflicting the results of high monitorability.
+Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential, conflicting the results of high monitorability.
 
-However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
+However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler together with a higher number of diffusion steps largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Rather, the truncation might have put the model outside of this training distribution. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
 
 ![GPQA truncation failure modes](figs/fig1_gpqa_trunc_failures.png)
 

@@ -23,6 +23,20 @@ Everything is a pure CPU re-render of archived study data — never launch model
 Python: system `python3` suffices (matplotlib/numpy/PIL, no scipy needed — Spearman is
 hand-rolled); the former /var/tmp loracles venv is wiped on workbench reboots.
 
+**PUBLIC-RELEASE CLEANUP 2026-08-15** (user: "clean nothing-unneeded starting point"): `post.html`
++ `post.docx` untracked (gitignored build outputs — keep rebuilding them locally; the aws-static
+mirror rsyncs the worktree file, unaffected). The two GDocs roundtrip .docx archives moved OUT of
+the repo to `/workspace-vast/jbauer/dg_blog_archive/` (comments preserved there). REMOVED from
+git (recoverable at d9bf119): all figures/scripts/data not referenced by the current post — fig2b
+triptych, figA7 controllability, figA10 selfrepair (+ selfcorr card: generator stripped from
+build_html.py, data/selfcorr_steps.json, parts/card_selfcorr_steps.png), figA12/A14/A15 strict+
+mult triptychs, figA13 mult map, figA16 jlens-step, extract_commit_{com,order}.py,
+extract_reverse_chain_order.py, src_data/lockin/, planning/{canalysis,constr_summary,gallery,
+commit_com,commit_order,reverse_chain_order}.json, posthoc/{com_posthoc_anim,temp_clean,
+temp_suscept,lure_cots,steer_results}.json. posthoc/counterfactual.json KEPT (figA8 script loads
+it). README.md added (minimal repro instructions — user should review). Full pipeline smoke-
+tested post-cleanup: every fig*.py + compose_figs + build_html (+card) runs green.
+
 **Self-contained since 2026-08-02:** all source data is vendored under `src_data/` (~23 MB) and
 every script resolves paths relative to the repo root (`Path(__file__).resolve().parent.parent`),
 so the full pipeline reruns from a bare clone with numpy+matplotlib+PIL. Verified: rerunning all

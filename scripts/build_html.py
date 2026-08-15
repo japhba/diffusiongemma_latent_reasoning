@@ -260,25 +260,9 @@ def ill_posthoc_case():
 </div>"""
 
 
-def ill_selfcorr_steps():
-    d = json.load(open(DATA / "selfcorr_steps.json"))
-    PH = {"early": "#7aa2ff", "mid": "#c2255c", "late": "#2f9e44"}
-    rows = "".join(
-        f'<div class="steergen" style="border-left:3px solid {PH[s["phase"]]}">'
-        f'<b style="color:{PH[s["phase"]]}">step t={s["t"]} ({s["phase"]}) · margin {s["margin"]}'
-        f'{" — violates the constraint" if s["phase"] == "mid" else (" — satisfied" if s["margin"] == 0 else "")}</b>'
-        f'<code class="gen block">{E(s["text"])}</code></div>'
-        for s in d["steps"])
-    return f"""<div class="card">
-<p class="small">task: <code class="gen">{E(d['prompt_task'])}</code></p>
-{rows}
-</div>"""
-
-
 GEN = {"letters_example": ill_letters_example, "probe_pair": ill_probe_pair,
        "steer_pair": ill_steer_pair, "jlens_pair": ill_jlens_pair,
-       "jlens_future": ill_jlens_future, "posthoc_case": ill_posthoc_case,
-       "selfcorr_steps": ill_selfcorr_steps}
+       "jlens_future": ill_jlens_future, "posthoc_case": ill_posthoc_case}
 for j, name in enumerate(ILL):
     blk = GEN[name]()
     body = re.sub(rf"(<p>)?\x02I{j}\x02(</p>)?", lambda m: blk, body)
@@ -356,6 +340,6 @@ print(ROOT / "post.html")
 
 if "card" in __import__("sys").argv:
     allcards = (ill_letters_example() + ill_probe_pair() + ill_steer_pair() + ill_jlens_pair()
-                + ill_jlens_future() + ill_posthoc_case() + ill_selfcorr_steps())
+                + ill_jlens_future() + ill_posthoc_case())
     (ROOT / "card_preview.html").write_text(HEAD + allcards + TAIL)
     print(ROOT / "card_preview.html")
