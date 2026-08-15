@@ -107,8 +107,17 @@ def ill_letters_example():
                       f'<b class="bv1">{ap:.3g}</b></span>')
         else:
             ap_bar = bar(ap, col)
+        # intervention @ answer for the image: dashed tick at the baseline mass + the log-ratio
+        # response R (the matshow's cell quantity) to indicate the orange mass change
+        if tok == d["img"]:
+            bp_bar = (f'<span class="btrack"><i style="width:{lgw(bp):.1f}%;background:{col}"></i>'
+                      f'<em class="bmark" style="left:{lgw(bb):.1f}%"></em>'
+                      f'<b class="bv1">{bp:.3g}&ensp;($R$ = '
+                      f'{math.log10(max(bp, LOGFLOOR) / max(bb, LOGFLOOR)):+.1f} vs baseline)</b></span>')
+        else:
+            bp_bar = bar(bp, col)
         body.append(f'<div class="brow b4c"><span class="btok" style="color:{col}">{E(tok)}</span>'
-                    + bar(ab, col) + bar(bb, col) + "<span></span>" + ap_bar + bar(bp, col) + "</div>")
+                    + bar(ab, col) + bar(bb, col) + "<span></span>" + ap_bar + bp_bar + "</div>")
     kword = {3: "three", 5: "five", 7: "seven", 11: "eleven"}[d["k"]]
     before, after = E(d["prompt"]).split(f" {kword} positions later", 1)
     prompt_html = (f'<code class="gen">{before} <u>{kword} positions later</u></code>'
@@ -126,7 +135,8 @@ def ill_letters_example():
 <span class="leg"><i style="background:{CL['inj']}"></i> injected source token
 <i style="background:{CL['tgt']}"></i> its arithmetic image
 <i style="background:{CL['att']}"></i> committed operand / natural answer
-<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; all bars share one log scale ($10^{{-5}}$ … $1$)</span>
+<i style="background:{CL['oth']}"></i> other &nbsp;·&nbsp; all bars share one log scale ($10^{{-5}}$ … $1$)
+&nbsp;·&nbsp; dashed tick: the image's baseline mass ($R$ = log$_{{10}}$ ratio)</span>
 </div>"""
 
 
@@ -327,10 +337,11 @@ code.gen.chip{padding:.15em .45em;border-radius:4px;white-space:pre}
 .brow .btok.sm{font-weight:400;font-size:.85em;text-align:right}
 .btrack{position:relative;height:14px;background:color-mix(in srgb,var(--fg) 6%,transparent);border-radius:3px;overflow:visible}
 .btrack i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.bmark{position:absolute;top:-2px;bottom:-2px;border-left:2px dashed var(--fg);opacity:.55}
 .laxis{position:relative;height:13px}
 .laxis em{position:absolute;top:0;height:4px;width:1px;background:var(--muted);opacity:.7}
 .laxis u{position:absolute;top:4px;font:.62em/1.4 ui-monospace,monospace;color:var(--muted);text-decoration:none}
-.btrack b{position:absolute;left:4px;top:-1px;font:10px/16px ui-monospace,monospace;font-weight:400;color:var(--fg);opacity:.85}
+.btrack b{position:absolute;left:4px;top:-1px;font:10px/16px ui-monospace,monospace;font-weight:400;color:var(--fg);opacity:.85;white-space:nowrap}
 .bhead .bh{font-size:.8em;color:var(--muted)}
 .steergen{padding:2px 10px;margin:2px 0}
 .leg{font-size:.8em;color:var(--muted)}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 10px;vertical-align:-1px}
