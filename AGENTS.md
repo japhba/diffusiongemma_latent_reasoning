@@ -47,6 +47,19 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   [stub:]). NOT ported: its parallelism-section edits (section removed 08-13 per user) and its
   seasonal/palindrome edits (superseded by the 08-07 repo rewrites). The five Word comments live
   only in this archived file.
+- `src_data/gdocs_roundtrip_2026-08-15.docx` — SECOND GDocs pass (base = the 827b63f-era export),
+  merged 2026-08-15: full restructure (new Introduction; intro→"Background on DiffusionGemma";
+  "Parallel computation" DELIBERATELY REINSTATED by the user with a NEW metric — fraction of
+  injection sets with min-over-members E(x_i) > 0 vs the 0.5^n chance null, E(x_i) = R(img(x_i))
+  − mean R over the possible-operand image pool; its figure `figs/fig2c_parallel_frac.png` is
+  VENDORED from the docx media (user-made upstream, k=3, n≤3 — NOT regenerable from src_data;
+  second repro exception besides card PNGs; reimplementable from payload let n-sweep if wanted);
+  Autonomous-usage section moved to main text with the user's caption + "early and late ablation"
+  claim; interp sections under "## Transfer of interpretability techniques"; Conclusion after it;
+  appendix = posthoc + bidirectionality only. REMOVED from the post per this pass: the figA16
+  J-lens-step block and the appendix multiplicative-map (figA13) section — scripts + figs kept.
+  Corrections applied during the merge: caption steps 64→94 fixed to the true 48→96; typos
+  (compute, monitorability, model's, "describes how", tasks, left-to-right, should).
 - `src_data/lockin/` ← `/workspace-vast/jbauer/exp/dg_lockin/` (clock + escape-minimum files).
 - `src_data/planning/{canalysis,constr_summary,gallery}.json` ← constrained battery
   (`diffusiongemma/exp/dg_planning/` + `reports/dg-planning/data/gallery.json`).
