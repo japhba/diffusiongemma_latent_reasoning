@@ -2,3 +2,15 @@ scripts/__pycache__/
 card_preview.html
 post.html
 post.docx
+__pycache__/
+experiments/lockin/data/*
+experiments/planning/exp/*
+experiments/planning/figs/*
+experiments/planning/out/*
+experiments/thinkfast/films/*
+experiments/posthoc/out/*
+experiments/transfer/third_party/*
+experiments/transfer/concept_probes/out/
+!experiments/**/.gitkeep
+src_data/gated/gpqa_problems.json
+src_data/gated/bench_capture_jobs.json

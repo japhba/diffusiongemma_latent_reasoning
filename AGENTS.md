@@ -103,6 +103,28 @@ committed as artifacts, not regenerable offline. Provenance of `src_data/`:
   (multiplicative ×k, reflection, QWERTY, −3, copy); the `num/let/ll/uu` subtrees were verified
   byte-identical to the 2026-08-02 extraction, so fig2a/fig2b reproduce unchanged.
 
+## experiments/ — vendored experiment code (2026-08-15, "rerun everything" pass)
+
+Per user: the repo must be able to RERUN all experiments, not just ship the data. So
+`experiments/` vendors the generating code for every `src_data/` family, sanitized
+(absolute paths → env vars with in-tree defaults; no secrets, no IPs, no SLURM wrappers).
+Dir names mirror the upstream repos: `worker/` (the pod's Flask DG server — the NEWER pod
+copy with `/energy` + `s_topk_record` + `no_commit`, pulled from `/workspace/dg/server.py`;
+the tracked `diffusiongemma/server.py` is an older ancestor and lacks those routes),
+`lockin/` (truncation ladder; problems staged by `stage_*.py` — math + humaneval verified
+byte-identical against the originals, lcb best-effort, GPQA from the encrypted zip),
+`planning/` (xtask captures + par ladder + ember), `thinkfast/`, `constrained/`, `engels/`,
+`posthoc/` (the POD posthoc_ext suite = the state that produced the vendored n=40 data),
+`transfer/` (concept_probes suite; `REPO` → `DGLR_ROOT` env, default the transfer dir;
+third-party repos cloned into `transfer/third_party/`). MUCH OF THIS CODE WAS UNTRACKED in
+the local-only diffusiongemma repo (no git remote) — this vendoring is its only durable copy;
+treat `experiments/` as canonical for those files. Originals archived outside the repo at
+`dg_blog_archive/pod_dg_code/`. `src_data/gated/` ships `gpqa_problems.json` +
+`bench_capture_jobs.json` as password-protected zips (GPQA anti-contamination norm; password
+documented in its README); the decrypted files are gitignored. Run-output dirs
+(`lockin/data`, `planning/{exp,figs,out}`, `thinkfast/films`, `posthoc/out`,
+`transfer/third_party`, `transfer/concept_probes/out`) are gitignored with `.gitkeep`s.
+
 - `scripts/build_html.py` — renders `post.md` → `post.html` (minimal md subset: `#`-headers,
   `**`/`__`/`*`, images, links, lists, `` ` `` code, `---`). House style: system light/dark +
   toggle (top right), no-cache meta, ~900px column. **Rebuild + push after every post.md edit.**
