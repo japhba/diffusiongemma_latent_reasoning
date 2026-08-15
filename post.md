@@ -116,7 +116,7 @@ A simple way is to just measure overlap between pairs of inputs, where each elem
 
 ![RSA cosine and CKA](figs/rsa_cosine_cka.png)
 
-_**Representational similarity falls with layers, and is significantly driven by bare model difference and bidirectional attention.** Inputs are concepts from ([Kantamneni et al., 2025](https://arxiv.org/abs/2502.16681))._
+_**Representational similarity falls with layers, and is significantly driven by bare model difference and bidirectional attention.** Inputs are concepts from ([Kantamneni et al., 2025](https://arxiv.org/abs/2502.16681)). Notably, both the continued training from Gemma itself, as well as the switch to bidirectional attention mode, contribute to the similarity decrease._
 
 A priori, this rather large drop suggests a significant change in how the representation is organized, which we then went on to test more specifically.
 
