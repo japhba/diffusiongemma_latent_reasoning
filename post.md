@@ -2,9 +2,9 @@
 
 ## TL;DR
 
-Google DeepMind's recent model DiffusionGemma (DG) generates text via diffusion, meaning many diffusion steps happen before generating the final output. In particular, these diffusion steps carry *vectors* in addition to tokens. If we cannot interpret these tokens and vectors, the model has significant [opaque serial depth](https://arxiv.org/abs/2603.09786), potentially harming monitorability. Recently, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DG nevertheless maintains high monitorability, for instance by showing that projecting the distribution to its top-k items largely retains performance. We strengthen these results by showing that this performance degradation is largely a sampler artifact and good performance can be maintained with only the top item, supporting the case for high monitorability. Still, we also find some rare case studies where the distribution vector is load-bearing computationally, i.e. thus top-1 projection is not enough. However even in these cases, it just encodes superposition, remaining interpretable.
+Google DeepMind's recent model DiffusionGemma (DG) generates text via diffusion, meaning many diffusion steps happen before generating the final output. In particular, these diffusion steps carry *vectors* in addition to tokens. If we cannot interpret these tokens and vectors, the model has significant [opaque serial depth](https://arxiv.org/abs/2603.09786), potentially harming monitorability. Recently, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DG nevertheless maintains high monitorability, for instance by showing that projecting the distribution to its top-k items largely retains performance. We strengthen these results by showing that this performance degradation is largely a sampler artifact and good performance can be maintained with only the top item, supporting the case for high monitorability. Still, we also find some rare case studies where the distribution vector is load-bearing computationally, i.e. where top-1 projection would be detrimental. However even in these cases, it just encodes superposition, remaining interpretable.
 
-Apart from model behavior, we also examined how interpretability techniques carry over to DiffusionGemma, including probes, steering, and J-lens. We find that performance is largely retained. This is a positive update on the interpretability of diffusion models that are derived from text-pretrained LLMs (an efficient training method likely to be deployed), but might not apply for more general paradigms.
+Apart from model behavior, we also examined how interpretability techniques carry over to DiffusionGemma, including probes, steering, and J-lens. We find that performance is largely retained. This is a positive update on the interpretability of diffusion models that are derived from text-pretrained LLMs (an efficient training method more likely to be deployed), but might not apply for more general paradigms.
 
 Overall, this supports the paper's conclusion that DiffusionGemma remains highly monitorable, while nevertheless showing that there are cases where models can learn to use vector-valued information.
 
@@ -44,9 +44,9 @@ The last point is especially interesting, since it passes the vector $\mathbf{s}
 
 ## Performance degradation from top-k truncation largely is a sampler artifact
 
-Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) found that DiffusionGemma scores similar monitorability to Gemma. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential, conflicting the results of high monitorability.
+Investigating this risk, [Engels et al.](https://arxiv.org/abs/2606.20560) surprisingly found that DiffusionGemma scores _similar_ monitorability to Gemma. However, when truncating $\mathbf{s}^t$ to just its top-k entries, performance significantly dropped. Thus somehow the information in $\mathbf{s}^t$ seemed to have been essential, conflicting with the results of high monitorability.
 
-However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler together with a higher number of diffusion steps largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Rather, the truncation might have put the model outside of this training distribution. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
+However, when replicating their experiments, we observed that the model will often fall into a "degenerate loop", outputting the same token over and over, never reaching the final answer. We found that adopting a gentler sampler together with a higher number of diffusion steps largely prevents this failure mode, suggesting that in fact the distribution is not essential to solve these problems. Rather, the truncation might have put the model outside of its training distribution. Still, this does not rule out that there is a functional necessity in other tasks that the paper had not investigated.
 
 ![GPQA truncation failure modes](figs/gpqa_trunc_failures.png)
 
@@ -80,11 +80,11 @@ _**Example of one intervention.** a subleading injection on `H` (the leader `G` 
 
 This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. This would be interesting, since it would suggest that the model can carry out simultaneous computation, a key advantage that latent reasoning models have on paper.
 
-To this end, we measured responses $R$ and $\langle R\rangle_{P}$ averaged over the target images over the injection operand sets and images of alternative *possible operands*, respectively, and measure the _effect_ $E = R - \langle R_P\rangle$. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
+To this end, we measured the response $R(img(x_i))$ on the image of the injected operands $x_i$ and a baseline $\langle R(img(x))\rangle_{x \in P}$ averaged over images of *alternative possible* operands, respectively, and measure the _effect_ $E = R - \langle R\rangle_P$. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
 
 ![Parallel injection fraction](figs/letters_parallel_frac.png)
 
-_**DiffusionGemma responds to multiple injections in parallel, more than expected by chance.** Letters task with $k=3$: for each injected operand $x_i$ we define the per-member effect $E(x_i) = R(\mathrm{img}(x_i)) - \langle R(\mathrm{img}(y))\rangle_{y\in P}$, where $\mathrm{img}(x) = x+k$ and $P$ is the pool of possible operands, with the response $R$ as defined above. An injection set counts as responding if $\min_i E(x_i) > 0$. Dashed: chance level $0.5^n$. Error bars are 95% CIs over possible injection operand sets._
+_**DiffusionGemma responds to multiple injections in parallel, more than expected by chance.** Letters task with $k=3$: for each injected operand $x_i$ we define the per-member effect $E(x_i) = R(\mathrm{img}(x_i)) - \langle R(\mathrm{img}(x))\rangle_{x\in P}$, where $\mathrm{img}(x) = x+k$ and $P$ is the pool of possible operands, with the response $R$ as defined above. An injection set counts as responding if $\min_i E(x_i) > 0$. Dashed: chance level $0.5^n$. Error bars are 95% CIs over possible injection operand sets._
 
 We observe that the average target response exceeds the non-target response for all injected members more often than chance, averaged over possible injection sets. This behavior is plausible considering the computation in question: a shift is easily implemented by a linear operation in representation space. Therefore by linearity, superpositions of letters will be transported to superpositions of responses. Overall, this leaves an interpretable picture.
 
@@ -98,7 +98,7 @@ To investigate this, we searched for a non-trivial (i.e., not just a binary choi
 
 ![Seasonal vs idiom: ablation](figs/seasonal_ember_kill.png)
 
-_**Ablating a nascent contender in the distribution can prevent takeover.** Probability mass of the two completions at the contested slots, summed over comprising tokens (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
+_**Ablating a nascent contender in the distribution can prevent takeover.** Probability mass of the two completions at the contested slots, summed over all tokens of each completion (black: idiom, purple: seasonal). Top row: Base run without interventions. Bottom row: ablation of the idiom's probability mass (red) beyond step $t=2$._
 
 The canvas will read the _seasonal_ answer for the first few diffusion steps, after which it flips and stays at _idiom_. Interestingly, this is accompanied by _dynamics_ in $\mathbf{s}^t$: _idiom_ will start at ~0, and progressively gain weight, replacing _seasonal_.
 
@@ -126,7 +126,7 @@ Probing allows us to study how well a model separates concepts. We use 56 binary
 
 ![Probe retention](figs/probe_retention.png)
 
-_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, probe source (trained on) × target (applied to). DG is split by attention mode (last-position read everywhere). Bottom: a held-out positive and negative test text for one concept (clickbait): On this instance, the same gemma-trained probe scores gemma-4 and DG activations near-identically. Ticks: \<read model\> · \<attention mode\> · \<read position\>. G = gemma-4, DG = DiffusionGemma, "last" = the probe reads the residual at the last token._
+_**Probes largely transfer from Gemma to DiffusionGemma.** Top: mean held-out AUC over the 56 concepts, probe source (trained on) × target (applied to). DG is split by attention mode (last-position read everywhere). Bottom: a held-out positive and negative test text for one concept (clickbait): On this instance, the same Gemma-trained probe scores Gemma-4 and DG activations near-identically. Ticks: \<read model\> · \<attention mode\> · \<read position\>. G = gemma-4, DG = DiffusionGemma, "last" = the probe reads the residual at the last token._
 
 #### DiffusionGemma's representation is more linearly separable
 
@@ -134,11 +134,11 @@ Interestingly, we observed training and applying probes on DiffusionGemma in _bi
 
 ### Steering retention
 
-To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\langle h\rangle_{\mathrm{pos}} - \langle h\rangle_{\mathrm{neg}}\big)$, where $\langle h\rangle_{\mathrm{...}}$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and needs to make a forced choice to select the $+$-steered one.
+To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\langle h\rangle_{\mathrm{pos}} - \langle h\rangle_{\mathrm{neg}}\big)$, where $\langle h\rangle_{\mathrm{...}}$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (Gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and needs to make a forced choice to select the $+$-steered one.
 
 ![Steering retention](figs/steer_retention.png)
 
-_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind judge accuracy, direction source × steered model. Bottom: the same gemma-fit happiness direction applied to gemma-4 and DiffusionGemma on one carrier prompt.  Ticks: \<read model\> · \<attention mode\> · \<read position of the direction fit\>. "pr80 write" = the direction is added over the last 80% of prompt positions._
+_**Steering largely transfers from Gemma to DiffusionGemma.** Top: blind judge accuracy, direction source × steered model. Bottom: the same Gemma-fit happiness direction applied to Gemma-4 and DiffusionGemma on one carrier prompt.  Ticks: \<read model\> · \<attention mode\> · \<read position of the direction fit\>. "pr80 write" = the direction is added over the last 80% of prompt positions._
 
 ### J-Lens retention
 
@@ -148,9 +148,9 @@ The [Jacobian lens](https://transformer-circuits.pub/2026/workspace/index.html) 
 
 _**J-lens largely transfers from Gemma to DiffusionGemma.** Top: Transfer matrix, with scores being the fraction of layers * positions slots where the presumed intermediate is in the top-20 (the eval tasks from the [J-Lens paper](https://transformer-circuits.pub/2026/workspace/index.html)). Bottom: An example poetry eval task, where the models surface the rhyme already one line in advance. Ticks show the computed Jacobian: $h^{\ell'}_i(X)$ is the residual at source layer $\ell'$ and position $i$, $h^{L}_j(X)$ the final-layer residual at target position $j$. The causal fits average over causal targets $j\geq i$, the bidirectional fit over all canvas positions $I$. The expectation is taken over samples $X$ of WikiText._
 
-#### DiffusionGemma represents tokens acausally
+#### DiffusionGemma represents tokens non-causally
 
-Since DiffusionGemma uses bidirectional attention, it is interesting to ask whether J-space percept will also be distributed in a non-causal way. In particular, do they occur before the token that triggers them? Indeed, we found such instances on some problems:
+Since DiffusionGemma uses bidirectional attention, it is interesting to ask whether J-space percepts will also be distributed in a non-causal way. In particular, do they occur before the token that triggers them? Indeed, we found such instances on some problems:
 
 ![J-Lens future operation](figs/jlens_future.png)
 
@@ -158,9 +158,9 @@ _**A position preceding the operand will hold it in J-space.** Shown are the top
 
 ## Conclusion
 
-In this post, we have studied whether DiffusionGemma does latent reasoning via its vector-valued state $\mathbf{s}^t$. We found that top-k truncation of $\mathbf{s}^t$ largely preserves accuracy suggests that it is not _significantly_ being used in typical reasoning-focused task. However, for some tasks, we found that the model can make _some_ use of $\mathbf{s}^t$, in terms of carrying out (parallel) computation on it.
+In this post, we have studied whether DiffusionGemma does latent reasoning via its vector-valued state $\mathbf{s}^t$. We found that top-k truncation of $\mathbf{s}^t$ largely preserves accuracy, suggesting that it is not _significantly_ being used in typical reasoning-focused tasks. However, for some tasks, we found that the model can make _some_ use of $\mathbf{s}^t$, in terms of carrying out (parallel) computation on it.
 
-Overall, this supports [Engels et al.](https://arxiv.org/abs/2606.20560)'s conclusion of a highly monitorable DiffusionGemma. In particular, we did not find any strong evidence of latent _reasoning_, as in using $\mathbf{s}^t$ in a way that carries out nontrivial computation and is opaque.
+Overall, this supports [Engels et al.](https://arxiv.org/abs/2606.20560)'s conclusion of a highly monitorable DiffusionGemma. In particular, we did not find any evidence of latent _reasoning_, as in using $\mathbf{s}^t$ in a way that carries out nontrivial computation and is opaque.
 
 Going forward, these largely negative results are an update that "true" latent reasoning is somewhat hard to learn. However, there already exist models like CODI that pass a vector-valued state that is not clearly a superposition of tokens, though they so far don't show superior performance. We believe that finding methods to better interpret such models is an important area of research.
 
@@ -190,13 +190,13 @@ In the previous paragraph, we found that commitment time of the answer correlate
 
 ![Answer resolution](figs/answer_resolution.png)
 
-_**Post-hoc answers commit before their CoT, load-bearing answers wait till the CoT is committed.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step, one rollout per battery problem, grouped by the susceptibility of the answer ($S \le 0.1$ vs $S \ge 0.3$, faint = single problems, bold = group mean). n is the number of tasks in each panel, taken from the previous figure._
+_**Post-hoc answers commit before their CoT, load-bearing answers wait till the CoT is committed.** Mean token entropy of the answer positions (solid) and CoT positions (dashed) per denoising step, one rollout per battery problem, grouped by the susceptibility of the answer ($S \le 0.1$ vs $S \ge 0.3$, faint = single problems, bold = group mean). $n$ is the number of tasks in each panel, taken from the previous figure._
 
 ### How bidirectional are DiffusionGemma's generations?
 
-One of the differences in DiffusionGemma is that it has bidirectional attention. While some tasks relying on some form of logical induction require causal left-to-right generation, other tasks do not obviously require it. However, being a finetune of Gemma, it is unclear how much it will just inherit a bias towards causal generation vs actually using bidirectional generation.
+One of the differences in DiffusionGemma is that it has bidirectional attention. While some tasks relying on some form of logical induction require causal left-to-right generation, other tasks do not obviously require it. However, being a finetune of Gemma, it is unclear how much it will just inherit a bias towards causal generation versus actually using bidirectional generation.
 ![Commitment causality](figs/commit_causality.png)
 
-_**Commitment order follows the task's logical direction, but defaults to causality when ambiguous.** Center of mass of the canvas positions committed by step $t$ (0 = left, 1 = right of the content span) over diffusion progress $t/T$ (faint = single rollouts, bold = mean). $\rho_{\mathrm{logic}}$ = Spearman between the judge's logical ordering of its own atom decomposition and the atoms' positions in the text. n denotes distinct task instances._
+_**Commitment order follows the task's logical direction, but has a bias towards causal generation.** Center of mass of the canvas positions committed by step $t$ (0 = left, 1 = right of the content span) over diffusion progress $t/T$ (faint = single rollouts, bold = mean). $\rho_{\mathrm{logic}}$ = Spearman between a judge's logical ordering of CoT steps and their actual appearance in the text. $n$ denotes distinct task instances._
 
 We considered three tasks: GPQA, which involves logic-style problems and therefore should require left-to-right generation, *poem writing*, which has no clear left-to-right bias but only needs to satisfy a global structure, and *reverse_chain*, which requires the model to reverse its reasoning order.
