@@ -80,7 +80,7 @@ _**Example of one intervention.** a subleading injection on `H` (the leader `G` 
 
 This simple response behavior begs the question whether it is possible to perturb $n>1$ source letters _simultaneously_ (again, keeping them subleading) and see whether the corresponding target images respond. This would be interesting, since it would suggest that the model can carry out simultaneous computation, a key advantage that latent reasoning models have on paper.
 
-To this end, we measured responses $ R$ and $\langle R\rangle_{P}$ averaged over the target images over the injection operand sets and images of alternative *possible operands*, respectively, and measure the _effect_ $E = R - \langle R_P\rangle $. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
+To this end, we measured responses $R$ and $\langle R\rangle_{P}$ averaged over the target images over the injection operand sets and images of alternative *possible operands*, respectively, and measure the _effect_ $E = R - \langle R_P\rangle$. We then report the fraction of simultaneous injections that has positive response on all targets, as well as a null hypothesis if tokens would respond randomly.
 
 ![Parallel injection fraction](figs/letters_parallel_frac.png)
 
@@ -134,7 +134,7 @@ Interestingly, we observed training and applying probes on DiffusionGemma in _bi
 
 ### Steering retention
 
-To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\langle h\rangle_{\mathrm{pos}} - \langle h\rangle_{\mathrm{neg}}\big)$, where $\langle h\rangle_{\mathrm{...}}$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and needs to make a forced choice to select the $+$steer one.
+To see whether these similarities in representation are causally load-bearing, we consider the steering experiments from the RepE paper ([Zou et al., 2023](https://arxiv.org/abs/2310.01405)). For each of 11 RepE concept tasks we fit a direction $\hat v = \mathrm{normalize}\big(\langle h\rangle_{\mathrm{pos}} - \langle h\rangle_{\mathrm{neg}}\big)$, where $\langle h\rangle_{\mathrm{...}}$ denotes the mean last-token residual activation $h$ over the task's positive contrastive stimuli (likewise for $\mathrm{neg}$), read separately on each stream (gemma-4, DG causal, DG bidirectional). The direction is then injected additively into the residual stream of the steered model at a fixed strength ($h' \leftarrow h' + \alpha\,\lVert h'\rVert\,\hat v$ with $\alpha=0.35$, layers 9–19) while it completes a neutral carrier prompt, once with $+\hat v$ and once with $-\hat v$. A blinded judge sees the two generations in random order and needs to make a forced choice to select the $+$-steered one.
 
 ![Steering retention](figs/steer_retention.png)
 
