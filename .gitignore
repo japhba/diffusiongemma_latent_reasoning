@@ -14,4 +14,3 @@ experiments/transfer/concept_probes/out/
 !experiments/**/.gitkeep
 src_data/gated/gpqa_problems.json
 src_data/gated/bench_capture_jobs.json
-lesswrong.md
